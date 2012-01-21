@@ -72,8 +72,8 @@ describe('Declaring an unnamed module', function () {
     it('should raise an exception if an invalid token is encountered', function () {
         nh.reset();
         var modPath = '/test/fixtures/invalidToken.js';
-        var caught = false;
         var spy = jasmine.createSpy();
+
         nh.error(spy);
         runs(function () {
             nh(modPath);
@@ -129,27 +129,55 @@ describe('Declaring an named module', function () {
 describe('Importing named modules', function () {
     var modWithImport = '/test/fixtures/withImport.js';
     var importedMod = '/test/fixtures/named.js';
-   beforeEach(function () {
-       runs(function () {
-           nh.reset();
-           nh(importedMod);
-       });
-       waitsFor(function () {
-           return nh.get(importedMod);
-       });
-   })
-   
-   it('should be able to load an available module from its import name', function () {
-       var spy = jasmine.createSpy();
-       runs(function () {
-          nh(modWithImport, spy); 
-       });
-       waitsFor(function () {
-           return nh.get(modWithImport);
-       });
-       runs(function () {
-           expect(nh.get(modWithImport).imp1()).toBeTruthy();
-           expect(nh.get(modWithImport).ref1).toBe(nh.get(importedMod).fn1);
-       });
-   });
+    beforeEach(function () {
+        runs(function () {
+            nh.reset();
+            nh(importedMod);
+        });
+        waitsFor(function () {
+            return nh.get(importedMod);
+        });
+    })
+    
+    it('should be able to load an available module from its import name', function () {
+        var spy = jasmine.createSpy();
+        runs(function () {
+           nh(modWithImport, spy); 
+        });
+        waitsFor(function () {
+            return nh.get(modWithImport);
+        });
+        runs(function () {
+            expect(nh.get(modWithImport).imp1()).toBeTruthy();
+            expect(nh.get(modWithImport).ref1).toBe(nh.get(importedMod).fn1);
+        });
+    });
+    
+    it ('should load modules and rename its imports', function () {
+        var spy = jasmine.createSpy();
+        runs(function () {
+           nh('/test/fixtures/withRenamedImport.js', spy); 
+        });
+        waitsFor(function () {
+            return nh.get('/test/fixtures/withRenamedImport.js');
+        });
+        runs(function () {
+            expect(nh.get('/test/fixtures/withRenamedImport.js').imp1()).toBeTruthy();
+            expect(nh.get('/test/fixtures/withRenamedImport.js').ref1).toBe(nh.get(importedMod).fn1);
+        });
+    });
+    
+    it ('should be able to import modules from URL', function () {
+        var spy = jasmine.createSpy();
+        runs(function () {
+           nh('/test/fixtures/importFromURL.js', spy); 
+        });
+        waitsFor(function () {
+            return nh.get('/test/fixtures/importFromURL.js');
+        });
+        runs(function () {
+            expect(nh.get('/test/fixtures/importFromURL.js').imp1()).toBeTruthy();
+            expect(nh.get('/test/fixtures/importFromURL.js').ref1).toBe(nh.get(importedMod).fn1);
+        });
+    });
 });
