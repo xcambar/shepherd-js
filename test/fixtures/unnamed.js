@@ -1,6 +1,6 @@
 "module {";
-"  export fn2";
-"  export var2"
+"  export fn2;";
+"  export var2;"
 "}";
 
 /**

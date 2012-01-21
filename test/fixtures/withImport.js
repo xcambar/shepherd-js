@@ -1,7 +1,8 @@
-"module hasImport";
-"import m1";
-"export imp1";
-"export ref1";
+"module hasImport {";
+"import m1;";
+"export imp1;";
+"export ref1;";
+"}";
 
 var imp1 = function () {
     return m1.fn1();

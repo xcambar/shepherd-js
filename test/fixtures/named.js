@@ -1,6 +1,6 @@
 "module m1 {";
-"  export fn1";
-"  export var1";
+"  export fn1;";
+"  export var1;";
 "}";
 
 /**
