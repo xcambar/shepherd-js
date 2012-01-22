@@ -194,6 +194,31 @@
         }
     };
     
+    var _moduleSrc = function(src, callback, errorFn, conf) {
+        var moduleConf = conf || {},
+            callback = callback || function () {},
+            errorFn = errorFn || function () {},
+            text = src.split('\n'),
+            declaration = []
+        for (var i = 0; i < text.length; i++) {
+            var cmd = text[i].trim().match(/^\s*"(.*)"\s*;?$/);
+            if (cmd) {
+                declaration.push(cmd[1].trim());
+            } else { // At the first line where we do not find a module-related command, we stop the module evaluation.
+                break;
+            }
+        }
+        if (declaration.length) {
+            moduleConf = parse(declaration, moduleConf);
+            (typeof moduleConf == 'string') && errorFn(moduleConf);
+            applyConfiguration(moduleConf, function (parsedConf) {
+                loadModule(text, parsedConf, callback)
+            }, errorFn.origFn);
+        } else {
+            loadModule(text, moduleConf, callback);
+        }
+    };
+    
     /**
      * Retrieves the file corresponding to the module and declares it
      */
@@ -207,6 +232,8 @@
                 throw new Error(msg);
             }
         };
+        _error.origFn = errorFn;
+        
         reqwest({  //@TODO update with generic AJAX request
             url: moduleSrc,
             type: 'js-module',
@@ -214,28 +241,8 @@
                 _error('Unable to fetch the module "' + moduleSrc + '"');
             },
             success: function (res) {
-                var moduleConf = {
-                    src: moduleSrc
-                };
-                var text = res.responseText.split('\n');
-                var declaration = []
-                for (var i = 0; i < text.length; i++) {
-                    var cmd = text[i].trim().match(/^\s*"(.*)"\s*;?$/);
-                    if (cmd) {
-                        declaration.push(cmd[1].trim());
-                    } else { // At the first line where we do not find a module-related command, we stop the module evaluation.
-                        break;
-                    }
-                }
-                if (declaration.length) {
-                    moduleConf = parse(declaration, moduleConf);
-                    (typeof moduleConf == 'string') && _error(moduleConf);
-                    applyConfiguration(moduleConf, function (parsedConf) {
-                        loadModule(text, parsedConf, callback)
-                    }, errorFn);
-                } else {
-                    loadModule(text, moduleConf, callback);
-                }
+                var responseText = res.responseText;
+                _moduleSrc(responseText, callback, _error, { src: moduleSrc});
             }
         });
     }
@@ -246,9 +253,8 @@
             var script = document.scripts[i];
             if (script.getAttribute('type') === 'text/shepherd-js') {
                 var moduleSrc = script.getAttribute('src');
-                if (moduleSrc && !modules.hasOwnProperty(moduleSrc)) {
-                    _module(moduleSrc);
-                }
+                moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
+                !moduleSrc && script.innerHTML && _moduleSrc(script.innerHTML);
             }
         }
     });
