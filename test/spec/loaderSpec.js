@@ -176,8 +176,8 @@ describe('Importing named modules', function () {
             return nh.get('/test/fixtures/importFromURL.js');
         });
         runs(function () {
-            expect(nh.get('/test/fixtures/importFromURL.js').imp1()).toBeTruthy();
-            expect(nh.get('/test/fixtures/importFromURL.js').ref1).toBe(nh.get(importedMod).fn1);
+            expect(nh.get('/test/fixtures/importFromURL.js').imp1()).toEqual('external loaded');
+            expect(typeof nh.get('/test/fixtures/importFromURL.js').ref1).toBe('function');
         });
     });
 });

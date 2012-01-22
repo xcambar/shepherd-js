@@ -1,12 +1,12 @@
 "module externalModule {";
-"import m1 from '/test/fixtures/named.js';";
+"module externalModule from '/test/fixtures/external.js';";
 "export imp1;";
 "export ref1;";
 "}";
 
 var imp1 = function () {
-    return m1.fn1();
+    return externalModule.ext1();
 };
 
-console.log('m1: ', m1);
-var ref1 = m1.fn1;
+console.log('externalModule: ', externalModule);
+var ref1 = externalModule.ext1;

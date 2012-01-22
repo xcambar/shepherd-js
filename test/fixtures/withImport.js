@@ -1,5 +1,5 @@
 "module hasImport {";
-"import m1;";
+"module m1 from m1;";
 "export imp1;";
 "export ref1;";
 "}";
