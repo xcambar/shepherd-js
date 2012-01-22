@@ -19,17 +19,10 @@ var rebound = function (el, container) {
                 if (el.position().top + el.height() >= CtnHgt) {
                     direction.y *= -1;
                     el.stop(true, false);
-                    setTimeout(function () {
-                        console.log('a');
-                        //rebound(el, container);
-                    }, 10);
                 }
                 if (el.position().left + el.width() >= CtnWth) {
                     direction.x *= -1;
                     el.stop(true, false);
-                    setTimeout(function () {
-                        //rebound(el, container);
-                    }, 10);
                 }
             },
             complete: function () {
