@@ -1,13 +1,37 @@
 /**
- * !! Module declaration MUST be the header of the file
- * 
  * @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
  * @see http://addyosmani.com/writing-modular-js/
  */
 (function (me) {
+    var undefined = arguments[arguments.length];
     var modules = {},
         _errCb,
         _errModules = null;
+    
+    //
+    // Native plugins
+    //
+    
+    var modularize = function (globalVar) {
+        if (!me.hasOwnProperty(globalVar)) {
+            return 'No global "' + globalVar + '"';
+        }
+        modules[globalVar] = me[globalVar];
+        return true;
+    };
+    
+    var noGlobal = function (globalVar) {
+        if (!me.hasOwnProperty(globalVar)) {
+            return 'No global "' + globalVar + '"';
+        }
+        me[globalVar] = undefined;
+        return true;
+    };
+    
+    var _plugins = {
+        'modularize': modularize,
+        'noGlobal': noGlobal
+    };
     
     /**
      * Parses the module declaration and prepares the execution context of the module
@@ -15,12 +39,37 @@
      * @return {Object|String} Returns the module's evaluated execution context or an error string 
      */
     var parse = function (declaration, conf) {
+        
+        function pluginDeclaration (decl, conf) {
+            var plugins = decl.split(';'),
+                pluginRe = /^\s*(\w+)\!(\S*)\s*$/;
+            for(var i = 0; i < plugins.length; i++) {
+                if (!plugins[i]) { continue; }
+                var plugin = plugins[i],
+                    match = plugin.match(pluginRe);
+                if (match) {
+                    var pluginName = match[1];
+                        argument = match[2];
+                    if (!_plugins[pluginName]) {
+                        return 'Unknown plugin "' + pluginName + '"';
+                    }
+                    var pluginResult = _plugins[pluginName](argument);
+                    if ((typeof(pluginResult) == 'string' || !pluginResult)) {
+                        return pluginResult;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
         function moduleDeclaration (decl, conf) {
             return moduleDefinition(decl, conf) || moduleSpecifier(decl, conf);
         };
         
         function moduleDefinition (decl, conf) {
-            var namedMod = /^module\s+(\w+)\s*\{(.+)\}\s*;?\s*$/,
+            var namedMod = /^\s*module\s+(\w+)\s*\{(.+)\}\s*;?\s*$/,
                 match = decl.match(namedMod);
             if (match) {
                 conf.name = match[1];
@@ -89,8 +138,13 @@
         };
         
         var moduleObj = conf || {},
-            decl = declaration.join('');
-        if (!(moduleDeclaration(decl, moduleObj) || exportDeclaration(decl, moduleObj) || importDeclaration(decl, moduleObj))) {
+            decl = declaration.join(''),
+            isPlugin = pluginDeclaration(decl, moduleObj);
+        if (typeof isPlugin == 'string') {
+            return isPlugin;
+        } else if (isPlugin) {
+            return moduleObj;
+        } else if (!(moduleDeclaration(decl, moduleObj) || exportDeclaration(decl, moduleObj) || importDeclaration(decl, moduleObj))) {
             return 'Not a module declaration: ' + declaration;
         }
         return moduleObj;
@@ -118,7 +172,6 @@
                'location': window.location
             };
         }
-        
         var module = fn.apply({}, [conf]);
         if (moduleConf.hasOwnProperty('name')) {
             modules[moduleConf.src] = module;
@@ -145,36 +198,34 @@
                 conf.modules.hasOwnProperty(i) && _c++;
             }
             return function () {
-                --_c || (console.log(conf) || callback(conf));
+                --_c || callback(conf);
             }
         })();
         
-        var importsLoader = function (i) {
-            var imported = conf.import[i];
-            if (modules[imported]) {
-                conf.deps[i] = modules[imported][i];
+        var importsLoader = function (name, ref) {
+            if (modules[ref]) {
+                conf.deps[name] = modules[ref][i];
                 depsPool();
             } else {
                 _module(
-                    imported,
+                    ref || name,
                     function (module) {
-                        conf.deps[i] = module[i];
+                        conf.deps[name] = module[name || ref];
                         depsPool();
                     },
                     errorFn);
             }
         };
         
-        var modulesLoader = function (i) {
-            var imported = conf.modules[i];
-            if (modules[imported]) {
-                conf.deps[i] = modules[imported];
+        var modulesLoader = function (name, ref) {
+            if (modules[ref]) {
+                conf.deps[name] = modules[ref];
                 depsPool();
             } else {
                 _module(
-                    imported,
+                    ref || name,
                     function (module) {
-                        conf.deps[i] = module;
+                        conf.deps[name] = module;
                         depsPool();
                     },
                     errorFn);
@@ -183,11 +234,11 @@
         
         conf.deps = {};
         for (var i in conf.import) {
-            conf.import.hasOwnProperty(i) && importsLoader(i);
+            conf.import.hasOwnProperty(i) && importsLoader(i, conf.import[i]);
         }
         
         for (var i in conf.modules) {
-            conf.modules.hasOwnProperty(i) && modulesLoader(i);
+            conf.modules.hasOwnProperty(i) && modulesLoader(i, conf.modules[i]);
         }
         if (!conf.import && !conf.modules) {
             return callback(conf);
@@ -201,9 +252,11 @@
             text = src.split('\n'),
             declaration = []
         for (var i = 0; i < text.length; i++) {
-            var cmd = text[i].trim().match(/^\s*"(.*)"\s*;?$/);
-            if (cmd) {
-                declaration.push(cmd[1].trim());
+            var cmd = text[i].trim();
+            if (!cmd) { continue; }
+            var match = cmd.match(/^\s*"(.*)"\s*;?$/);
+            if (match) {
+                declaration.push(match[1].trim());
             } else { // At the first line where we do not find a module-related command, we stop the module evaluation.
                 break;
             }
@@ -252,7 +305,7 @@
         for (var i = 0; i < document.scripts.length; i++) {
             var script = document.scripts[i];
             if (script.getAttribute('type') === 'text/shepherd-js') {
-                var moduleSrc = script.getAttribute('src');
+                var moduleSrc = script.getAttribute('data-src');
                 moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
                 !moduleSrc && script.innerHTML && _moduleSrc(script.innerHTML);
             }
