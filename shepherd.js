@@ -106,7 +106,7 @@
     var loadModule = function (text, moduleConf, callback) {
         !moduleConf && (moduleConf = {});
         var returns = moduleConf.export ?
-            '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v   ; }).join(',') + '}'
+            '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
             : '';
         var fn = new Function('imports', 'with (imports) {' + text.join('\n') + '; return ' + returns + ';}');
         
@@ -239,15 +239,19 @@
             }
         });
     }
-    for (var i = 0; i < document.scripts.length; i++) {
-        var script = document.scripts[i];
-        if (script.getAttribute('type') === 'text/shepherd-js') {
-            var moduleSrc = script.getAttribute('src');
-            if (moduleSrc && !modules.hasOwnProperty(moduleSrc)) {
-                _module(moduleSrc);
+    
+    //<script> tag evaluation
+    me.addEventListener && me.addEventListener('load', function () {
+        for (var i = 0; i < document.scripts.length; i++) {
+            var script = document.scripts[i];
+            if (script.getAttribute('type') === 'text/shepherd-js') {
+                var moduleSrc = script.getAttribute('src');
+                if (moduleSrc && !modules.hasOwnProperty(moduleSrc)) {
+                    _module(moduleSrc);
+                }
             }
         }
-    }
+    });
     
     //var _previousValue = me.nh; //Unused for now
     me.nh = function (modulePath, cb) {
