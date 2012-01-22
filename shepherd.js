@@ -332,20 +332,22 @@
         }
     });
     
-    //var _previousValue = me.nh; //Unused for now
-    me.nh = function (modulePath, cb) {
+    me.s6d = function (modulePath, cb) {
         _module(modulePath, cb, _errCb);
     };
-    me.nh.get = function (moduleName) {
+    me.s6d.src = function (moduleSrc, cb) {
+        _module(moduleSrc, cb, _errCb);
+    };
+    me.s6d.get = function (moduleName) {
         return modules[moduleName];
     };
-    me.nh.error = function (cb) {
+    me.s6d.error = function (cb) {
         if (arguments.length === 0) {
             return _errModules;
         }
         _errCb = cb;
     };
-    me.nh.reset = function () {
+    me.s6d.reset = function () {
         _errCb = undefined;
         modules = {};
         _errModules = null;
