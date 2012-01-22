@@ -1,4 +1,9 @@
 /**
+ * 
+ * Copyright (c) 2012, Xavier Cambar
+ * Licensed under the MIT License (see LICENSE for details)
+ * 
+ * Sources of inspiration (among others)
  * @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
  * @see http://addyosmani.com/writing-modular-js/
  */
@@ -287,9 +292,24 @@
         };
         _error.origFn = errorFn;
         
-        reqwest({  //@TODO update with generic AJAX request
-            url: moduleSrc,
-            type: 'js-module',
+        
+        (function (o) {
+            var http = ('XMLHttpRequest' in me) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+            http.open('GET', o.url, true);
+            http.setRequestHeader('Accept', 'application/javascript, text/javascript');
+            http.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (/^20\d$/.test(this.status)) {
+                        o.success && o.success(http);
+                        o.complete && o.complete(http);
+                    } else {
+                        o.error && o.error(http);
+                        o.complete && o.complete(http);
+                    }
+                }
+            };
+            http.send();
+        })({ url: moduleSrc,
             error: function () {
                 _error('Unable to fetch the module "' + moduleSrc + '"');
             },
