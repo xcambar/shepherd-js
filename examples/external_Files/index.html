@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Shepherding Underscore</title>
+        <script type="text/javascript" src="/reqwest.js"></script>
+        <script type="text/javascript" src="/shepherd.js"></script>
+        
+        <script type="text/javascript" src="https://raw.github.com/documentcloud/underscore/master/underscore-min.js"></script>
+        <script type="text/shepherd-js">
+            "modularize!_;";
+            "noGlobal!_;";
+        </script>
+        
+        <script type="text/shepherd-js" data-src="/examples/external_Files/main.js"></script>
+        
+        <style type="text/css">
+            body {padding: 0;margin:0;}
+            .info {border-bottom: 3px solid orange;background: #FFD39B;text-align: center;font-size: 1.05em;padding-top: 5px;}
+            .info pre {text-align:left;width: 500px; margin: 0 auto;background-color: #DDD;padding: 5px 20px;border: 1px solid #999;}
+        </style>
+    </head>
+    <body>
+        <div class='info'>
+            <b>Note</b>: This demo uses Underscore fetched from a CDN.<br />
+            To have it work with Shepherd, the following lines had to be included:<br /><br />
+            <pre>&lt;script type="text/shepherd-js"&gt;
+  "modularize!_;"; // Made _ available as a module
+  "noGlobal!_;"; // Removed _ from the global scope
+&lt;script&gt;</pre><br />
+        </div>
+        <ul class='methods'></ul>
+    </body>
+</html>
