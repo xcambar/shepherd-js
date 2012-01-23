@@ -158,6 +158,26 @@
     //
     // UTILITY FUNCTIONS
     //
+    /**
+     *  XHR request
+     **/
+    var xhr = function (o) {
+        var http = ('XMLHttpRequest' in me) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+        http.open('GET', o.url, true);
+        http.setRequestHeader('Accept', 'application/javascript, text/javascript');
+        http.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (/^20\d$/.test(this.status)) {
+                    o.success && o.success(http);
+                    o.complete && o.complete(http);
+                } else {
+                    o.error && o.error(http);
+                    o.complete && o.complete(http);
+                }
+            }
+        };
+        http.send();
+    };
     
     /**
      * Loads a module in its own function
@@ -292,24 +312,7 @@
         };
         _error.origFn = errorFn;
         
-        
-        (function (o) {
-            var http = ('XMLHttpRequest' in me) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-            http.open('GET', o.url, true);
-            http.setRequestHeader('Accept', 'application/javascript, text/javascript');
-            http.onreadystatechange = function () {
-                if (this.readyState == 4) {
-                    if (/^20\d$/.test(this.status)) {
-                        o.success && o.success(http);
-                        o.complete && o.complete(http);
-                    } else {
-                        o.error && o.error(http);
-                        o.complete && o.complete(http);
-                    }
-                }
-            };
-            http.send();
-        })({ url: moduleSrc,
+        xhr({ url: moduleSrc,
             error: function () {
                 _error('Unable to fetch the module "' + moduleSrc + '"');
             },
