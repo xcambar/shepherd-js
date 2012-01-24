@@ -3,15 +3,11 @@
 <head>
   <meta charset='utf-8'>
 
-  <title>xcambar/shepherd-js @ GitHub</title>
+  <title>Shepherd-js : Put fences around your JS files!</title>
 
+  <link rel="stylesheet/less" type="text/css" href="vendor/bootstrap/lib/bootstrap.less">
+  <script type="text/javascript" src="vendor/less/dist/less-1.2.1.js"></script>
   <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #b8dbd0;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #A0310E;
-    }
     .container {
       margin: 0 auto;
       width: 960px;
@@ -27,12 +23,30 @@
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
+    
+    p.fork { font-size: 1.1em; font-weight: bold;margin: 0 15px;}
+    body .container { margin-top: 50px;}
+    .nav a {font-weight: bold; font-size: 1.2em;}
   </style>
 </head>
 
 <body>
-  <a href="https://github.com/xcambar/shepherd-js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
+  <div class="topbar">
+  	<div class="topbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="#">Shepherd-js</a>
+          <ul class="nav">
+            <li><a href="#">tl;dr</a></li>
+            <li><a href="#Features">Features</a></li>
+            <li><a href="#Syntax">Syntax</a></li>
+            <li><a href="#Examples">Examples</a></li>
+            <li><a href="#About">About</a></li>
+          </ul>
+          <p class="pull-right fork"><a href="https://github.com/xcambar/shepherd-js">Fork me!</a></p>
+          <p class="pull-right fork"><a href="https://github.com/xcambar/shepherd-js/zipball/master">Download</a></p>
+        </div>
+      </div>
+  </div>
   <div class="container">
 
     <div class="download">
