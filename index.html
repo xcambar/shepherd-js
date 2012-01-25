@@ -5,22 +5,14 @@
 
   <title>Shepherd-js : Put fences around your JS files!</title>
 
-  <link rel="stylesheet/less" type="text/css" href="vendor/bootstrap/lib/bootstrap.less">
+  <link rel="stylesheet/less" type="text/css" href="app.less">
   <script type="text/javascript" src="vendor/less/dist/less-1.2.1.js"></script>
   <style type="text/css">
     .container {
       margin: 0 auto;
       width: 960px;
     }
-    h1 { font-size: 3.8em; color: black; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #67242F; }
-    h3 { text-align: center; color: #67242F; }
     a { color: #47242f; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
     
@@ -32,15 +24,15 @@
 
 <body>
   <div class="topbar">
-  	<div class="topbar-inner">
+    <div class="topbar-inner">
         <div class="container-fluid">
-          <a class="brand" href="#">Shepherd-js</a>
+          <h1 class="brand" href="#">Shepherd-js</h1>
           <ul class="nav">
-            <li><a href="#">tl;dr</a></li>
-            <li><a href="#Features">Features</a></li>
-            <li><a href="#Syntax">Syntax</a></li>
-            <li><a href="#Examples">Examples</a></li>
-            <li><a href="#About">About</a></li>
+            <li><a href="#tldr">[ tl;dr ]</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#syntax">Syntax</a></li>
+            <li><a href="#about">About</a></li>
           </ul>
           <p class="pull-right fork"><a href="https://github.com/xcambar/shepherd-js">Fork me!</a></p>
           <p class="pull-right fork"><a href="https://github.com/xcambar/shepherd-js/zipball/master">Download</a></p>
@@ -48,71 +40,65 @@
       </div>
   </div>
   <div class="container">
-
-    <div class="download">
-      <a href="https://github.com/xcambar/shepherd-js/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/xcambar/shepherd-js/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="https://github.com/xcambar/shepherd-js">shepherd-js</a></h1>
-
     <div class="description">
-      Shepherd is module loader and dependency manager for your JS apps, that takes a radically different approach than similar projects, and can effectively port your JS code to both-side (client- AND server-side)
+      <p>Shepherd is <b>module loader and dependency manager</b> for your JS files. It takes a radically different approach than other similar projects.</p>
+      <br/>It :
+      <ul>
+        <li>is non-obstrusive and non-destructive to your files (What ??)</li>
+        <li>enhances the modularity of your JS application (How ?)</li>
+        <li>maintains backward compatibility <b>and</b> brings forward compatibility (what ??)</li>
+      </ul>
+      <p>Shepherd secures your app and makes your code portable, <b>really</b> portable!</p>
     </div>
-
-    
-      <p>Shepherd is like no other module loader in many ways, including:
-          <ul>
-            <li>It is compatible with AMD AND CommonJS</li>
-            <li>It has a non-obstrusive lightweight syntax compliant with the upcoming specifications from ECMA (named ECMAScript:harmony-modules)</li>
-            <li>It allows developers to secure external libraries by litteraly turning them into modules and avoid global pollution!</li>
-            <li>It helps turning your legacy code into module in seconds (literally!)</li>
-            <li>Your code remains compatible with non-shepherd'ed applications. It' 100% backward compatible. Migrate your apps with ease!</li>
-          </ul>
-      </p>
-    
-      <h2>Dependencies</h2>
-      <p>Shepherd has absolutely no dependencies. Simply download shepherd.js, setup your modules (see below) and you're good to go!</p>
-    
-
-    
-      <h2>Install</h2>
-      <p>General as well as specific instructions to come.<br />
-Meanwhile, please have a look at the examples to figure out the use (it's pretty simple).</p>
-    
-    
-      <h2>License</h2>
-      <p>Releaser under the MIT Licence. See LICENSE file for details.</p>
-    
-    
-      <h2>Authors</h2>
-      <p>Xavier Cambar (xcambar@gmail.com)</p>
-    
-      <h2>Contact</h2>
-      <p>Xavier Cambar (xcambar@gmail.com), @xcambar
-<br/>      </p>
-    
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/xcambar/shepherd-js/zipball/master">zip</a> or
-      <a href="https://github.com/xcambar/shepherd-js/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/xcambar/shepherd-js</pre>
-    </p>
-
-    <div class="footer">
-      Copyright (c) 2012, <a href="https://github.com/xcambar">Xavier Cambar</a><br />
-      Get the source code on GitHub : <a href="https://github.com/xcambar/shepherd-js">xcambar/shepherd-js</a>
-    </div>
-
   </div>
-
+  
+  <h2 id="examples">Examples <small>Let's see how it works!</small></h2>
+  <div class="container">
+    Import modules<br />
+    Export variables<br />
+    Turn your existing files into modules. <br />
+    Use external libraries as modules. <br />
+    What about SSJS ?<br />
+    Already using RequireJS?<br />
+    
+  </div>
+  <h2 id="features">Features</h2>
+  <div class="container">
+    <p>Shepherd is like no other module loader in many ways, including:
+      <ul>
+        <li>It is compatible with AMD AND CommonJS</li>
+        <li>It has a non-obstrusive lightweight syntax compliant with the upcoming specifications from ECMA (named ECMAScript:harmony-modules)</li>
+        <li>It allows developers to secure external libraries by litteraly turning them into modules and avoid global pollution!</li>
+        <li>It helps turning your legacy code into module in seconds (literally!)</li>
+        <li>Your code remains compatible with non-shepherd'ed applications. It' 100% backward compatible. Migrate your apps with ease!</li>
+      </ul>
+    </p>
+  </div>
+  <h2 id="syntax">Install</h2>
+  <div class="container">
+    <p>Just include the following line to your header:</p>
+    <pre>&lt;script type="text/javascript" src="lib/shepherd.js">&lt;/script></pre>
+    <p>Then include all the files you want Shepherd to handle like the following:</p>
+    <pre>&lt;script type="text/shepherd-js" data-src="path/to/my/file.js">&lt;/script></pre>
+  </div>
+  
+  <h2>About</h2>
+  <div class="container">
+    <p>...</p>
+  </div>
+  <h2 id="tldr">tl;dr</h2>
+  <div class="container">
+    <p>
+      Encapsulation through modules is a key factor to efficient/beautiful Javascript code.<br/>
+      Wrapping modules into functions to achieve is annoying and visually inelegant.<br />
+      ECMA made a proposal for an extension of Javascript using modules.<br />
+      &rArr; Waiting for the day the proposal will be natively integrated to the runtimes, a library implements it for today's runtimes: <b>Shepherd</b>.
+    </p>
+  </div>
+  <div class="footer">
+    Copyright (c) 2012, <a href="https://github.com/xcambar">Xavier Cambar</a>, Released under the MIT Licence<br />
+    The page has been built using <a href="twitter.github.com/bootstrap">Bootstrap</a>
+  </div>
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

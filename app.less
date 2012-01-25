@@ -1,0 +1,66 @@
+@import "vendor/bootstrap/lib/bootstrap.less";
+
+
+@basefont: 16px;
+@baseline: 20px;
+@bgColor: #85B4A6;
+@brownish: #57343F;
+
+body {
+  padding-top: 50px;
+  div.container {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+}
+
+.topbar {
+  h1{
+    margin-bottom: 0;
+  } 
+}
+.topbar-inner {
+  background-color: @bgColor;
+  background-image: none;
+  
+  a {
+    color: @brownish;
+    text-shadow: 0 1px 0 rgba(128,128,64,.5);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: @brownish;
+  small {
+    color: @brownish;
+  }
+}
+h2 {
+  border-bottom: 1px solid black;
+  padding-left: @baseline * .5;
+}
+
+.description {
+  font-family: courier;
+  font-size: 1.2em;
+  padding: 30px 50px;
+  margin-bottom: 30px;
+  border: 4px solid @brownish;
+  .border-radius(10px);
+  p {
+    font-size: 1em;
+  }
+}
+
+ul {
+  margin-top: @baseline;
+}
+
+span.operator {
+font-size: 0.9em;
+  font-weight: bold;
+  color: @brownish;
+  border: 2px solid @brownish;
+  .border-radius(1em);
+  padding: 0 0.4em;
+}
