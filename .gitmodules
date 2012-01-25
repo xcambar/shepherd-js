@@ -1,7 +1,7 @@
 
 [submodule "vendor/bootstrap"]
 	path = vendor/bootstrap
-	url = http://github.com/twitter/bootstrap.git
+	url = git://github.com/twitter/bootstrap.git
 [submodule "vendor/less"]
 	path = vendor/less
-	url = http://github.com/cloudhead/less.js.git
+	url = git://github.com/cloudhead/less.js.git
