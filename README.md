@@ -1,6 +1,12 @@
-## What is shepherd ?
+# Shepherd-js
 
-Shepherd is a module loader and dependency manager for your JS apps, that takes a radically different approach than similar projects, and can effectively port your JS code to both-side (client- AND server-side)
+Shepherd is module loader and dependency manager for your JS files.
+
+In two words, Shepherd-js puts fences around your javascript units.
+
+## What is shepherd-js ?
+
+Shepherd-js is a module loader and dependency manager for your JS apps, that takes a radically different approach than similar projects, and can effectively port your JS code to both-side (client- AND server-side)
 
 Shepherd is like no other module loader in many ways, including:
 
