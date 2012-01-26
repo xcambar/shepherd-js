@@ -112,10 +112,14 @@
         };
         
         function importDeclaration (decl, conf) {
-            var importRexp = /^\s*import\s+(.*)$/;
+            var importRexp = /^\s*((\w*)\!)?import\s+(.*)$/;
             var match = decl.match(importRexp);
             if (match) {
-                return importBindings(match[1], conf);
+                if (match[1]) {
+                    conf.format = conf.format || [];
+                    conf.format.indexOf(match[2]) === -1 && conf.format.push(match[2]);
+                }
+                return importBindings(match[3], conf);
             }
             return false;
         };
@@ -187,7 +191,7 @@
         var returns = moduleConf.export ?
             '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
             : '';
-        var fn = new Function('imports', 'with (imports) {' + text.join('\n') + '; return ' + returns + ';}');
+        var fn = new Function('imports', 'define', 'require', 'with (imports) {' + text.join('\n') + '; return ' + returns + ';}');
         
         var conf = moduleConf.deps || {};
         if (typeof window !== 'undefined') {
@@ -197,7 +201,15 @@
                'location': window.location
             };
         }
-        var module = fn.apply({}, [conf]);
+        var arguments = [conf];
+        var format = moduleConf.format;
+        if (format.length) {
+            console.log('Custom format required!', format);
+            arguments.push(function() {
+                console.log('define called with arguments: ', arguments);
+            })
+        }
+        var module = fn.apply({}, arguments);
         if (moduleConf.hasOwnProperty('name')) {
             modules[moduleConf.src] = module;
             moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their names or their URI             
@@ -238,7 +250,8 @@
                         conf.deps[name] = module[name || ref];
                         depsPool();
                     },
-                    errorFn);
+                    errorFn,
+                    conf.format);
             }
         };
         
@@ -253,7 +266,8 @@
                         conf.deps[name] = module;
                         depsPool();
                     },
-                    errorFn);
+                    errorFn,
+                    conf.format);
             }
         };
         
@@ -286,11 +300,12 @@
                 break;
             }
         }
+        
         if (declaration.length) {
             moduleConf = parse(declaration, moduleConf);
             (typeof moduleConf == 'string') && errorFn(moduleConf);
             applyConfiguration(moduleConf, function (parsedConf) {
-                loadModule(text, parsedConf, callback)
+                loadModule(text, parsedConf, callback);
             }, errorFn.origFn);
         } else {
             loadModule(text, moduleConf, callback);
@@ -300,7 +315,7 @@
     /**
      * Retrieves the file corresponding to the module and declares it
      */
-    var _module = function (moduleSrc, callback, errorFn) {
+    var _module = function (moduleSrc, callback, errorFn, formats) {
         var _error = function (msg) {
             _errModules = _errModules || [];
             _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
@@ -318,7 +333,7 @@
             },
             success: function (res) {
                 var responseText = res.responseText;
-                _moduleSrc(responseText, callback, _error, { src: moduleSrc});
+                _moduleSrc(responseText, callback, _error, { src: moduleSrc, format: formats || []});
             }
         });
     }
