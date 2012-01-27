@@ -115,21 +115,17 @@
             var importRexp = /^\s*((\w*)\!)?import\s+(.*)$/;
             var match = decl.match(importRexp);
             if (match) {
-                if (match[1]) {
-                    conf.format = conf.format || [];
-                    conf.format.indexOf(match[2]) === -1 && conf.format.push(match[2]);
-                }
-                return importBindings(match[3], conf);
+                return importBindings(match[3], conf, match[2]);
             }
             return false;
         };
         
-        function importBindings(decl, conf) {
+        function importBindings(decl, conf, format) {
             var bindingRE = /^\s*(\w+)\s+from\s+(['"]?)([^\s'"]+)(['"]?)\s*;\s*$/;
             var match = decl.match(bindingRE);
             if (match) {
                 conf.import = conf.import || {};
-                conf.import[match[1]] = match[3] || match[1];
+                conf.import[match[1]] = {ref: match[3] || match[1], format: format};
                 return true;
             }
             return false;
@@ -186,12 +182,11 @@
     /**
      * Loads a module in its own function
      */
-    var loadModule = function (text, moduleConf, callback) {
+    var loadModule = function (moduleConf, callback) {
         !moduleConf && (moduleConf = {});
         var returns = moduleConf.export ?
             '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
             : '';
-        var fn = new Function('imports', 'define', 'require', 'with (imports) {' + text.join('\n') + '; return ' + returns + ';}');
         
         var conf = moduleConf.deps || {};
         if (typeof window !== 'undefined') {
@@ -202,13 +197,14 @@
             };
         }
         var arguments = [conf];
-        var format = moduleConf.format;
-        if (format.length) {
-            console.log('Custom format required!', format);
+        if (moduleConf.format && moduleConf.format.length) {
+            console.log('Custom format required for:', moduleConf);
             arguments.push(function() {
                 console.log('define called with arguments: ', arguments);
-            })
+            });
         }
+        
+        var fn = Function.apply({}, ['imports', 'define', 'require', 'with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']);
         var module = fn.apply({}, arguments);
         if (moduleConf.hasOwnProperty('name')) {
             modules[moduleConf.src] = module;
@@ -240,18 +236,18 @@
         })();
         
         var importsLoader = function (name, ref) {
-            if (modules[ref]) {
-                conf.deps[name] = modules[ref][i];
+            if (modules[ref.ref]) {
+                conf.deps[name] = modules[ref.ref][i];
                 depsPool();
             } else {
                 _module(
-                    ref || name,
+                    {name: ref.ref || name, format: ref.format},
                     function (module) {
-                        conf.deps[name] = module[name || ref];
+                        debugger
+                        conf.deps[name] = module[name || ref.ref];
                         depsPool();
                     },
-                    errorFn,
-                    conf.format);
+                    errorFn);
             }
         };
         
@@ -266,8 +262,7 @@
                         conf.deps[name] = module;
                         depsPool();
                     },
-                    errorFn,
-                    conf.format);
+                    errorFn);
             }
         };
         
@@ -284,11 +279,11 @@
         }
     };
     
-    var _moduleSrc = function(src, callback, errorFn, conf) {
+    var _moduleSrc = function(conf, callback, errorFn) {
         var moduleConf = conf || {},
             callback = callback || function () {},
             errorFn = errorFn || function () {},
-            text = src.split('\n'),
+            text = conf.contents ? conf.contents.split('\n') : [],
             declaration = []
         for (var i = 0; i < text.length; i++) {
             var cmd = text[i].trim();
@@ -305,17 +300,17 @@
             moduleConf = parse(declaration, moduleConf);
             (typeof moduleConf == 'string') && errorFn(moduleConf);
             applyConfiguration(moduleConf, function (parsedConf) {
-                loadModule(text, parsedConf, callback);
+                loadModule(parsedConf, callback);
             }, errorFn.origFn);
         } else {
-            loadModule(text, moduleConf, callback);
+            loadModule(moduleConf, callback);
         }
     };
     
     /**
      * Retrieves the file corresponding to the module and declares it
      */
-    var _module = function (moduleSrc, callback, errorFn, formats) {
+    var _module = function (moduleSrc, callback, errorFn) {
         var _error = function (msg) {
             _errModules = _errModules || [];
             _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
@@ -326,16 +321,20 @@
             }
         };
         _error.origFn = errorFn;
-        
-        xhr({ url: moduleSrc,
-            error: function () {
-                _error('Unable to fetch the module "' + moduleSrc + '"');
-            },
-            success: function (res) {
-                var responseText = res.responseText;
-                _moduleSrc(responseText, callback, _error, { src: moduleSrc, format: formats || []});
-            }
-        });
+        var uri = (typeof moduleSrc == 'string') ? moduleSrc : moduleSrc.name;
+        if (uri) {
+            xhr({ url: uri,
+                error: function () {
+                    _error('Unable to fetch the module "' + moduleSrc + '"');
+                },
+                success: function (res) {
+                    var responseText = res.responseText;
+                    _moduleSrc({ src: moduleSrc, contents: responseText }, callback, _error);
+                }
+            });
+        } else {
+            (typeof moduleSrc == 'object') && _moduleSrc(moduleSrc, callback, _error);
+        }
     }
     
     //<script> tag evaluation
@@ -345,7 +344,7 @@
             if (script.getAttribute('type') === 'text/shepherd-js') {
                 var moduleSrc = script.getAttribute('data-src');
                 moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
-                !moduleSrc && script.innerHTML && _moduleSrc(script.innerHTML);
+                !moduleSrc && script.innerHTML && _moduleSrc({contents: script.innerHTML});
             }
         }
     });
