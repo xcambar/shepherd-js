@@ -44,7 +44,6 @@
      * @return {Object|String} Returns the module's evaluated execution context or an error string 
      */
     var parse = function (declaration, conf) {
-        
         function pluginDeclaration (decl, conf) {
             var plugins = decl.split(';'),
                 pluginRe = /^\s*(\w+)\!(\S*)\s*$/;
@@ -180,7 +179,11 @@
     };
     
     /**
-     * Loads a module in its own function
+     * Loads a module in its own wrapper function
+     * The module is ocnsideref as fully loaded, dependencies included.
+     * When using a loader wrapper, we are out of this scope, as dependencies are likely yet to be loaded.
+     * The interface must be updated to reflect the need of one more level of async.
+     * @TODO Change the process when using AMD (current example)
      */
     var loadModule = function (moduleConf, callback) {
         !moduleConf && (moduleConf = {});
@@ -197,14 +200,17 @@
             };
         }
         var arguments = [conf];
+        var argsName = ['imports'];
         if (moduleConf.format && moduleConf.format.length) {
-            console.log('Custom format required for:', moduleConf);
-            arguments.push(function() {
-                console.log('define called with arguments: ', arguments);
-            });
+            switch (moduleConf.format) {
+                case 'amd':
+                    arguments.push(function() {
+                        console.log('define called with arguments: ', arguments);
+                    });
+                    argsName.push('define');
+            }
         }
-        
-        var fn = Function.apply({}, ['imports', 'define', 'require', 'with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']);
+        var fn = Function.apply({}, argsName.concat(['with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']));
         var module = fn.apply({}, arguments);
         if (moduleConf.hasOwnProperty('name')) {
             modules[moduleConf.src] = module;
@@ -217,7 +223,7 @@
             }
         }
         if (typeof callback == 'function') {
-            callback(module);
+            callback(module || {} );
         }
     };
     
@@ -243,7 +249,6 @@
                 _module(
                     {name: ref.ref || name, format: ref.format},
                     function (module) {
-                        debugger
                         conf.deps[name] = module[name || ref.ref];
                         depsPool();
                     },
@@ -321,6 +326,7 @@
             }
         };
         _error.origFn = errorFn;
+        var moduleConf = (typeof moduleSrc != 'string') ? moduleSrc : {src: moduleSrc}
         var uri = (typeof moduleSrc == 'string') ? moduleSrc : moduleSrc.name;
         if (uri) {
             xhr({ url: uri,
@@ -329,7 +335,8 @@
                 },
                 success: function (res) {
                     var responseText = res.responseText;
-                    _moduleSrc({ src: moduleSrc, contents: responseText }, callback, _error);
+                    moduleConf.contents = responseText;
+                    _moduleSrc(moduleConf, callback, _error);
                 }
             });
         } else {
