@@ -18,25 +18,21 @@
     // Native plugins
     //
     
-    var modularize = function (globalVar) {
-        if (!me.hasOwnProperty(globalVar)) {
-            return 'No global "' + globalVar + '"';
-        }
-        modules[globalVar] = me[globalVar];
-        return true;
-    };
-    
-    var noGlobal = function (globalVar) {
-        if (!me.hasOwnProperty(globalVar)) {
-            return 'No global "' + globalVar + '"';
-        }
-        me[globalVar] = undefined;
-        return true;
-    };
-    
     var _plugins = {
-        'modularize': modularize,
-        'noGlobal': noGlobal
+        'modularize': function (globalVar) {
+            if (!me.hasOwnProperty(globalVar)) {
+                return 'No global "' + globalVar + '"';
+            }
+            modules[globalVar] = me[globalVar];
+            return true;
+        },
+        'noGlobal': function (globalVar) {
+            if (!me.hasOwnProperty(globalVar)) {
+                return 'No global "' + globalVar + '"';
+            }
+            me[globalVar] = undefined;
+            return true;
+        }
     };
     
     /**
