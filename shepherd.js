@@ -11,7 +11,8 @@
     var undefined = arguments[arguments.length];
     var modules = {},
         _errCb,
-        _errModules = null;
+        _errModules = null,
+        _isServer = typeof window == 'undefined';
     
     //
     // Native plugins
@@ -157,6 +158,44 @@
     //
     // UTILITY FUNCTIONS
     //
+    
+    var _loaderWrappers = function (name) {
+        if (name !== 'amd') { return 'Unknown module format'; }
+        var wrapperFn = function (name, deps, factory) {
+            var _n, _d, _f
+            switch (arguments.length) {
+                case 1:
+                    _f = name;
+                    break;
+                case 2:
+                    _d = name, _f = deps;
+                    break;
+                default:
+                    _n = name, _d = deps, _f = factory;
+            }
+            if (_d) {
+                var deps = {};
+                for (var i = 0, _l = _d.length; i < _l; i++) {
+                    deps[_d[i]] = _d[i];
+                }
+                _d = deps;
+            }
+            var modConf = {};
+            _d && (modConf.import = _d);
+            _n && (modConf.name = _n);
+            _f && (modConf.fn = _f);
+
+            applyConfiguration(modConf, function (parsedConf) {
+                loadModule(parsedConf, callback);
+            }, function () { console.log(this, arguments)});
+        };
+        var wrapperName = 'define';
+        return {
+            fn: wrapperFn,
+            name: wrapperName
+        };
+    };
+    
     /**
      *  XHR request
      **/
@@ -192,7 +231,7 @@
             : '';
         
         var conf = moduleConf.deps || {};
-        if (typeof window !== 'undefined') {
+        if (!_isServer) {
             conf.window = {
                'document': window.document,
                'navigator': window.navigator,
@@ -202,15 +241,11 @@
         var arguments = [conf];
         var argsName = ['imports'];
         if (moduleConf.format && moduleConf.format.length) {
-            switch (moduleConf.format) {
-                case 'amd':
-                    arguments.push(function() {
-                        console.log('define called with arguments: ', arguments);
-                    });
-                    argsName.push('define');
-            }
+            var wrapperConf = _loaderWrappers(moduleConf.format);
+            arguments.push(wrapperConf.fn);
+            argsName.push(wrapperConf.name);
         }
-        var fn = Function.apply({}, argsName.concat(['with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']));
+        var fn = moduleConf.fn || Function.apply({}, argsName.concat(['with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']));
         var module = fn.apply({}, arguments);
         if (moduleConf.hasOwnProperty('name')) {
             modules[moduleConf.src] = module;
@@ -237,7 +272,7 @@
                 conf.modules.hasOwnProperty(i) && _c++;
             }
             return function () {
-                --_c || callback(conf);
+                !--_c && callback(conf);
             }
         })();
         
@@ -329,7 +364,7 @@
         var moduleConf = (typeof moduleSrc != 'string') ? moduleSrc : {src: moduleSrc}
         var uri = (typeof moduleSrc == 'string') ? moduleSrc : moduleSrc.name;
         if (uri) {
-            xhr({ url: uri,
+            !_isServer && xhr({ url: uri,
                 error: function () {
                     _error('Unable to fetch the module "' + moduleSrc + '"');
                 },
@@ -339,13 +374,22 @@
                     _moduleSrc(moduleConf, callback, _error);
                 }
             });
+            if (_isServer) {
+                try {
+                    moduleConf.contents = require('fs').readFileSync(__dirname + '/./' + uri, 'utf-8');
+                } catch (e) {
+                    _error(e);
+                    return
+                }
+                _moduleSrc(moduleConf, callback, _error);
+            }
         } else {
             (typeof moduleSrc == 'object') && _moduleSrc(moduleSrc, callback, _error);
         }
     }
     
     //<script> tag evaluation
-    me.addEventListener && me.addEventListener('load', function () {
+    !_isServer && me.addEventListener && me.addEventListener('load', function () {
         for (var i = 0; i < document.scripts.length; i++) {
             var script = document.scripts[i];
             if (script.getAttribute('type') === 'text/shepherd-js') {
@@ -375,5 +419,8 @@
         _errCb = undefined;
         modules = {};
         _errModules = null;
+    }
+    if (_isServer) {
+        exports = module.exports = me.s6d;
     }
 })(this);

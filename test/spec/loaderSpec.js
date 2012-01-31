@@ -1,3 +1,7 @@
+if (typeof window == 'undefined') {
+    var s6d = require('../../shepherd.js');
+}
+
 describe('Generic features of the Loader', function () {
     it('should reset its state at will', function () {
         var modPath = '/test/fixtures/unnamed.js';
@@ -20,7 +24,7 @@ describe('Generic features of the Loader', function () {
         });
         waitsFor(function () {
             return s6d.error();
-        }, 'No error happened', 10000);
+        }, 'No error happened', 2000);
     });
     
     it('should log the modules which could not have been loaded', function () {
@@ -35,7 +39,7 @@ describe('Generic features of the Loader', function () {
         
         waitsFor(function () {
             return s6d.error();
-        }, 'No error happened', 10000);
+        }, 'No error happened', 2000);
         
         runs(function () {
             expect(s6d.error()).toEqual([modPath]);
@@ -54,7 +58,7 @@ describe('Declaring an unnamed module', function () {
         });
         waitsFor(function () {
             return !!s6d.get(modPath);
-        }, 'The module has never been loaded', 10000);
+        }, 'The module has been loaded', 2000);
         
         runs(function () {
             expect(spy).toHaveBeenCalled();
@@ -98,7 +102,7 @@ describe('Declaring an named module', function () {
         });
         waitsFor(function () {
             return !!s6d.get(modPath);
-        }, 'The module has never been loaded', 10000);
+        }, 'The module has never been loaded', 2000);
         
         runs(function () {
             expect(spy).toHaveBeenCalled();
