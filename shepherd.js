@@ -375,8 +375,18 @@
                 }
             });
             if (_isServer) {
+                var _resolve = function (uri) {
+                    var modPath;
+                    try {
+                        modPath = require.resolve(uri);
+                    } catch (e) {
+                        modPath = __dirname + '/./' + uri;
+                    } finally {
+                        return modPath;
+                    }
+                };
                 try {
-                    moduleConf.contents = require('fs').readFileSync(__dirname + '/./' + uri, 'utf-8');
+                    moduleConf.contents = require('fs').readFileSync(_resolve(uri), 'utf-8');
                 } catch (e) {
                     _error(e);
                     return
