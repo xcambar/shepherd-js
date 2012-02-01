@@ -376,7 +376,7 @@
                     try {
                         modPath = require.resolve(uri);
                     } catch (e) {
-                        modPath = __dirname + '/./' + uri;
+                        modPath = process.cwd() + '/./' + uri;
                     } finally {
                         return modPath;
                     }

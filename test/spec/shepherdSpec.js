@@ -4,7 +4,7 @@ if (typeof window == 'undefined') {
 
 describe('Generic features of the Loader', function () {
     it('should reset its state at will', function () {
-        var modPath = '/test/fixtures/unnamed.js';
+        var modPath = 'fixtures/unnamed.js';
         s6d.reset();
         expect(s6d.error()).toBeNull();
         expect(s6d.get(modPath)).toBeUndefined();
@@ -51,7 +51,7 @@ describe('Generic features of the Loader', function () {
 
 describe('Declaring an unnamed module', function () {
     it('should load an unnamed module and call the optionnally provided callback', function () {
-        var modPath = '/test/fixtures/unnamed.js';
+        var modPath = 'fixtures/unnamed.js';
         var spy = jasmine.createSpy();
         runs(function () {
             s6d(modPath, spy);
@@ -67,7 +67,7 @@ describe('Declaring an unnamed module', function () {
     });
 
     it('should return an available module by its path', function () {
-        var module = s6d.get('/test/fixtures/unnamed.js');
+        var module = s6d.get('fixtures/unnamed.js');
         expect(module).toHaveMembers(['fn2', 'var2']);
         expect(module.var2).toBe('EXPORTED!!')
         expect(typeof module.fn2).toBe('function');
@@ -75,7 +75,7 @@ describe('Declaring an unnamed module', function () {
     
     it('should raise an exception if an invalid token is encountered', function () {
         s6d.reset();
-        var modPath = '/test/fixtures/invalidToken.js';
+        var modPath = 'fixtures/invalidToken.js';
         var spy = jasmine.createSpy();
 
         s6d.error(spy);
@@ -92,7 +92,7 @@ describe('Declaring an unnamed module', function () {
 });
 
 describe('Declaring an named module', function () {
-    var modPath = '/test/fixtures/named.js',
+    var modPath = 'fixtures/named.js',
         modName = 'm1';
     
     it('should load a named module by its path and call the optionnally provided callback', function () {
@@ -131,8 +131,8 @@ describe('Declaring an named module', function () {
 });
 
 describe('Importing named modules', function () {
-    var modWithImport = '/test/fixtures/withImport.js';
-    var importedMod = '/test/fixtures/named.js';
+    var modWithImport = 'fixtures/withImport.js';
+    var importedMod = 'fixtures/named.js';
     beforeEach(function () {
         runs(function () {
             s6d.reset();
@@ -160,34 +160,34 @@ describe('Importing named modules', function () {
     it ('should load modules and rename its imports', function () {
         var spy = jasmine.createSpy();
         runs(function () {
-           s6d('/test/fixtures/withRenamedImport.js', spy); 
+           s6d('fixtures/withRenamedImport.js', spy); 
         });
         waitsFor(function () {
-            return s6d.get('/test/fixtures/withRenamedImport.js');
+            return s6d.get('fixtures/withRenamedImport.js');
         });
         runs(function () {
-            expect(s6d.get('/test/fixtures/withRenamedImport.js').imp1()).toBeTruthy();
-            expect(s6d.get('/test/fixtures/withRenamedImport.js').ref1).toBe(s6d.get(importedMod).fn1);
+            expect(s6d.get('fixtures/withRenamedImport.js').imp1()).toBeTruthy();
+            expect(s6d.get('fixtures/withRenamedImport.js').ref1).toBe(s6d.get(importedMod).fn1);
         });
     });
 });
 
 describe('Declare modules by their URLs', function () {
-    it ('should be able to import modules from an absolute URL', function () {
+    it ('should be able to import modules from a relative URL', function () {
         var spy = jasmine.createSpy();
         runs(function () {
-           s6d('/test/fixtures/importFromAbsoluteURL.js', spy); 
+           s6d('fixtures/importFromRelativeURL.js', spy); 
         });
         waitsFor(function () {
-            return s6d.get('/test/fixtures/importFromAbsoluteURL.js');
+            return s6d.get('fixtures/importFromRelativeURL.js');
         });
         runs(function () {
-            expect(s6d.get('/test/fixtures/importFromAbsoluteURL.js').imp1()).toEqual('external loaded');
-            expect(typeof s6d.get('/test/fixtures/importFromAbsoluteURL.js').ref1).toBe('function');
+            expect(s6d.get('fixtures/importFromRelativeURL.js').imp1()).toEqual('external loaded');
+            expect(typeof s6d.get('fixtures/importFromRelativeURL.js').ref1).toBe('function');
         });
     });
 
-    it ('should be able to import modules from a relative URL', function () {
+    it ('should be able to import modules from an absolute URL', function () {
         throw 'Test not written';
     });
 
