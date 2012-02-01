@@ -5,3 +5,6 @@
 [submodule "vendor/less"]
 	path = vendor/less
 	url = git://github.com/cloudhead/less.js.git
+[submodule "vendor/shepherd"]
+	path = vendor/shepherd
+	url = git://github.com/xcambar/shepherd-js.git
