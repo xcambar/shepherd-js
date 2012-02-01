@@ -170,18 +170,38 @@ describe('Importing named modules', function () {
             expect(s6d.get('/test/fixtures/withRenamedImport.js').ref1).toBe(s6d.get(importedMod).fn1);
         });
     });
-    
-    it ('should be able to import modules from URL', function () {
+});
+
+describe('Declare modules by their URLs', function () {
+    it ('should be able to import modules from an absolute URL', function () {
         var spy = jasmine.createSpy();
         runs(function () {
-           s6d('/test/fixtures/importFromURL.js', spy); 
+           s6d('/test/fixtures/importFromAbsoluteURL.js', spy); 
         });
         waitsFor(function () {
-            return s6d.get('/test/fixtures/importFromURL.js');
+            return s6d.get('/test/fixtures/importFromAbsoluteURL.js');
         });
         runs(function () {
-            expect(s6d.get('/test/fixtures/importFromURL.js').imp1()).toEqual('external loaded');
-            expect(typeof s6d.get('/test/fixtures/importFromURL.js').ref1).toBe('function');
+            expect(s6d.get('/test/fixtures/importFromAbsoluteURL.js').imp1()).toEqual('external loaded');
+            expect(typeof s6d.get('/test/fixtures/importFromAbsoluteURL.js').ref1).toBe('function');
         });
+    });
+
+    it ('should be able to import modules from a relative URL', function () {
+        throw 'Test not written';
+    });
+
+    it ('should be able to import modules from a canonical URL', function () {
+        throw 'Test not written';
+    });
+})
+
+describe('Recursive module loading', function () {
+    it ('should be able to load files recursively', function () {
+        throw 'Test not written';
+    });
+    
+    it ('should be able to load files recursively with recurrent dependencies', function () {
+        throw 'Test not written';
     });
 });
