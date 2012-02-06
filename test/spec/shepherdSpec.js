@@ -140,10 +140,33 @@ describe('Importing named modules', function () {
 
 describe('Recursive module loading', function () {
     it ('should be able to load files recursively', function () {
-        throw 'Test not written';
+        var spy = this.loadModule('fixtures/recursive/d0.js');
+        runs(function () {
+            expect(s6d.get('fixtures/recursive/d0.js')).toBeTruthy();
+            expect(s6d.get('./fixtures/recursive/d2.js').a).toBe('Module export');
+            expect(s6d.get('d1')).toHaveNumberOfMembers(0);
+            expect(s6d.get('d0')).toHaveNumberOfMembers(0);
+        });
     });
     
     it ('should be able to load files recursively with recurrent dependencies', function () {
-        throw 'Test not written';
+        var spy = this.loadModule('fixtures/recursive/d0a.js');
+        runs(function () {
+            expect(s6d.get('fixtures/recursive/d0a.js')).toBeTruthy();
+            expect(s6d.get('./fixtures/recursive/d2.js').a).toBe('Module export');
+            expect(s6d.get('d1')).toHaveNumberOfMembers(0);
+            expect(s6d.get('d0')).toHaveNumberOfMembers(0);
+        });
+    });
+    
+    it ('allows cyclic dependencies', function () {
+        throw 'Not implemented';
+        var spy = this.loadModule('fixtures/cyclic/a.js');
+        runs(function () {
+            expect(s6d.get('fixtures/recursive/d0a.js')).toBeTruthy();
+            expect(s6d.get('./fixtures/recursive/d2.js').a).toBe('Module export');
+            expect(s6d.get('d1')).toHaveNumberOfMembers(0);
+            expect(s6d.get('d0')).toHaveNumberOfMembers(0);
+        });
     });
 });

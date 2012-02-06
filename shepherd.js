@@ -158,7 +158,7 @@
     var _loaderWrappers = function (name) {
         if (name !== 'amd') { return 'Unknown module format'; }
         var wrapperFn = function (name, deps, factory) {
-            var _n, _d, _f
+            var _n, _d, _f;
             switch (arguments.length) {
                 case 1:
                     _f = name;
@@ -224,8 +224,7 @@
         !moduleConf && (moduleConf = {});
         var returns = moduleConf.export ?
             '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
-            : '';
-        
+            : '{}';
         var conf = moduleConf.deps || {};
         if (!_isServer) {
             conf.window = {
@@ -243,8 +242,9 @@
         }
         var fn = moduleConf.fn || Function.apply({}, argsName.concat(['with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']));
         var module = fn.apply({}, arguments);
+        console.log(moduleConf, module)
+        moduleConf.src && (modules[moduleConf.src] = module);
         if (moduleConf.hasOwnProperty('name')) {
-            modules[moduleConf.src] = module;
             moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their names or their URI             
         } else {
             for (var i in module) {
@@ -256,6 +256,7 @@
         if (typeof callback == 'function') {
             callback(module || {} );
         }
+        console.log(modules);
     };
     
     var applyConfiguration = function (conf, callback, errorFn) {

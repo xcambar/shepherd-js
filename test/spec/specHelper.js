@@ -13,6 +13,19 @@ beforeEach(function () {
             return true;
         }
     });
+
+    this.addMatchers({
+        toHaveNumberOfMembers: function (expected) {
+            var _c = 0;
+            for (var i in this.actual) {
+                if(this.actual.hasOwnProperty(i)) {
+                    _c++;
+                }
+            }
+            return _c === expected;
+        }
+    });
+    
     this.loadModule = function (moduleName) {
         var spy = jasmine.createSpy();
         runs(function () {
