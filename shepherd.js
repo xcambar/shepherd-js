@@ -242,7 +242,6 @@
         }
         var fn = moduleConf.fn || Function.apply({}, argsName.concat(['with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']));
         var module = fn.apply({}, arguments);
-        console.log(moduleConf, module)
         moduleConf.src && (modules[moduleConf.src] = module);
         if (moduleConf.hasOwnProperty('name')) {
             moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their names or their URI             
@@ -256,7 +255,6 @@
         if (typeof callback == 'function') {
             callback(module || {} );
         }
-        console.log(modules);
     };
     
     var applyConfiguration = function (conf, callback, errorFn) {
