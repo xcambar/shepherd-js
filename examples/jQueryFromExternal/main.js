@@ -1,8 +1,8 @@
-"module {                                                   ";
-"  import $ from jQuery; ";
-"  import rebound from '/examples/jQuery/animation.js';     ";
-"  import gear from '/examples/jQuery/gear.js';             ";
-"};                                                         ";
+"module {                                               ";
+"  import $ from jQuery;                                ";
+"  import rebound from '/examples/jQuery/animation.js'; ";
+"  import gear from '/examples/jQuery/gear.js';         ";
+"};                                                     ";
 
 
 $(function () {

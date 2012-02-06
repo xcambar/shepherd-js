@@ -183,7 +183,7 @@
 
             applyConfiguration(modConf, function (parsedConf) {
                 loadModule(parsedConf, callback);
-            }, function () { console.log(this, arguments)});
+            });
         };
         var wrapperName = 'define';
         return {
@@ -371,28 +371,41 @@
                 }
             });
             if (_isServer) {
-                var _resolve = function (uri) {
-                    var modPath;
+                var modPath, url = require('url'), parsedURL = url.parse(uri);
+                if(parsedURL.host) {
+                    var get = require(parsedURL.protocol.indexOf('https') !== -1 ? 'https' : 'http').get;
+                    var newURL = {host: parsedURL.host, path: parsedURL.pathname};
+                    parsedURL.port && (newURL.port = parsedURL.port);
+                    get(newURL, function (res) {
+                        var data = '';
+                        res.on('data', function (chunk) {
+                            data += chunk;
+                        });
+                        res.on('end', function () {
+                            moduleConf.contents = data;
+                            _moduleSrc(moduleConf, callback, _error);
+                        });
+                        res.on('error', _error);
+                    });
+                } else {
                     try {
                         modPath = require.resolve(uri);
                     } catch (e) {
                         modPath = process.cwd() + '/./' + uri;
-                    } finally {
-                        return modPath;
                     }
-                };
-                try {
-                    moduleConf.contents = require('fs').readFileSync(_resolve(uri), 'utf-8');
-                } catch (e) {
-                    _error(e);
-                    return
+                    try {
+                        moduleConf.contents = require('fs').readFileSync(modPath, 'utf-8');
+                    } catch (e) {
+                        _error(e);
+                        return
+                    }
+                    _moduleSrc(moduleConf, callback, _error);
                 }
-                _moduleSrc(moduleConf, callback, _error);
             }
         } else {
             (typeof moduleSrc == 'object') && _moduleSrc(moduleSrc, callback, _error);
         }
-    }
+    };
     
     //<script> tag evaluation
     !_isServer && me.addEventListener && me.addEventListener('load', function () {

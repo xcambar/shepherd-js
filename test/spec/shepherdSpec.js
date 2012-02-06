@@ -52,14 +52,7 @@ describe('Generic features of the Loader', function () {
 describe('Declaring an unnamed module', function () {
     it('should load an unnamed module and call the optionnally provided callback', function () {
         var modPath = 'fixtures/unnamed.js';
-        var spy = jasmine.createSpy();
-        runs(function () {
-            s6d(modPath, spy);
-        });
-        waitsFor(function () {
-            return !!s6d.get(modPath);
-        }, 'The module has been loaded', 2000);
-        
+        var spy = this.loadModule(modPath);
         runs(function () {
             expect(spy).toHaveBeenCalled();
             expect(spy.callCount).toEqual(1);
@@ -96,13 +89,7 @@ describe('Declaring an named module', function () {
         modName = 'm1';
     
     it('should load a named module by its path and call the optionnally provided callback', function () {
-        var spy = jasmine.createSpy();
-        runs(function () {
-            s6d(modPath, spy);
-        });
-        waitsFor(function () {
-            return !!s6d.get(modPath);
-        }, 'The module has never been loaded', 2000);
+        var spy = this.loadModule(modPath);
         
         runs(function () {
             expect(spy).toHaveBeenCalled();
@@ -133,24 +120,9 @@ describe('Declaring an named module', function () {
 describe('Importing named modules', function () {
     var modWithImport = 'fixtures/withImport.js';
     var importedMod = 'fixtures/named.js';
-    beforeEach(function () {
-        runs(function () {
-            s6d.reset();
-            s6d(importedMod);
-        });
-        waitsFor(function () {
-            return s6d.get(importedMod);
-        });
-    })
     
     it('should be able to load an available module from its import name', function () {
-        var spy = jasmine.createSpy();
-        runs(function () {
-           s6d(modWithImport, spy); 
-        });
-        waitsFor(function () {
-            return s6d.get(modWithImport);
-        });
+        var spy = this.loadModule(modWithImport);
         runs(function () {
             expect(s6d.get(modWithImport).imp1()).toBeTruthy();
             expect(s6d.get(modWithImport).ref1).toBe(s6d.get(importedMod).fn1);
@@ -158,43 +130,13 @@ describe('Importing named modules', function () {
     });
     
     it ('should load modules and rename its imports', function () {
-        var spy = jasmine.createSpy();
-        runs(function () {
-           s6d('fixtures/withRenamedImport.js', spy); 
-        });
-        waitsFor(function () {
-            return s6d.get('fixtures/withRenamedImport.js');
-        });
+        var spy = this.loadModule('fixtures/withRenamedImport.js');
         runs(function () {
             expect(s6d.get('fixtures/withRenamedImport.js').imp1()).toBeTruthy();
             expect(s6d.get('fixtures/withRenamedImport.js').ref1).toBe(s6d.get(importedMod).fn1);
         });
     });
 });
-
-describe('Declare modules by their URLs', function () {
-    it ('should be able to import modules from a relative URL', function () {
-        var spy = jasmine.createSpy();
-        runs(function () {
-           s6d('fixtures/importFromRelativeURL.js', spy); 
-        });
-        waitsFor(function () {
-            return s6d.get('fixtures/importFromRelativeURL.js');
-        });
-        runs(function () {
-            expect(s6d.get('fixtures/importFromRelativeURL.js').imp1()).toEqual('external loaded');
-            expect(typeof s6d.get('fixtures/importFromRelativeURL.js').ref1).toBe('function');
-        });
-    });
-
-    it ('should be able to import modules from an absolute URL', function () {
-        throw 'Test not written';
-    });
-
-    it ('should be able to import modules from a canonical URL', function () {
-        throw 'Test not written';
-    });
-})
 
 describe('Recursive module loading', function () {
     it ('should be able to load files recursively', function () {
