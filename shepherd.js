@@ -89,8 +89,13 @@
             var re = /^\s*module\s+(\w+)\s+from\s+(['"])?([^\s'"]+)(['"])?\s*;\s*$/,
                 match = decl.match(re);
             if (match) {
-                conf.modules = conf.modules || {};
-                conf.modules[match[1]] = match[3];
+                if (match[2] && match[4] && (match[2] === match[4])) {
+                    conf.modulesByURI = conf.modulesByURI || {};
+                    conf.modulesByURI[match[1]] = match[3];
+                } else if (!match[2] && !match[4]) {
+                    conf.modules = conf.modules || {};
+                    conf.modules[match[1]] = match[3];
+                }
                 return true;
             }
             return false;
@@ -266,6 +271,9 @@
             for (var i in conf.modules) {
                 conf.modules.hasOwnProperty(i) && _c++;
             }
+            for (var i in conf.modulesByURI) {
+                conf.modulesByURI.hasOwnProperty(i) && _c++;
+            }
             return function () {
                 !--_c && callback(conf);
             }
@@ -309,7 +317,12 @@
         for (var i in conf.modules) {
             conf.modules.hasOwnProperty(i) && modulesLoader(i, conf.modules[i]);
         }
-        if (!conf.import && !conf.modules) {
+        
+        for (var i in conf.modulesByURI) {
+            conf.modulesByURI.hasOwnProperty(i) && modulesLoader(i, conf.modulesByURI[i]);
+        }
+        
+        if (!conf.import && !conf.modules && !conf.modulesByURI) {
             return callback(conf);
         }
     };
@@ -422,7 +435,7 @@
         _module(modulePath, cb, _errCb);
     };
     me.s6d.src = function (moduleSrc, cb) {
-        _module(moduleSrc, cb, _errCb);
+        _moduleSrc({contents: moduleSrc}, cb, _errCb);
     };
     me.s6d.get = function (moduleName) {
         return modules[moduleName];
