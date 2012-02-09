@@ -163,10 +163,8 @@ describe('Recursive module loading', function () {
         throw 'Not implemented';
         var spy = this.loadModule('fixtures/cyclic/a.js');
         runs(function () {
-            expect(s6d.get('fixtures/recursive/d0a.js')).toBeTruthy();
-            expect(s6d.get('./fixtures/recursive/d2.js').a).toBe('Module export');
-            expect(s6d.get('d1')).toHaveNumberOfMembers(0);
-            expect(s6d.get('d0')).toHaveNumberOfMembers(0);
+            expect(s6d.get('./fixtures/cycle/a.js')).toBeTruthy();
+            expect(s6d.get('./fixtures/cycle/b.js')).toBeTruthy();
         });
     });
 });
