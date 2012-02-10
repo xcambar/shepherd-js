@@ -4,6 +4,11 @@ describe('global.require function', function () {
     it ('has been replaced by a custom function', function () {
         throw 'Test not written';
     });
+
+    it ('can load node modules', function () {
+        throw 'Test not written';
+        //this.loadModule('fixtures/node-js/load_fs.js');
+    });
     
     it ('is recursively consistent over module loading', function () {
         throw 'Test not written';
@@ -21,13 +26,7 @@ describe('exports', function () {
 
 describe('Declare modules by their paths', function () {
     it ('should be able to import modules from a relative path', function () {
-        var spy = jasmine.createSpy();
-        runs(function () {
-           s6d('fixtures/importFromRelativeURL.js', spy); 
-        });
-        waitsFor(function () {
-            return s6d.get('fixtures/importFromRelativeURL.js');
-        });
+        this.loadModule('fixtures/importFromRelativeURL.js');
         runs(function () {
             expect(s6d.get('fixtures/importFromRelativeURL.js').imp1()).toEqual('external loaded');
             expect(typeof s6d.get('fixtures/importFromRelativeURL.js').ref1).toBe('function');
@@ -35,13 +34,7 @@ describe('Declare modules by their paths', function () {
     });
 
     it ('should be able to import modules from an absolute path', function () {
-        var spy = jasmine.createSpy();
-        runs(function () {
-           s6d('fixtures/importFromAbsolutePath.js', spy); 
-        });
-        waitsFor(function () {
-            return s6d.get('fixtures/importFromAbsolutePath.js');
-        });
+        this.loadModule('fixtures/importFromAbsolutePath.js');
         runs(function () {
             expect(s6d.get('fixtures/importFromAbsolutePath.js').imp1()).toEqual('external loaded');
             expect(typeof s6d.get('fixtures/importFromAbsolutePath.js').ref1).toBe('function');
