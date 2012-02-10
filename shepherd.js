@@ -355,6 +355,28 @@
         }
     };
     
+    //Path detection follows 3 steps
+    // * resolution by require (ie, let Node try to do the job) in case it is a native module or a Node module
+    // * "natural" path resolution (ie, let Node try to do the job)
+    // * test the path from the location of shepherd.js
+    // * test the path from the current working directory (via process.cwd())
+    var _serverPathDetection = function (uri) {
+        var path;
+        try {
+            path =  !!require(uri) ? uri : path;
+        } catch (e) { /** Nothing here **/ }
+        try {
+            path =  !path ? require.resolve(uri) : path;
+        } catch (e) { /** Nothing here **/ }
+        try {
+            path =  !path ? require('fs').statSync(__dirname + '/' + uri).isFile() && (__dirname + '/' + uri) : path;
+        } catch (e) { /** Nothing here **/ }
+        try {
+            path =  !path ? require('fs').statSync(process.cwd() + '/' + uri).isFile() && process.cwd() + '/' + uri : path;
+        } catch (e) { /** Nothing here **/ }
+        return path;
+    };
+    
     /**
      * Retrieves the file corresponding to the module and declares it
      */
@@ -365,6 +387,7 @@
             if (typeof errorFn == 'function') {
                 errorFn();
             } else {
+                console.log('Error with: ', moduleSrc);
                 throw new Error(msg);
             }
         };
@@ -400,16 +423,16 @@
                         res.on('error', _error);
                     });
                 } else {
-                    try {
-                        modPath = require.resolve(uri);
-                    } catch (e) {
-                        modPath = process.cwd() + '/./' + uri;
+                    var modPath = _serverPathDetection(uri);
+                    if (!modPath) {
+                        _error('Unable to locate file ' + uri);
+                        return;
                     }
                     try {
                         moduleConf.contents = require('fs').readFileSync(modPath, 'utf-8');
                     } catch (e) {
-                        _error(e);
-                        return
+                        _error(e.message);
+                        return;
                     }
                     _moduleSrc(moduleConf, callback, _error);
                 }
