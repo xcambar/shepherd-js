@@ -277,9 +277,28 @@
             }
             context.returns = {};
             context.console = console;
+            context.exports = {};
+            context.module = {exports: {}};
             var returnStatement = moduleConf.export ? moduleConf.export.map(function (v) {return 'returns.' + v + ' = ' + v}).join(';\n') : '';
             vm.runInNewContext(moduleConf.contents + ';\n' + returnStatement, context, moduleConf.src + '.vm');
             module = context.returns;
+            
+            /**
+             * Automatically exports properties from exports and module.exports
+             * I am really not sure this is a good idea, although it eases adoption...
+             **/
+            for (var i in context.exports) {
+                if (context.exports.hasOwnProperty(i)) {
+                    console.log('Exporting ' + i + ' from the exports variable.');
+                    module[i] = context.exports[i];
+                }
+            }
+            for (var i in context.module.exports) {
+                if (context.module.exports.hasOwnProperty(i)) {
+                    console.log('Exporting ' + i + ' from the module.exports variable.');
+                    module[i] = context.module.exports[i];
+                }
+            }
         }
         moduleConf.src && (modules[moduleConf.src] = module);
         if (moduleConf.hasOwnProperty('name')) {

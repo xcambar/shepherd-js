@@ -11,7 +11,13 @@ describe('global.require function', function () {
     });
     
     it ('is recursively consistent over module loading', function () {
-        throw 'Test not written';
+        this.loadModule('fixtures/NodeJS/recursive/main.js');
+        runs(function () {
+            expect(s6d.get('fixtures/NodeJS/recursive/main.js').test).toBe('test value');
+            expect(s6d.get('fixtures/NodeJS/recursive/a.js').a1).toBe('a1');
+            expect(s6d.get('fixtures/NodeJS/recursive/b.js').b1).toBe('test2');
+            expect(s6d.get('fixtures/NodeJS/recursive/c.js').test2).toBe('test2');
+        });
     });
 });
 
