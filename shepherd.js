@@ -17,7 +17,6 @@
     //
     // Native plugins
     //
-    
     var _plugins = {
         'modularize': function (globalVar) {
             if (!me.hasOwnProperty(globalVar)) {
@@ -34,6 +33,61 @@
             return true;
         }
     };
+    
+    // 
+    // Wrappers for commonJS and AMD loaders
+    // 
+    var _loaderWrappers = function (conf) {
+        var name = conf.format;
+        if (name === 'commonJS') {
+            return {
+                fn: function (arg) {
+                    return (conf.deps && conf.deps[arg]) ? conf.deps[arg] : null;
+                },
+                name: 'require'
+            };
+        } else if (name === 'amd') {
+            var wrapperFn = function (name, deps, factory) {
+                var _n, _d, _f;
+                switch (arguments.length) {
+                    case 1:
+                        _f = name;
+                        break;
+                    case 2:
+                        _d = name, _f = deps;
+                        break;
+                    default:
+                        _n = name, _d = deps, _f = factory;
+                }
+                if (_d) {
+                    var deps = {};
+                    for (var i = 0, _l = _d.length; i < _l; i++) {
+                        deps[_d[i]] = _d[i];
+                    }
+                    _d = deps;
+                }
+                var modConf = {};
+                _d && (modConf.import = _d);
+                _n && (modConf.name = _n);
+                _f && (modConf.fn = _f);
+
+                applyConfiguration(modConf, function (parsedConf) {
+                    loadModule(parsedConf, callback);
+                });
+            };
+            var wrapperName = 'define';
+            return {
+                fn: wrapperFn,
+                name: wrapperName
+            };            
+        }
+    };
+    
+    // 
+    // 
+    // Module declaration parser
+    // 
+    // 
     
     /**
      * Parses the module declaration and prepares the execution context of the module
@@ -160,42 +214,6 @@
     // UTILITY FUNCTIONS
     //
     
-    var _loaderWrappers = function (name) {
-        if (name !== 'amd') { return 'Unknown module format'; }
-        var wrapperFn = function (name, deps, factory) {
-            var _n, _d, _f;
-            switch (arguments.length) {
-                case 1:
-                    _f = name;
-                    break;
-                case 2:
-                    _d = name, _f = deps;
-                    break;
-                default:
-                    _n = name, _d = deps, _f = factory;
-            }
-            if (_d) {
-                var deps = {};
-                for (var i = 0, _l = _d.length; i < _l; i++) {
-                    deps[_d[i]] = _d[i];
-                }
-                _d = deps;
-            }
-            var modConf = {};
-            _d && (modConf.import = _d);
-            _n && (modConf.name = _n);
-            _f && (modConf.fn = _f);
-
-            applyConfiguration(modConf, function (parsedConf) {
-                loadModule(parsedConf, callback);
-            });
-        };
-        var wrapperName = 'define';
-        return {
-            fn: wrapperFn,
-            name: wrapperName
-        };
-    };
     
     /**
      *  XHR request
@@ -241,7 +259,7 @@
         var arguments = [conf];
         var argsName = ['imports'];
         if (moduleConf.format && moduleConf.format.length) {
-            var wrapperConf = _loaderWrappers(moduleConf.format);
+            var wrapperConf = _loaderWrappers(moduleConf);
             arguments.push(wrapperConf.fn);
             argsName.push(wrapperConf.name);
         }
@@ -309,13 +327,26 @@
             }
         };
         
+        var modulesLoaderByRef = function (name, ref) {
+            var mod = modules[ref];
+            if (!mod) {
+                if (_isServer) {
+                    mod = modules[ref] = require(ref);
+                } else {
+                    throw new Error(e);
+                }
+            }    
+            conf.deps[name] = mod;
+            depsPool();
+        };
+        
         conf.deps = {};
         for (var i in conf.import) {
             conf.import.hasOwnProperty(i) && importsLoader(i, conf.import[i]);
         }
         
         for (var i in conf.modules) {
-            conf.modules.hasOwnProperty(i) && modulesLoader(i, conf.modules[i]);
+            conf.modules.hasOwnProperty(i) && modulesLoaderByRef(i, conf.modules[i]);
         }
         
         for (var i in conf.modulesByURI) {
@@ -363,9 +394,6 @@
     var _serverPathDetection = function (uri) {
         var path;
         try {
-            path =  !!require(uri) ? uri : path;
-        } catch (e) { /** Nothing here **/ }
-        try {
             path =  !path ? require.resolve(uri) : path;
         } catch (e) { /** Nothing here **/ }
         try {
@@ -387,12 +415,13 @@
             if (typeof errorFn == 'function') {
                 errorFn();
             } else {
-                console.log('Error with: ', moduleSrc);
+                console.log('Error with: ', moduleSrc, msg);
                 throw new Error(msg);
             }
         };
         _error.origFn = errorFn;
-        var moduleConf = (typeof moduleSrc != 'string') ? moduleSrc : {src: moduleSrc}
+        var moduleConf = (typeof moduleSrc != 'string') ? moduleSrc : {src: moduleSrc};
+        !moduleConf.format && _isServer && (moduleConf.format = 'commonJS');
         var uri = (typeof moduleSrc == 'string') ? moduleSrc : moduleSrc.name;
         if (uri) {
             !_isServer && xhr({ url: uri,
@@ -427,12 +456,16 @@
                     if (!modPath) {
                         _error('Unable to locate file ' + uri);
                         return;
-                    }
-                    try {
-                        moduleConf.contents = require('fs').readFileSync(modPath, 'utf-8');
-                    } catch (e) {
-                        _error(e.message);
-                        return;
+                    } else if (typeof modPath == 'object') { //@TODO Check
+                        moduleConf.deps = moduleConf.deps || {};
+                        moduleConf.deps[modPath.uri] = modPath.node_module;
+                    } else {
+                        try {
+                            moduleConf.contents = require('fs').readFileSync(modPath, 'utf-8');
+                        } catch (e) {
+                            _error(e.message);
+                            return;
+                        }
                     }
                     _moduleSrc(moduleConf, callback, _error);
                 }
