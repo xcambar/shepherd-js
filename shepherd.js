@@ -248,9 +248,6 @@
      */
     var loadModule = function (moduleConf, callback) {
         !moduleConf && (moduleConf = {});
-        var returns = moduleConf.export ?
-            '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
-            : '{}';
         var conf = moduleConf.deps || {};
         if (!_isServer) {
             conf.window = {
@@ -259,15 +256,33 @@
                'location': window.location
             };
         }
-        var arguments = [conf];
-        var argsName = ['imports'];
-        if (moduleConf.format && moduleConf.format.length) {
-            var wrapperConf = _loaderWrappers(moduleConf);
-            arguments.push(wrapperConf.fn);
-            argsName.push(wrapperConf.name);
+        var module;
+        if (!_isServer) {
+            var returns = moduleConf.export ?
+                '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
+                : '{}';
+            var arguments = [conf];
+            var argsName = ['imports'];
+            if (moduleConf.format && moduleConf.format.length) {
+                var wrapperConf = _loaderWrappers(moduleConf);
+                arguments.push(wrapperConf.fn);
+                argsName.push(wrapperConf.name);
+            }
+            var fn = Function.apply({}, argsName.concat([['with (imports) {', moduleConf.contents, 'return ' + returns, '}'].join('\n')]));
+            module = fn.apply({}, arguments);
+        } else {
+            var vm = require('vm');
+            var context = conf;
+            if (moduleConf.format && moduleConf.format.length) {
+                var wrapperConf = _loaderWrappers(moduleConf);
+                context[wrapperConf.name] = wrapperConf.fn;
+            }
+            context.returns = {};
+            context.console = console;
+            var returnStatement = moduleConf.export.map(function (v) {return 'returns.' + v + ' = ' + v}).join(';\n');
+            vm.runInNewContext(moduleConf.contents + ';\n' + returnStatement, context, moduleConf.src + '.vm');
+            module = context.returns;
         }
-        var fn = moduleConf.fn || Function.apply({}, argsName.concat([['with (imports) {', moduleConf.contents, 'return ' + returns, '}'].join('\n')]));
-        var module = fn.apply({}, arguments);
         moduleConf.src && (modules[moduleConf.src] = module);
         if (moduleConf.hasOwnProperty('name')) {
             moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI             
