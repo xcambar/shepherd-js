@@ -23,10 +23,16 @@ describe('global.require function', function () {
 
 describe('exports', function () {
     it('should be able to expose exported module elements declared with exports', function () {
-        throw 'Test not written';
+        this.loadModule('fixtures/NodeJS/withExports.js');
+        runs(function () {
+            expect(s6d.get('fixtures/NodeJS/withExports.js').a).toBe('yep');
+        });
     });
     it('should be able to expose exported module elements declared with module.exports', function () {
-        throw 'Test not written';
+        this.loadModule('fixtures/NodeJS/withModuleExports.js');
+        runs(function () {
+            expect(s6d.get('fixtures/NodeJS/withModuleExports.js').a).toBe('yep');
+        });
     });
 });
 
