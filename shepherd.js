@@ -259,14 +259,20 @@
             var returns = moduleConf.export ?
                 '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
                 : '{}';
-            var arguments = [conf];
-            var argsName = ['imports'];
+            var arguments = [];
+            var argsName = [];
+            for (var i in conf) {
+                if (conf.hasOwnProperty(i)) {
+                    argsName.push(i);
+                    arguments.push(conf[i]);
+                }
+            }
             if (moduleConf.format && moduleConf.format.length) {
                 var wrapperConf = _loaderWrappers(moduleConf);
-                arguments.push(wrapperConf.fn);
                 argsName.push(wrapperConf.name);
+                arguments.push(wrapperConf.fn);
             }
-            var fn = Function.apply({}, argsName.concat([['with (imports) {', moduleConf.contents, 'return ' + returns, '}'].join('\n')]));
+            var fn = Function.apply({}, argsName.concat([moduleConf.contents +  ';\nreturn ' + returns]));
             module = fn.apply({}, arguments);
         } else {
             var vm = require('vm');
