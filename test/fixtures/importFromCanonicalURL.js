@@ -3,5 +3,4 @@
 "  export export1;                                                                                      ";
 "};                                                                                                     ";
 
-console.log('extModule1', extModule1);
 var export1 = extModule1;
