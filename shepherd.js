@@ -249,15 +249,13 @@
     var loadModule = function (moduleConf, callback) {
         !moduleConf && (moduleConf = {});
         var conf = moduleConf.deps || {};
+        var module;
         if (!_isServer) {
             conf.window = {
                'document': window.document,
                'navigator': window.navigator,
                'location': window.location
             };
-        }
-        var module;
-        if (!_isServer) {
             var returns = moduleConf.export ?
                 '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
                 : '{}';
@@ -279,7 +277,7 @@
             }
             context.returns = {};
             context.console = console;
-            var returnStatement = moduleConf.export.map(function (v) {return 'returns.' + v + ' = ' + v}).join(';\n');
+            var returnStatement = moduleConf.export ? moduleConf.export.map(function (v) {return 'returns.' + v + ' = ' + v}).join(';\n') : '';
             vm.runInNewContext(moduleConf.contents + ';\n' + returnStatement, context, moduleConf.src + '.vm');
             module = context.returns;
         }
