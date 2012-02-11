@@ -2,12 +2,11 @@ var s6d = require('../../shepherd.js');
 
 describe('global.require function', function () {
     it ('has been replaced by a custom function', function () {
-        throw 'Test not written';
-    });
-
-    it ('can load node modules', function () {
-        throw 'Test not written';
-        //this.loadModule('fixtures/node-js/load_fs.js');
+        this.loadModule('fixtures/NodeJS/using_require.js');
+        runs(function () {
+            expect(s6d.get('fixtures/NodeJS/using_require.js').stat).toBe(require('fs').stat);
+            expect(s6d.get('fixtures/NodeJS/using_require.js').stat_shepherd).toBe(require('fs').stat);
+        });
     });
     
     it ('is recursively consistent over module loading', function () {
@@ -16,10 +15,10 @@ describe('global.require function', function () {
 });
 
 describe('exports', function () {
-    it('should be able to expose module elements via exports', function () {
+    it('should be able to expose exported module elements declared with exports', function () {
         throw 'Test not written';
     });
-    it('should be able to expose module elements via module.exports', function () {
+    it('should be able to expose exported module elements declared with module.exports', function () {
         throw 'Test not written';
     });
 });
@@ -49,6 +48,15 @@ describe('Importing module declared by a canonical URL', function () {
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1).toBeTruthy();
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1.var1).toBe('EXPORTED NAMED MODULE!!');
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1).toHaveMembers(['var1', 'fn1']);
+        });
+    });
+});
+
+describe('Importing a module by its reference', function () {
+    it ('can load node native modules', function () {
+        this.loadModule('fixtures/NodeJS/load_fs.js');
+        runs(function () {
+            expect(s6d.get('fixtures/NodeJS/load_fs.js').stat).toBe(require('fs').stat);
         });
     });
 });
