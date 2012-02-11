@@ -40,9 +40,12 @@
     var _loaderWrappers = function (conf) {
         var name = conf.format;
         if (name === 'commonJS') {
+            /**
+             * The call to require(arg) ternary operator makes the loader non strict, but is used for convenience
+             */
             return {
                 fn: function (arg) {
-                    return (conf.deps && conf.deps[arg]) ? conf.deps[arg] : null;
+                    return (conf.deps && conf.deps.hasOwnProperty(arg)) ? conf.deps[arg] : require(arg);
                 },
                 name: 'require'
             };
@@ -263,11 +266,11 @@
             arguments.push(wrapperConf.fn);
             argsName.push(wrapperConf.name);
         }
-        var fn = moduleConf.fn || Function.apply({}, argsName.concat(['with (imports) {' + moduleConf.contents + '; return ' + returns + ';}']));
+        var fn = moduleConf.fn || Function.apply({}, argsName.concat([['with (imports) {', moduleConf.contents, 'return ' + returns, '}'].join('\n')]));
         var module = fn.apply({}, arguments);
         moduleConf.src && (modules[moduleConf.src] = module);
         if (moduleConf.hasOwnProperty('name')) {
-            moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their names or their URI             
+            moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI             
         } else {
             for (var i in module) {
                 if (module.hasOwnProperty(i)) {
@@ -333,7 +336,7 @@
                 if (_isServer) {
                     mod = modules[ref] = require(ref);
                 } else {
-                    throw new Error(e);
+                    throw new Error(e); //@TODO Plugin idea => browser-side auto loader by module name
                 }
             }    
             conf.deps[name] = mod;

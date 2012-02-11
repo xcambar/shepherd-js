@@ -5,7 +5,8 @@ describe('global.require function', function () {
         this.loadModule('fixtures/NodeJS/using_require.js');
         runs(function () {
             expect(s6d.get('fixtures/NodeJS/using_require.js').stat).toBe(require('fs').stat);
-            expect(s6d.get('fixtures/NodeJS/using_require.js').stat_shepherd).toBe(require('fs').stat);
+            expect(s6d.get('fixtures/NodeJS/using_require.js').shepherd_stat).toBe(require('fs').stat);
+            expect(s6d.get('fixtures/NodeJS/using_require.js').native_stat).toBe(require('fs').stat); // Not Strict, allowed for convenience
         });
     });
     
