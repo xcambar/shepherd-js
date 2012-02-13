@@ -191,11 +191,11 @@
         };
         
         function exportDeclaration (decl, conf) {
-            var exportRexp = /^\s*export\s+(\w+(\.\w+)*)\s*;\s*$/;
+            var exportRexp = /^\s*export\s+(\w+(\.\w+)*)(\s+as\s+(\w+))?\s*;\s*$/;
             var match = decl.match(exportRexp);
             if (match) {
                 conf.export = conf.export || [];
-                conf.export.push(match[1]);
+                conf.export.push({src: match[1], dest: match[3] || match[1].substr(match[1].indexOf('.') + 1)});
                 return true;
             }
             return false;
@@ -280,7 +280,7 @@
                'location': window.location
             };
             var returns = moduleConf.export ?
-                '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
+                '{' + moduleConf.export.map(function (v) { return v.dest + ':' + v.src; }).join(',') + '}'
                 : '{}';
             var moduleArgs = [];
             var argsName = [];
@@ -329,7 +329,7 @@
             context.console = console;
             context.exports = {};
             context.module = {exports: {}};
-            var returnStatement = moduleConf.export ? moduleConf.export.map(function (v) {return 'returns.' + v + ' = ' + v}).join(';\n') : '';
+            var returnStatement = moduleConf.export ? moduleConf.export.map(function (v) {return 'returns.' + v.dest + ' = ' + v.src}).join(';\n') : '';
             vm.runInNewContext(moduleConf.contents + ';\n' + returnStatement, context, moduleConf.src + '.vm');
             module = context.returns;
             
