@@ -159,7 +159,7 @@ describe('Recursive module loading', function () {
         });
     });
     
-    it ('allows cyclic dependencies', function () {
+    xit ('allows cyclic dependencies', function () {
         throw 'Not implemented';
         var spy = this.loadModule('fixtures/cyclic/a.js');
         runs(function () {

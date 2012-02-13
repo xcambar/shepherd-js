@@ -12,7 +12,8 @@
     var modules = {},
         _errCb,
         _errModules = null,
-        _isServer = typeof window == 'undefined';
+        _isServer = typeof window == 'undefined',
+        _extDepsCount = 0;
     
     //
     // Native plugins
@@ -29,7 +30,7 @@
             if (!me.hasOwnProperty(globalVar)) {
                 return 'No global "' + globalVar + '"';
             }
-            me[globalVar] = undefined;
+            delete me[globalVar];
             return true;
         }
     };
@@ -240,6 +241,28 @@
     };
     
     /**
+     * This function is in charge of setting all the modules exports in the memory.
+     * @param {Object} module the return vslua of the wrapper function. Contains all the values exported by the module
+     * @param {Object} moduleConf The result of the parsing of the module configuration
+     * @param {Function} callback The callback function to be called after the successful export
+     */
+    var _handleExports = function (module, moduleConf, callback) {
+        moduleConf.src && (modules[moduleConf.src] = module);
+        if (moduleConf.hasOwnProperty('name')) {
+            moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI             
+        } else {
+            for (var i in module) {
+                if (module.hasOwnProperty(i)) {
+                    modules[i] = module[i];
+                }
+            }
+        }
+        if (typeof callback == 'function') {
+            callback(module || {} );
+        }
+    };
+    
+    /**
      * Loads a module in its own wrapper function
      * The module is ocnsideref as fully loaded, dependencies included.
      * When using a loader wrapper, we are out of this scope, as dependencies are likely yet to be loaded.
@@ -259,21 +282,42 @@
             var returns = moduleConf.export ?
                 '{' + moduleConf.export.map(function (v) { return v.substr(v.indexOf('.') + 1) + ':' + v; }).join(',') + '}'
                 : '{}';
-            var arguments = [];
+            var moduleArgs = [];
             var argsName = [];
             for (var i in conf) {
                 if (conf.hasOwnProperty(i)) {
                     argsName.push(i);
-                    arguments.push(conf[i]);
+                    moduleArgs.push(conf[i]);
                 }
             }
             if (moduleConf.format && moduleConf.format.length) {
                 var wrapperConf = _loaderWrappers(moduleConf);
                 argsName.push(wrapperConf.name);
-                arguments.push(wrapperConf.fn);
+                moduleArgs.push(wrapperConf.fn);
             }
-            var fn = Function.apply({}, argsName.concat([moduleConf.contents +  ';\nreturn ' + returns]));
-            module = fn.apply({}, arguments);
+            if (true) { //@TODO Activate debug mode
+                var script = document.createElement('script'),
+                    head = document.getElementsByTagName('head')[0];
+                script.type = 'text/javascript';
+                var extDepIndex = _extDepsCount++;
+                script.innerHTML = '(function (' + argsName.join(', ') + ') {\n' + moduleConf.contents + '\n;s6d[' + extDepIndex + '](' + returns + ');\n}).apply({}, s6d[' + extDepIndex + ']())';
+                moduleConf.src && script.setAttribute('data-src', moduleConf.src);
+                moduleConf.name && script.setAttribute('name', moduleConf.name);
+                !moduleConf.contents && console.log(moduleConf);
+                me.s6d[extDepIndex] = function (exports) {
+                    if (exports) {
+                        delete me.s6d[extDepIndex];
+                        _handleExports(exports, moduleConf, callback);
+                        return;
+                    }
+                    return moduleArgs;
+                };
+                head.appendChild(script);
+            } else {
+                var fn = Function.apply({}, argsName.concat([moduleConf.contents +  ';\nreturn ' + returns]));
+                module = fn.apply({}, arguments);
+                _handleExports(module, moduleConf, callback);
+            }
         } else {
             var vm = require('vm');
             var context = conf;
@@ -295,29 +339,17 @@
              **/
             for (var i in context.exports) {
                 if (context.exports.hasOwnProperty(i)) {
-                    console.log('Exporting ' + i + ' from the exports variable.');
+                    console.log('Exporting "' + i + '" from the exports variable.');
                     module[i] = context.exports[i];
                 }
             }
             for (var i in context.module.exports) {
                 if (context.module.exports.hasOwnProperty(i)) {
-                    console.log('Exporting ' + i + ' from the module.exports variable.');
+                    console.log('Exporting "' + i + '" from the module.exports variable.');
                     module[i] = context.module.exports[i];
                 }
             }
-        }
-        moduleConf.src && (modules[moduleConf.src] = module);
-        if (moduleConf.hasOwnProperty('name')) {
-            moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI             
-        } else {
-            for (var i in module) {
-                if (module.hasOwnProperty(i)) {
-                    modules[i] = module[i];
-                }
-            }
-        }
-        if (typeof callback == 'function') {
-            callback(module || {} );
+            _handleExports(module, moduleConf, callback);
         }
     };
     
@@ -374,7 +406,7 @@
                 if (_isServer) {
                     mod = modules[ref] = require(ref);
                 } else {
-                    throw new Error(e); //@TODO Plugin idea => browser-side auto loader by module name
+                    throw new Error('Unable to load the module ' + name); //@TODO Plugin idea => browser-side auto loader by module name
                 }
             }    
             conf.deps[name] = mod;
@@ -418,10 +450,13 @@
         
         if (declaration.length) {
             moduleConf = parse(declaration, moduleConf);
-            (typeof moduleConf == 'string') && errorFn(moduleConf);
-            applyConfiguration(moduleConf, function (parsedConf) {
-                loadModule(parsedConf, callback);
-            }, errorFn.origFn);
+            if (typeof moduleConf == 'string') {
+                errorFn(moduleConf);
+            } else {
+                applyConfiguration(moduleConf, function (parsedConf) {
+                    loadModule(parsedConf, callback);
+                }, errorFn.origFn);
+            }
         } else {
             loadModule(moduleConf, callback);
         }
@@ -435,7 +470,7 @@
     var _serverPathDetection = function (uri) {
         var path;
         try {
-            path =  !path ? require.resolve(uri) : path;
+            path =  require.resolve(uri);
         } catch (e) { /** Nothing here **/ }
         try {
             path =  !path ? require('fs').statSync(__dirname + '/' + uri).isFile() && (__dirname + '/' + uri) : path;
