@@ -66,7 +66,7 @@
                 if (_d) {
                     var deps = {};
                     for (var i = 0, _l = _d.length; i < _l; i++) {
-                        deps[_d[i]] = _d[i];
+                        deps[_d[i]] = {format: 'amd', ref: _d[i]};
                     }
                     _d = deps;
                 }
@@ -76,7 +76,7 @@
                 _f && (modConf.fn = _f);
 
                 applyConfiguration(modConf, function (parsedConf) {
-                    loadModule(parsedConf, callback);
+                    loadModule(parsedConf);
                 });
             };
             var wrapperName = 'define';
@@ -303,7 +303,6 @@
                 script.innerHTML = '(function (' + argsName.join(', ') + ') {\n' + moduleConf.contents + '\n;s6d[' + extDepIndex + '](' + returns + ');\n}).apply({}, s6d[' + extDepIndex + ']())';
                 moduleConf.src && script.setAttribute('data-src', moduleConf.src);
                 moduleConf.name && script.setAttribute('name', moduleConf.name);
-                !moduleConf.contents && console.log(moduleConf);
                 me.s6d[extDepIndex] = function (exports) {
                     if (exports) {
                         delete me.s6d[extDepIndex];
@@ -314,8 +313,8 @@
                 };
                 head.appendChild(script);
             } else {
-                var fn = Function.apply({}, argsName.concat([moduleConf.contents +  ';\nreturn ' + returns]));
-                module = fn.apply({}, arguments);
+                var fn = moduleConf.fn || Function.apply({}, argsName.concat([moduleConf.contents +  ';\nreturn ' + returns]));
+                module = fn.apply({}, moduleArgs);
                 _handleExports(module, moduleConf, callback);
             }
         } else {
