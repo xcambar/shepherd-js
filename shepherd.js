@@ -132,7 +132,7 @@
         };
         
         function moduleDefinition (decl, conf) {
-            var namedMod = /^\s*module\s+(\w+)\s*\{(.+)\}\s*;?\s*$/,
+            var namedMod = /^\s*module\s+([^\s+])\s*\{(.+)\}\s*;?\s*$/,
                 match = decl.match(namedMod);
             if (match) {
                 conf.name = match[1];
@@ -148,7 +148,7 @@
         };
         
         function moduleSpecifier (decl, conf) {
-            var re = /^\s*module\s+(\w+)\s+from\s+(['"])?([^\s'"]+)(['"])?\s*;\s*$/,
+            var re = /^\s*module\s+([^\s+])\s+from\s+(['"])?([^\s'"]+)(['"])?\s*;\s*$/,
                 match = decl.match(re);
             if (match) {
                 if (match[2] && match[4] && (match[2] === match[4])) {
@@ -184,7 +184,7 @@
         };
         
         function importBindings(decl, conf, format) {
-            var bindingRE = /^\s*(\w+)\s+from\s+(['"]?)([^\s'"]+)(['"]?)\s*;\s*$/;
+            var bindingRE = /^\s*([^\s]+)\s+from\s+(['"]?)([^\s'"]+)(['"]?)\s*;\s*$/;
             var match = decl.match(bindingRE);
             if (match) {
                 conf.import = conf.import || {};
@@ -372,7 +372,6 @@
                 !--_c && callback(conf);
             }
         })();
-        
         var importsLoader = function (name, ref) {
             if (modules[ref.ref]) {
                 conf.deps[name] = modules[ref.ref][i];
