@@ -7,6 +7,15 @@
 
   <link rel="stylesheet/less" type="text/css" href="app.less">
   <script type="text/javascript" src="vendor/less/dist/less-1.2.1.js"></script>
+  <script type="text/javascript" src="vendor/shepherd/shepherd.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  <script type="text/shepherd-js">
+    "modularize!jQuery;";
+    "noGlobal!jQuery;";
+    "noGlobal!$;";
+  </script>
+  <script type="text/shepherd-js" data-src="lib/revealer.js"></script>
+  
   <style type="text/css">
     .container {
       margin: 0 auto;
@@ -58,14 +67,46 @@
   
   <h2 id="examples">Examples <small>Let's see how it works!</small></h2>
   <div class="container">
-    Import modules<br />
-    Export variables<br />
-    Turn your existing files into modules. <br />
-    Use external libraries as modules. <br />
-    What about SSJS ?<br />
-    Already using RequireJS?<br />
-    <a href="vendor/shepherd/test/">Check out the tests!</a>
-    
+    <dl class="unstyled examples">
+    <dt>Import a module from its URI</dt>
+    <dd><pre>"module myModule from 'path/to/my/awesome/module.js'";
+
+console.log(myModule); // Displays myModule to the console
+</pre></dd>
+    <dt>Import a module by its name</dt>
+    <dd><pre>"module $ from jQuery";
+// The above declaration uses a module called jQuery and exposes it to the module as $
+
+$.ajax(/** ... **/);
+</pre></dd>
+    <dt>Export variables</dt>
+    <dd><pre>blabla
+blabla
+blabla
+bla</pre></dd>
+    <dt>Turn your existing files into modules. </dt>
+    <dd><pre>blabla
+blabla
+blabla
+bla</pre></dd>
+    <dt>Use external ddbraries as modules. </dt>
+    <dd><pre>blabla
+blabla
+blabla
+bla</pre></dd>
+    <dt>What about SSJS ?</dt>
+    <dd><pre>blabla
+blabla
+blabla
+bla</pre></dd>
+    <dt>Already using RequireJS?</dt>
+    <dd><pre>blabla
+blabla
+blabla
+bla</pre></dd>
+    <dt><a href="vendor/shepherd/test/">Check out the tests!</a></dt>
+    </dl>
+    <div class="snippets"></div>
   </div>
   <h2 id="features">Features</h2>
   <div class="container">
@@ -95,8 +136,8 @@
   <div class="container">
     <p>
       Encapsulation through modules is a key factor to efficient/beautiful Javascript code.<br/>
-      Wrapping modules into functions to achieve is annoying and visually inelegant.<br />
-      ECMA made a proposal for an extension of Javascript using modules.<br />
+      Both AMD and CommonJS have proven very efficient, but they are hardly compatible.<br />
+      ECMA made a proposal for an extension of Javascript using modules: ES:Harmony<br />
       &rArr; Waiting for the day the proposal will be natively integrated to the runtimes, a library implements it for today's runtimes: <b>Shepherd</b>.
     </p>
   </div>
