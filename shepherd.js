@@ -51,10 +51,14 @@
                 name: 'require'
             };
         } else if (name === 'amd') {
+            /**
+             * Wraps the AMD's define function
+             */
             var wrapperFn = function (name, deps, factory) {
                 var _n, _d, _f;
                 switch (arguments.length) {
                     case 1:
+                        _n = conf.name;
                         _f = name;
                         break;
                     case 2:
@@ -74,7 +78,7 @@
                 _d && (modConf.import = _d);
                 _n && (modConf.name = _n);
                 _f && (modConf.fn = _f);
-
+                modConf.src = conf.src;
                 applyConfiguration(modConf, function (parsedConf) {
                     loadModule(parsedConf);
                 });
