@@ -1,12 +1,10 @@
 # Shepherd
 
-Your Web application is a valley.
+See your Web application as a valley, each of your JS files as a field in this valley, with sheep *(ie. variables and so on...)* grazing in the valley.
 
-Each of your JS files is a field in this valley in which lie sheep (prototypes, functions, variables, instances, ...).
+Wouldn't you be much happier if your sheep kept grazing in the field they're dedicated to, instead of freely moving in that whole valley of yours?
 
-Wouldn't you be much happier if your sheep kept grazing in their own dedicated field, instead of freely moving in that whole valley of yours?
-
-Wouldn't you be more confident if only you could choose which sheep can visit which field ?
+Wouldn't you be even more confident if you could choose which sheep can visit which field ?
 
 Wouldn't you like it if you could still enjoy the beauty of your fields and the valley by avoiding the installation of fences ?
 
@@ -28,8 +26,8 @@ __Shepherd__:
 
 * is cross-side, which means it works well in the browser and in the server
 * has a ECMAScript Harmony compatible syntax
-* is non-destructive to your files. Your javascript will work even without Shepherd, but they'll work better with it!
-* requires near-zero time to update your code (think of "use strict"; it works just the same!)
+* is non-destructive to your files. Your JS will execute even without Shepherd, but they'll do so much better with it! (think of "use strict"; it works just the same!)
+* requires near-zero time to update your existing code 
 * Works even with files/libraries you can not modify (eg, jQuery from a CDN)
 
 ## Want more ?
