@@ -1,27 +1,42 @@
-# Shepherd-js
+# Shepherd
 
-Shepherd is module loader and dependency manager for your JS files.
+Your Web application is a valley.
 
-In two words, Shepherd-js puts fences around your javascript units.
+Each of your JS files is a field in this valley in which lie sheep (prototypes, functions, variables, instances, ...).
 
-## What is shepherd-js ?
+Wouldn't you be much happier if your sheep kept grazing in their own dedicated field, instead of freely moving in that whole valley of yours?
 
-Shepherd-js is a module loader and dependency manager for your JS apps, that takes a radically different approach than similar projects, and can effectively port your JS code to both-side (client- AND server-side)
+Wouldn't you be more confident if only you could choose which sheep can visit which field ?
 
-Shepherd is like no other module loader in many ways, including:
+Wouldn't you like it if you could still enjoy the beauty of your fields and the valley by avoiding the installation of fences ?
 
-* it is compatible with AMD AND CommonJS
-* it has a non-obstrusive lightweight syntax compliant with the upcoming specifications from ECMA (named ECMAScript:harmony-modules)
-* it allows developers to secure external libraries by litteraly turning them into modules and avoid global pollution!
-* It helps turning your legacy code into module in seconds (literally!)
-* Your code remains compatible with non-shepherd'ed applications. It' 100% backward compatible. Migrate your apps with ease!
+Probably you would.
 
-## Usage
+If so, then it's time to hire a __Shepherd__ for your JS files and applications.
 
-A complete set of instruction on the syntax to be used will be added soon.
+## What is it ?
 
-Meanwhile, you can visit the pointers located in the header of shepherd.js as references.
+__Shepherd__ is three-fold:
 
-Examples are also available to help get started.
+* a module loader
+* a dependency manager
+* a _modulerizer_ (couldn't find any better word...) for your JS files and apps.
 
-## Enjoy!
+## Quick features list
+
+__Shepherd__:
+
+* is cross-side, which means it works well in the browser and in the server
+* has a ECMAScript Harmony compatible syntax
+* is non-destructive to your files. Your javascript will work even without Shepherd, but they'll work better with it!
+* requires near-zero time to update your code (think of "use strict"; it works just the same!)
+* Works even with files/libraries you can not modify (eg, jQuery from a CDN)
+
+## Want more ?
+
+You may want to check out the [home page](http://xcambar.github.com/shepherd-js) (which indeed uses Shepherd itself) or maybe even the [tests](http://xcambar.github.com/shepherd-js/vendor/shepherd/test/).
+
+# Enjoy!
+
+Have fun with __Shepherd__! Once it is in use, take a chair and enjoy the view, your valley is really gorgeous!
+
