@@ -2,14 +2,14 @@
 <html>
     <head>
         <title>Shepherding jQuery fetched from an external domain</title>
-        <script type="text/javascript" src="/shepherd.js"></script>
+        <script type="text/javascript" src="../../shepherd.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
         <script type="text/shepherd-js">
             "modularize!jQuery;";
             "noGlobal!jQuery;";
             "noGlobal!$;";
         </script>
-        <script type="text/shepherd-js" data-src="/examples/jQuery/main.js"></script>
+        <script type="text/shepherd-js" data-src="./main.js"></script>
         
         <style type="text/css">
             body {padding: 0;margin:0;position:fixed;top:0;bottom:0;left:0;right:0}
@@ -28,5 +28,6 @@
   "noGlobal!$;";
 &lt;/script&gt;</pre><br /><br />
         </div>
+        <p>Expected output: A gear falling to the bottom of the page</p>
     </body>
 </html>

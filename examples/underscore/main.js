@@ -1,5 +1,5 @@
 "module {                                               ";
-"  import _ from '/examples/libs/underscore.min.js';    ";
+"  import _ from '../libs/underscore.min.js';    ";
 "};                                                     ";
 
 var list = document.getElementsByTagName('ul')[0];
