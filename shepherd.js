@@ -208,6 +208,7 @@
         var moduleObj = conf || {},
             decl = declaration.join(''),
             isPlugin = pluginDeclaration(decl, moduleObj);
+        
         if (typeof isPlugin == 'string') {
             return isPlugin;
         } else if (isPlugin) {
@@ -438,10 +439,28 @@
             callback = callback || function () {},
             errorFn = errorFn || function () {},
             text = conf.contents ? conf.contents.split('\n') : [],
-            declaration = []
+            declaration = [],
+            endComment = false,
+            inComment = false;
         for (var i = 0; i < text.length; i++) {
             var cmd = text[i].trim();
-            if (!cmd) { continue; }
+            if (!cmd) { continue; } //Empty lines are ignored
+            if (cmd.match(/^"\s*use\s+strict\s*"\s*;?$/)) { continue; } // "use strict"; statements are ignored
+            if (cmd.match(/^[^\\]?\/\/.*$/)) { continue; } // Single line comments are ignored
+            if (cmd.match(/^[^\\]?\/\*.*$/)) { // Multi line comments are ignored
+                inComment = true;
+            }
+            if (inComment) {
+                var match = cmd.match(/^.*[^\\]?\*\/(.*)$/);
+                if (match) {
+                    inComment = false;
+                    cmd = match[1];
+                    if (!cmd) { continue; }
+                } else {
+                    continue;
+                }
+            }
+            
             var match = cmd.match(/^\s*"(.*)"\s*;?$/);
             if (match) {
                 declaration.push(match[1].trim());
@@ -449,7 +468,6 @@
                 break;
             }
         }
-        
         if (declaration.length) {
             moduleConf = parse(declaration, moduleConf);
             if (typeof moduleConf == 'string') {

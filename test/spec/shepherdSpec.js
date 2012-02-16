@@ -47,10 +47,64 @@ describe('Generic features of the Loader', function () {
             expect(spy.callCount).toEqual(1);
         });
     });
+
+});
+
+describe('Parsing a module definition', function () {
+    it('should allow no definition', function () {
+        var emptyModule = 'fixtures/empty.js';
+        var spy = this.loadModule(emptyModule);
+        runs(function () {
+            expect(spy).toHaveBeenCalled();
+            expect(s6d.get(emptyModule)).toHaveNumberOfMembers(0);
+        });
+    });
+
+    it('should skip "use strict"; statements', function () {
+        var module = 'fixtures/unnamed.js';
+        var spy = this.loadModule(module);
+        runs(function () {
+            expect(spy).toHaveBeenCalled();
+            //Ensure the module loaded correctly
+            expect(s6d.get(module)).toHaveMembers(['var2', 'fn2']);
+            expect(s6d.get(module)).toHaveNumberOfMembers(2);
+        });
+    });
+    it('should skip single line comments', function () {
+        var module = 'fixtures/comments/singleLine.js';
+        var spy = this.loadModule(module);
+        runs(function () {
+            expect(spy).toHaveBeenCalled();
+            //Ensure the module loaded correctly
+            expect(s6d.get(module)).toHaveMembers(['loaded']);
+            expect(s6d.get(module).loaded).toBe(true);
+        });
+    });
+    it('should skip multi line comments written on one line', function () {
+        var module = 'fixtures/comments/multiLineOnOneLine.js';
+        var spy = this.loadModule(module);
+        runs(function () {
+            expect(spy).toHaveBeenCalled();
+            //Ensure the module loaded correctly
+            expect(s6d.get(module)).toHaveMembers(['loaded']);
+            expect(s6d.get(module).loaded).toBe(true);
+        });
+    });
+    it('should skip multi line comments', function () {
+        var module = 'fixtures/comments/multiLine.js';
+        var spy = this.loadModule(module);
+        runs(function () {
+            expect(spy).toHaveBeenCalled();
+            //Ensure the module loaded correctly
+            expect(s6d.get(module)).toHaveMembers(['loaded']);
+            expect(s6d.get(module).loaded).toBe(true);
+        });
+    });
 });
 
 describe('Declaring an unnamed module', function () {
     it('should load an unnamed module and call the optionnally provided callback', function () {
+        s6d.reset();
         var modPath = 'fixtures/unnamed.js';
         var spy = this.loadModule(modPath);
         runs(function () {

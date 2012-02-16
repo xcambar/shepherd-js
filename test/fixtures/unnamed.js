@@ -1,3 +1,4 @@
+"use strict";
 "module {";
 "  export fn2;";
 "  export var2;"
