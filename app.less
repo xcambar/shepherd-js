@@ -73,11 +73,27 @@ font-size: 0.9em;
 
 .examples {
   float:left;
-  padding-right: 20px;
-  
+  padding-top: 17px;
+  dt {
+    padding-right: 20px;
+    padding-left: 10px;
+    cursor: pointer;
+    &:hover {
+      #translucent > .background(@bgColor * 1.25, 0.4);
+    }
+    &.current {
+      background-color: @bgColor * 1.25;
+    }
+  }
 }
 
 .snippets {
   float: right;
-  width: 660px;
+  width: 616px;
+  border: none;
+  margin-top: 12px;
+  background-color: @bgColor * 1.25;
+  ul {
+    margin-top: 0;
+  }
 }

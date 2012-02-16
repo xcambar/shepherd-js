@@ -40,7 +40,7 @@
             <li><a href="#tldr">[ tl;dr ]</a></li>
             <li><a href="#examples">Examples</a></li>
             <li><a href="#features">Features</a></li>
-            <li><a href="#syntax">Syntax</a></li>
+            <li><a href="#usage">How to use</a></li>
             <li><a href="#about">About</a></li>
           </ul>
           <p class="pull-right fork"><a href="https://github.com/xcambar/shepherd-js">&raquo; gitHub &laquo;</a></p>
@@ -75,35 +75,78 @@ console.log(myModule); // Displays myModule to the console
 </pre></dd>
     <dt>Import a module by its name</dt>
     <dd><pre>"module $ from jQuery";
-// The above declaration uses a module called jQuery and exposes it to the module as $
+// The above declaration retrieves a module called jQuery and exposes it as $
 
 $.ajax(/** ... **/);
 </pre></dd>
     <dt>Export variables</dt>
-    <dd><pre>blabla
-blabla
-blabla
-bla</pre></dd>
+    <dd><ul><li>File1.js : Defining a module <pre>"export myExportedVar";
+
+var a = 'This variable is private';
+var b = function () {
+  return 'This function is private too';
+};
+
+var myExportedVar = 'This variable is publicly available';
+var myExportedFn = function () {
+  return 'This function is publicly available';
+}</pre></li>
+<li>File2.js : Importing a part of a module <pre>"import myExportedVar from 'File1.js'";
+
+console.log(a); //undefined
+console.log(b); //undefined
+console.log(myExportedFn); //undefined
+console.log(myExportedVar); //"This variable is publicly available"</pre></li>
+<li>File2a.js : Importing the whole module<pre>"module 'File1.js'";
+
+console.log(a); //undefined
+console.log(b); //undefined
+console.log(myExportedFn()); //"This function is publicly available"
+console.log(myExportedVar); //"This variable is publicly available"</pre></li>
+</ul></dd>
     <dt>Turn your existing files into modules. </dt>
-    <dd><pre>blabla
-blabla
-blabla
-bla</pre></dd>
-    <dt>Use external ddbraries as modules. </dt>
-    <dd><pre>blabla
-blabla
-blabla
-bla</pre></dd>
+    <dd><pre>"module myModule {                          ";
+"  import imp1 from '/path/to/import.js';   ";
+"  import imp2 from namedImportedModule;    ";
+"  module mod1 from '/path/to/module.js';   ";
+"  module mod2 from myImportedModule;       ";
+"  export expA;                             ";
+"  export expB;                             ";
+"}                                          ";
+
+/** Here after goes the code of your module **/
+
+var expA = {
+  exported: 'module'
+};
+var expB = ['exported', 'module'];</pre>
+<div class="alert-message"><b>imp2</b> and <b>mod2</b> are available via a reference name because they belong to/are (respectively) a module that has been given a name, just as in this example where <b>myModule</b> is the reference name for the module)</div></dd>
+    <dt>Use external libraries as modules. </dt>
+    <dd>Let's say you included jQuery from a CDN, such as <pre>&lt;script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"&gt;&lt;/script&gt;</pre>
+      If you want to remove jQuery from the global space and make it available as a module in Shepherd, just add the following in your header:
+      <pre>&lt;script type="text/shepherd-js"&gt;
+  "modularize!jQuery;";
+  "noGlobal!jQuery;";
+  "noGlobal!$;";
+&lt;/script&gt;
+</pre>
+In a module definition, just add <code>"module $ from jQuery;"</code> to assign (locally to the module, of course) the <code>$</code> variable to jQuery (see the live examples).
+    </dd>
     <dt>What about SSJS ?</dt>
-    <dd><pre>blabla
-blabla
-blabla
-bla</pre></dd>
+    <dd><div class="alert-message">The commonJS wrapper is written and available in the package, but requires some testing and possibly some changes before a release.<br/>
+      Check out the <a href="https://github.com/xcambar/shepherd-js/tree/master/examples/NodeJS">examples folder</a> for details.</div></dd>
     <dt>Already using RequireJS?</dt>
-    <dd><pre>blabla
-blabla
-blabla
-bla</pre></dd>
+    <dd><div class="alert-message">The AMD wrapper is a work in progress and will be made available as soon as possible.</div></dd>
+    <dt style="color: red;">Live examples</dt>
+    <dd>
+      <ul>
+        <li><a href="vendor/shepherd/examples/jQuery"> Modified jQuery with the necessary exports</a></li>
+        <li><a href="vendor/shepherd/examples/jQueryFromExternal"> jQuery from a CDN</a></li>
+        <li><a href="vendor/shepherd/examples/underscore"> Modified Underscore with the necessary exports</a></li>
+        <li><a href="vendor/shepherd/examples/underscoreFromExternal"> Underscore from a CDN</a></li>
+        <li><a href="#"> This page!</a></li>
+      </ul>
+    </dd>
     <dt><a href="vendor/shepherd/test/">Check out the tests!</a></dt>
     </dl>
     <div class="snippets"></div>
@@ -120,17 +163,21 @@ bla</pre></dd>
       </ul>
     </p>
   </div>
-  <h2 id="syntax">Install</h2>
+  <h2 id="usage">How to use</h2>
   <div class="container">
     <p>Just include the following line to your header:</p>
     <pre>&lt;script type="text/javascript" src="lib/shepherd.js">&lt;/script></pre>
     <p>Then include all the files you want Shepherd to handle like the following:</p>
     <pre>&lt;script type="text/shepherd-js" data-src="path/to/my/file.js">&lt;/script></pre>
+    <p>An in-depth documentation on the syntax will very soon (I promise) be made available.</p>
   </div>
   
-  <h2>About</h2>
+  <h2 id="about">About</h2>
   <div class="container">
-    <p>...</p>
+    <p><b>Shepherd</b> is born from the frustration of not being able to write cross-side libraries with ease, and from the will to be ready for ES:Harmony.</p>
+    <p>It is released under the MIT Licence, so feel free to use, fork, report bugs and do pull-requests.</p>
+    <p>You can leave me a message here at GitHub or on Twitter <a href="http://twitter.com/xcambar">@xcambar</a> for more information.</p>
+    
   </div>
   <h2 id="tldr">tl;dr</h2>
   <div class="container">
@@ -143,7 +190,7 @@ bla</pre></dd>
   </div>
   <div class="footer">
     Copyright (c) 2012, <a href="https://github.com/xcambar">Xavier Cambar</a>, Released under the MIT Licence<br />
-    The page has been built using <a href="twitter.github.com/bootstrap">Bootstrap</a>
+    The page has been built using <a href="twitter.github.com/bootstrap">Bootstrap</a>.
   </div>
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
