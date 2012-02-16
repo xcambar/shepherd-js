@@ -1,7 +1,7 @@
 "module {                                               ";
 "  module $ from jQuery;                                ";
-"  import rebound from '/examples/jQuery/animation.js'; ";
-"  import gear from '/examples/jQuery/gear.js';         ";
+"  import rebound from 'animation.js'; ";
+"  import gear from 'gear.js';         ";
 "};                                                     ";
 
 $(function () {

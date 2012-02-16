@@ -1,5 +1,5 @@
 "module {                                                   ";
-"  import jQuery from '/examples/libs/jquery-1.7.1.min.js'; ";
+"  import jQuery from '../libs/jquery-1.7.1.min.js'; ";
 "  export gear;                                             ";
 "}                                                          ";
 
