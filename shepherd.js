@@ -598,7 +598,7 @@
      */
     var initConfig = function (confs) {
         for (var i = 0; i < confs.length; i++) {
-            var confStr = confs[i].innerHTML.trim();
+            var confStr = confs[i];
             var conf;
             if (is(JSON, 'object')) {
                 conf = JSON.parse(confStr);
@@ -638,7 +638,7 @@
             if (srcAttr == "text/shepherd-js") {
                 modules.push(script);
             } else if (srcAttr == "text/shepherd-js/config"){
-                confs.push(script);
+                confs.push(script.innerHTML.trim());
             }
         }
         initConfig(confs);
@@ -647,7 +647,7 @@
     
     me.s6d = function (modulePath, cb) {
         if (is(modulePath, 'object')) {
-            console.log('got config');
+            initConfig([modulePath]);
         } else {
             _module(modulePath, cb, _errCb);
         }
