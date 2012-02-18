@@ -18,7 +18,7 @@ __Shepherd__ is three-fold:
 
 * a module loader
 * a dependency manager
-* a _modulerizer_ (couldn't find any better word...) for your JS files and apps.
+* a _modularizer_ (couldn't find any better word...) for your JS files and apps.
 
 ## Quick features list
 
