@@ -4,10 +4,11 @@
         <title>Shepherding jQuery fetched from an external domain</title>
         <script type="text/javascript" src="../../shepherd.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-        <script type="text/shepherd-js">
-            "modularize!jQuery;";
-            "noGlobal!jQuery;";
-            "noGlobal!$;";
+        <script type="text/shepherd-js/config">
+          {
+            modularize: 'jQuery',
+            noGlobal: ['jQuery', '$']
+          }
         </script>
         <script type="text/shepherd-js" data-src="./main.js"></script>
         

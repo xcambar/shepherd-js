@@ -8,30 +8,52 @@
  * @see http://addyosmani.com/writing-modular-js/
  */
 (function (me) {
+    var is = function (obj, type) { //Thanks Underscore ;)
+        return Object.prototype.toString.call(obj).toLowerCase() == '[object ' + type.toLowerCase() + ']';
+    }
     var undefined = arguments[arguments.length];
     var modules = {},
         _errCb,
         _errModules = null,
         _isServer = typeof window == 'undefined',
-        _extDepsCount = 0;
+        _extDepsCount = 0,
+        _debug;
     
     //
     // Native plugins
     //
     var _plugins = {
-        'modularize': function (globalVar) {
-            if (!me.hasOwnProperty(globalVar)) {
-                return 'No global "' + globalVar + '"';
+        'modularize': function (vars) {
+            var fn = function (globalVar) {
+                if (!me.hasOwnProperty(globalVar)) {
+                    return 'No global "' + globalVar + '"';
+                }
+                modules[globalVar] = me[globalVar];
+                return true;
             }
-            modules[globalVar] = me[globalVar];
-            return true;
+            if (is(vars, 'array')) {
+                for (var i = 0; i < vars.length; i++) {
+                    fn(vars[i]);
+                }
+            } else {
+                fn(vars);
+            }
         },
-        'noGlobal': function (globalVar) {
-            if (!me.hasOwnProperty(globalVar)) {
-                return 'No global "' + globalVar + '"';
+        'noGlobal': function (vars) {
+            var fn = function (globalVar) {
+                if (!me.hasOwnProperty(globalVar)) {
+                    return 'No global "' + globalVar + '"';
+                }
+                delete me[globalVar];
+                return true;
             }
-            delete me[globalVar];
-            return true;
+            if (is(vars, 'array')) {
+                for (var i = 0; i < vars.length; i++) {
+                    fn(vars[i]);
+                }
+            } else {
+                fn(vars);
+            }
         }
     };
     
@@ -117,7 +139,7 @@
                         return 'Unknown plugin "' + pluginName + '"';
                     }
                     var pluginResult = _plugins[pluginName](argument);
-                    if ((typeof(pluginResult) == 'string' || !pluginResult)) {
+                    if (is(pluginResult, 'string') || !pluginResult) {
                         return pluginResult;
                     }
                 } else {
@@ -209,7 +231,7 @@
             decl = declaration.join(''),
             isPlugin = pluginDeclaration(decl, moduleObj);
         
-        if (typeof isPlugin == 'string') {
+        if (is(isPlugin, 'string')) {
             return isPlugin;
         } else if (isPlugin) {
             return moduleObj;
@@ -262,7 +284,7 @@
                 }
             }
         }
-        if (typeof callback == 'function') {
+        if (is(callback, 'function')) {
             callback(module || {} );
         }
     };
@@ -300,7 +322,7 @@
                 argsName.push(wrapperConf.name);
                 moduleArgs.push(wrapperConf.fn);
             }
-            if (true) { //@TODO Activate debug mode
+            if (_debug) {
                 var script = document.createElement('script'),
                     head = document.getElementsByTagName('head')[0];
                 script.type = 'text/javascript';
@@ -470,7 +492,7 @@
         }
         if (declaration.length) {
             moduleConf = parse(declaration, moduleConf);
-            if (typeof moduleConf == 'string') {
+            if (is(moduleConf, 'string')) {
                 errorFn(moduleConf);
             } else {
                 applyConfiguration(moduleConf, function (parsedConf) {
@@ -508,7 +530,7 @@
         var _error = function (msg) {
             _errModules = _errModules || [];
             _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
-            if (typeof errorFn == 'function') {
+            if (is(errorFn, 'function')) {
                 errorFn();
             } else {
                 console.log('Error with: ', moduleSrc, msg);
@@ -516,9 +538,9 @@
             }
         };
         _error.origFn = errorFn;
-        var moduleConf = (typeof moduleSrc != 'string') ? moduleSrc : {src: moduleSrc};
+        var moduleConf = is(moduleSrc, 'string') ?  {src: moduleSrc} : moduleSrc;
         !moduleConf.format && _isServer && (moduleConf.format = 'commonJS');
-        var uri = (typeof moduleSrc == 'string') ? moduleSrc : moduleSrc.name;
+        var uri = is(moduleSrc, 'string') ? moduleSrc : moduleSrc.name;
         if (uri) {
             !_isServer && xhr({ url: uri,
                 error: function () {
@@ -552,7 +574,7 @@
                     if (!modPath) {
                         _error('Unable to locate file ' + uri);
                         return;
-                    } else if (typeof modPath == 'object') { //@TODO Check
+                    } else if (is(modPath, 'object')) { //@TODO Check
                         moduleConf.deps = moduleConf.deps || {};
                         moduleConf.deps[modPath.uri] = modPath.node_module;
                     } else {
@@ -567,24 +589,68 @@
                 }
             }
         } else {
-            (typeof moduleSrc == 'object') && _moduleSrc(moduleSrc, callback, _error);
+            is(moduleSrc, 'object') && _moduleSrc(moduleSrc, callback, _error);
+        }
+    };
+    
+    /**
+     * Parses the configuration objects
+     */
+    var initConfig = function (confs) {
+        for (var i = 0; i < confs.length; i++) {
+            var confStr = confs[i].innerHTML.trim();
+            var conf;
+            if (is(JSON, 'object')) {
+                conf = JSON.parse(confStr);
+            } else {
+                var confFn = new Function ('return ' + confStr);
+                conf = confFn();
+            }
+            for (var prop in conf) {
+                if (!conf.hasOwnProperty(prop)) { continue; }
+                if (prop in _plugins) {
+                    _plugins[prop](conf[prop]);
+                } else if (prop == 'debug') {
+                    _debug = conf[prop];
+                }
+            }
+        }
+    };
+    /**
+     * Runs through the modules' definition and loads them
+     **/
+    var initModules = function (modules) {
+        for (var i = 0; i < modules.length; i++) {
+            var module = modules[i];
+            var moduleSrc = module.getAttribute('data-src');
+            moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
+            !moduleSrc && module.innerHTML && _moduleSrc({contents: module.innerHTML});
         }
     };
     
     //<script> tag evaluation
     !_isServer && me.addEventListener && me.addEventListener('load', function () {
+        var confs = [];
+        var modules = [];
         for (var i = 0; i < document.scripts.length; i++) {
-            var script = document.scripts[i];
-            if (script.getAttribute('type') === 'text/shepherd-js') {
-                var moduleSrc = script.getAttribute('data-src');
-                moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
-                !moduleSrc && script.innerHTML && _moduleSrc({contents: script.innerHTML});
+            var script = document.scripts[i],
+                srcAttr = script.getAttribute('type');
+            if (srcAttr == "text/shepherd-js") {
+                modules.push(script);
+            } else if (srcAttr == "text/shepherd-js/config"){
+                confs.push(script);
             }
         }
+        initConfig(confs);
+        initModules(modules);
     });
     
     me.s6d = function (modulePath, cb) {
-        _module(modulePath, cb, _errCb);
+        if (is(modulePath, 'object')) {
+            console.log('got config');
+        } else {
+            _module(modulePath, cb, _errCb);
+        }
     };
     me.s6d.src = function (moduleSrc, cb) {
         _moduleSrc({contents: moduleSrc}, cb, _errCb);

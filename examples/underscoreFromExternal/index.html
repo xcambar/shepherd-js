@@ -3,11 +3,12 @@
     <head>
         <title>Shepherding Underscore fetched from an external domain</title>
         <script type="text/javascript" src="../../shepherd.js"></script>
-        
         <script type="text/javascript" src="https://raw.github.com/documentcloud/underscore/master/underscore-min.js"></script>
-        <script type="text/shepherd-js">
-            "modularize!_;";
-            "noGlobal!_;";
+        <script type="text/shepherd-js/config">
+          {
+            modularize: '_',
+            noGlobal: '_'
+          }
         </script>
         
         <script type="text/shepherd-js" data-src="main.js"></script>
