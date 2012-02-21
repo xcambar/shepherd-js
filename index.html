@@ -50,33 +50,64 @@
   </div>
   <div class="container">
     <div class="description">
-      <p>Shepherd is <b>module loader and dependency manager</b> for your JS files.</p>
-      <br/>It :
-      <ul>
-        <li>is non-obstrusive and non-destructive to your files (What ??)</li>
-        <li>enhances the modularity of your JS application (How ?)</li>
-        <li>maintains backward compatibility <b>and</b> brings forward compatibility (what ??)</li>
-      </ul>
-      <p>Shepherd secures your app and makes your code portable, <b>really</b> portable!</p>
+      <p><strong>Shepherd</strong> is a solution to manage Javascript modules and dependencies with an
+        <a href="http://wiki.ecmascript.org/doku.php?id=harmony:modules">ECMAScript:Harmony</a>-compliant syntax.</p>
+      <p>Stop wrapping your code with functions to build a module, your files <strong>are</strong> your modules. Period.
+      </p>
+      <br />
+      <p><strong>Shepherd</strong> allows you to take advantage of the features of the upcoming ECMAScript:Harmony within today's engines.</p>
     </div>
+  </div>
+  
+  <h2 id="features">Features</h2>
+  <div class="container features">
+    <h3>Shepherd provides:</h3>
+      <dl>
+        <dt>a syntax compliant with ECMAScript:Harmony</dt>
+        <dd>which means that when Harmony is implemented in your favorite JS engine, just remove the quotes surrounding the module declarations and voila! <strong>Your code is ported to Harmony</strong>.</dd>
+        <dt>a clutter-free module definition</dt>
+        <dd>Dont't bother wrapping your code with functions to create a module. <strong>Shepherd</strong> handles it for you out of the box by pre-processing your js files. <strong>Start writing at column 1!</strong></dd>
+        <dt>It allows developers to secure external libraries by litteraly turning them into modules and avoid global pollution!</dt>
+        <dd>When you cannot integrate the <strong>Shepherd</strong> syntax with external files, tell <strong>Shepherd</strong> to do some post-processing after the external file is loaded to depollute <i>global</i>.
+        <dt>Your code remains compatible with non-shepherd'ed applications.</dt>
+        <dd>The module declarations in <strong>Shepherd</strong> are stored in strings without operators nor left-operands (think of <code>"use strict";</code>), so your files remain 100% backward compatible. Migrate your apps with ease! </dd>
+      </dl>
+  </div>
+  <h2 id="usage">How to use</h2>
+  <div class="container">
+    <p>Just include the following line to your header:</p>
+    <pre>&lt;script type="text/javascript" src="lib/shepherd.js">&lt;/script></pre>
+    <p>Then include all the files you want Shepherd to handle like the following:</p>
+    <pre>&lt;script type="text/shepherd-js" data-src="path/to/my/file.js">&lt;/script></pre>
+    <p>An in-depth documentation on the syntax will very soon (I promise) be made available.</p>
   </div>
   
   <h2 id="examples">Examples <small>Let's see how it works!</small></h2>
   <div class="container">
     <dl class="unstyled examples">
     <dt>Import a module from its URI</dt>
-    <dd><pre>"module myModule from 'path/to/my/awesome/module.js'";
+    <dd>file.js:<pre>"module myModule from 'path/to/my/awesome/module.js'";
 
-console.log(myModule); // Displays myModule to the console
-</pre></dd>
+console.log(myModule); // Displays myModule to the console</pre>
+<div class="alert-message"><code>myModule</code> is not available anywhere else in your application <small>(unless you repeat the declaration in another module)</small></div>
+</dd>
     <dt>Import a module by its name</dt>
-    <dd><pre>"module $ from jQuery";
-// The above declaration retrieves a module called jQuery and exposes it as $
+    <dd>Declaring a named module (myNamedModule.js):
+<pre>"module myNamedModule {   ";
+"  export doSomething;    ";
+"}                        ";
 
-$.ajax(/** ... **/);
+var doSomething = function () {/* ... */};
+</pre>
+Using the named module (myApp.js):
+<pre>"module myNamedModule;";
+// The above declaration specifies we want to use the module 'myNamedModule'
+
+myNamedModule.doSomething();
 </pre></dd>
     <dt>Export variables</dt>
-    <dd><ul><li>File1.js : Defining a module <pre>"export myExportedVar";
+    <dd>File1.js : Defining a module <pre>"export myExportedVar";
+"export myExportedFn";
 
 var a = 'This variable is private';
 var b = function () {
@@ -86,20 +117,20 @@ var b = function () {
 var myExportedVar = 'This variable is publicly available';
 var myExportedFn = function () {
   return 'This function is publicly available';
-}</pre></li>
-<li>File2.js : Importing a part of a module <pre>"import myExportedVar from 'File1.js'";
+}</pre>
+File2.js : Importing a portion of the module <pre>"import myExportedVar from 'File1.js'";
 
 console.log(a); //undefined
 console.log(b); //undefined
 console.log(myExportedFn); //undefined
-console.log(myExportedVar); //"This variable is publicly available"</pre></li>
-<li>File2a.js : Importing the whole module<pre>"module 'File1.js'";
+console.log(myExportedVar); //"This variable is publicly available"</pre>
+File2a.js : Importing the whole module<pre>"module 'File1.js'";
 
 console.log(a); //undefined
 console.log(b); //undefined
 console.log(myExportedFn()); //"This function is publicly available"
-console.log(myExportedVar); //"This variable is publicly available"</pre></li>
-</ul></dd>
+console.log(myExportedVar); //"This variable is publicly available"</pre>
+</dd>
     <dt>Turn your existing files into modules. </dt>
     <dd><pre>"module myModule {                          ";
 "  import imp1 from '/path/to/import.js';   ";
@@ -112,21 +143,23 @@ console.log(myExportedVar); //"This variable is publicly available"</pre></li>
 
 /** Here after goes the code of your module **/
 
-var expA = {
-  exported: 'module'
-};
-var expB = ['exported', 'module'];</pre>
+var expA = "This is an exported string";
+var expB = ['This', 'is', 'an', 'exported', 'array'];</pre>
 <div class="alert-message"><b>imp2</b> and <b>mod2</b> are available via a reference name because they belong to/are (respectively) a module that has been given a name, just as in this example where <b>myModule</b> is the reference name for the module)</div></dd>
     <dt>Use external libraries as modules. </dt>
     <dd>Let's say you included jQuery from a CDN, such as <pre>&lt;script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"&gt;&lt;/script&gt;</pre>
       If you want to remove jQuery from the global space and make it available as a module in Shepherd, just add the following in your header:
       <pre>&lt;script type="text/shepherd-js"&gt;
-  "modularize!jQuery;";
+  "modularize!$;";
   "noGlobal!jQuery;";
   "noGlobal!$;";
 &lt;/script&gt;
 </pre>
-In a module definition, just add <code>"module $ from jQuery;"</code> to assign (locally to the module, of course) the <code>$</code> variable to jQuery (see the live examples).
+Using jQuery in a module (myModule.js):
+<pre>"module $;";
+$.ajax(/*...*/);
+</pre>
+<div class="alert-message">Check out the live examples or the source code of this page too!</div>
     </dd>
     <dt>What about SSJS ?</dt>
     <dd><div class="alert-message">The commonJS wrapper is written and available in the package, but requires some testing and possibly some changes before a release.<br/>
@@ -143,36 +176,29 @@ In a module definition, just add <code>"module $ from jQuery;"</code> to assign 
         <li><a href="#"> This page!</a></li>
       </ul>
     </dd>
-    <dt><a href="vendor/shepherd/test/">Check out the tests!</a></dt>
+    <dt><a target="_blank" href="vendor/shepherd/test/">Check out the tests!</a></dt>
     </dl>
     <div class="snippets"></div>
   </div>
-  <h2 id="features">Features</h2>
-  <div class="container">
-    <p>Shepherd is like no other module loader in many ways, including:
-      <ul>
-        <li>It is compatible with AMD AND CommonJS</li>
-        <li>It has a non-obstrusive lightweight syntax compliant with the upcoming specifications from ECMA (named ECMAScript:harmony-modules)</li>
-        <li>It allows developers to secure external libraries by litteraly turning them into modules and avoid global pollution!</li>
-        <li>It helps turning your legacy code into module in seconds (literally!)</li>
-        <li>Your code remains compatible with non-shepherd'ed applications. It' 100% backward compatible. Migrate your apps with ease!</li>
-      </ul>
-    </p>
-  </div>
-  <h2 id="usage">How to use</h2>
-  <div class="container">
-    <p>Just include the following line to your header:</p>
-    <pre>&lt;script type="text/javascript" src="lib/shepherd.js">&lt;/script></pre>
-    <p>Then include all the files you want Shepherd to handle like the following:</p>
-    <pre>&lt;script type="text/shepherd-js" data-src="path/to/my/file.js">&lt;/script></pre>
-    <p>An in-depth documentation on the syntax will very soon (I promise) be made available.</p>
-  </div>
-  
   <h2 id="about">About</h2>
   <div class="container">
-    <p><b>Shepherd</b> is born from the frustration of not being able to write cross-side libraries with ease, and from the will to be ready for ES:Harmony.</p>
-    <p>It is released under the MIT Licence, so feel free to use, fork, report bugs and do pull-requests.</p>
-    <p>You can leave me a message here at GitHub or on Twitter <a href="http://twitter.com/xcambar">@xcambar</a> for more information.</p>
+    <h3>"Why on Earth would I learn yet another syntax..."</h3>
+    "<em>...while I already know CommonJS and/or AMD which I love?</em>" Because with <strong>Shepherd</strong>, you're not learning a new custom syntax,
+    you're learning to use the future versions of Javascript as ECMA designed it. 
+
+    <h3>Why such a name "<em>Shepherd</em>" ?</h3>
+    The idea came as a souvenir of a my hiking holidays during the summer 2011: a shepherd always looks after his sheep and takes care they are well grouped and graze in the right place.
+    
+    <h3>What about Licensing ?</h3>
+    "Hmmm... let me guess. it's on GitHub, it's Javascript, there's +90% probability it's MIT."<br />
+    You're right, <strong>Shepherd</strong> is licensed under the <strong>MIT license</strong>.
+    
+    <h3>Never heard of you... Who are you ?</h3>
+    My name is Xavier Cambar, I've been a developer since the age of... Hmmm, let's say I've always been a developer, ok ?<br />
+    I currently live in Paris, where I left all my previous develoment and management activities to focus on Javascript.<br />
+    
+    <p>Of course, you can leave me a message here at GitHub or on Twitter <a href="http://twitter.com/xcambar">@xcambar</a>.
+    <br /> And if you want to send me an E-mail, surely you will find it with ease.</p>
     
   </div>
   <h2 id="tldr">tl;dr</h2>

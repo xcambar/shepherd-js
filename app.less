@@ -6,6 +6,26 @@
 @bgColor: #85B4A6;
 @brownish: #57343F;
 
+small {
+  font-size: 0.8em;
+}
+
+dd {
+  margin: 1px 0 10px 0;
+}
+
+.features dt, .examples dt.current {
+  min-width: 10px;
+  background-color: @bgColor * 1.25;
+  padding: 2px 8px 4px;
+  .border-radius(1em);
+  text-shadow: 2px 2px 5px @bgColor;
+}
+
+.features dd {
+  margin-bottom: 12px;
+}
+
 body {
   padding-top: 50px;
   div.container {
@@ -55,6 +75,13 @@ h2 {
   .border-radius(10px);
   p {
     font-size: 1em;
+  }
+  a {
+    border-bottom: 1px dotted black;
+    &:hover {
+      text-decoration: none;
+      border-color: #00438A;
+    }
   }
 }
 
