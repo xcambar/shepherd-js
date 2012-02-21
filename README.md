@@ -1,3 +1,12 @@
+### !! Breaking news !!
+
+ECMA has updated the syntax to Harmony modules on February 8th, 2012.
+The parser currently used fits reads the previous version, but don't worry!
+
+I'm currently working on a new parser for the latest specification, which you can find in the branch parser-20120208.
+
+For that matter, I'm using the fantastic [jison](http://github.com/azzch/jison) to build the parser.
+
 # Shepherd
 
 See your Web application as a valley, each of your JS files as a field in this valley, with sheep *(ie. variables and so on...)* grazing in the valley.
