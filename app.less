@@ -6,12 +6,33 @@
 @bgColor: #85B4A6;
 @brownish: #57343F;
 
+.clear {
+    clear: both;
+}
+
 small {
   font-size: 0.8em;
 }
 
 dd {
   margin: 1px 0 10px 0;
+}
+
+.overview {
+    .before, .after {
+        &.error, &.success {
+            padding-left:0;
+            padding-right: 0;
+        }
+        width: 48%;
+    }
+}
+.overview .before {
+    float: left;
+}
+
+.overview .after {
+    float: right;
 }
 
 .features dt, .examples dt.current {

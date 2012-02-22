@@ -9,10 +9,11 @@
   <script type="text/javascript" src="vendor/less/dist/less-1.2.1.js"></script>
   <script type="text/javascript" src="vendor/shepherd/shepherd.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-  <script type="text/shepherd-js">
-    "modularize!jQuery;";
-    "noGlobal!jQuery;";
-    "noGlobal!$;";
+  <script type="text/shepherd-js/config">
+    {
+      modularize: 'jQuery',
+      noGlobal: ['jQuery', '$']
+    }
   </script>
   <script type="text/shepherd-js" data-src="lib/revealer.js"></script>
   
@@ -59,6 +60,56 @@
     </div>
   </div>
   
+  <h2 id="overview">Overview <small>A quick example to see at a glance what <strong>Shepherd</strong> basically does.</small></h2>
+  <div class="container overview">
+    <div class="before">
+      <h3>A <em>classical</em> JS file (yes, it's ugly code. Whatever.)</h3>
+      <pre>
+var _min = 0;
+var _max = 1000;
+var _lte = function (a, b) { return a &lt;= b;};
+var setMin = function (newMin) {
+  if (_lte(newMin, max)) { min = newMin; }
+};
+var setMax = function (newMax) {
+  if(_lte(min, newMax)) { max = newMax; }
+};
+var random = function () {
+  return Math.round(Math.random() * (max - min)) + min;
+};
+      </pre>
+    </div>
+    <div class="after">
+      <h3>Add sugar, let <strong>Shepherd</strong> operate: it's now a module!</h3>
+      <pre>
+"module randomRange { ";
+"  export setMin;     ";
+"  export setMax;     ";
+"  export random;     ";
+"}                    ";
+
+var _min = 0;
+var _max = 1000;
+var _lte = function (a, b) { return a &lt;= b;};
+var setMin = function (newMin) {
+  if (_lte(newMin, max)) { min = newMin; }
+};
+var setMax = function (newMax) {
+  if(_lte(min, newMax)) { max = newMax; }
+};
+var random = function () {
+  return Math.round(Math.random() * (max - min)) + min;
+};
+      </pre>
+    </div>
+    <div class="clear"></div>
+    <div class="before alert-message error">
+      <code>global</code> is polluted by 6 variables, available all over the app.
+    </div>
+    <div class="after alert-message success">
+      <code>global</code> is not polluted at all, some vars are hidden, only useful elements are exposed to modules importing <em>randomRange</em>.
+    </div>
+  </div>
   <h2 id="features">Features</h2>
   <div class="container features">
     <h3>Shepherd provides:</h3>
@@ -67,9 +118,9 @@
         <dd>which means that when Harmony is implemented in your favorite JS engine, just remove the quotes surrounding the module declarations and voila! <strong>Your code is ported to Harmony</strong>.</dd>
         <dt>a clutter-free module definition</dt>
         <dd>Dont't bother wrapping your code with functions to create a module. <strong>Shepherd</strong> handles it for you out of the box by pre-processing your js files. <strong>Start writing at column 1!</strong></dd>
-        <dt>It allows developers to secure external libraries by litteraly turning them into modules and avoid global pollution!</dt>
-        <dd>When you cannot integrate the <strong>Shepherd</strong> syntax with external files, tell <strong>Shepherd</strong> to do some post-processing after the external file is loaded to depollute <i>global</i>.
-        <dt>Your code remains compatible with non-shepherd'ed applications.</dt>
+        <dt>a way to modularize external libraries as well</dt>
+        <dd>When you cannot integrate the <strong>Shepherd</strong> syntax within an external files, tell <strong>Shepherd</strong> to do some post-processing after the external file is loaded to depollute <i>global</i>.
+        <dt>backward-compatibility for your legacy-apps</dt>
         <dd>The module declarations in <strong>Shepherd</strong> are stored in strings without operators nor left-operands (think of <code>"use strict";</code>), so your files remain 100% backward compatible. Migrate your apps with ease! </dd>
       </dl>
   </div>
