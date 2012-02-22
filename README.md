@@ -1,7 +1,7 @@
 ### !! Breaking news !!
 
-ECMA has updated the syntax to Harmony modules on February 8th, 2012.
-The parser currently used fits reads the previous version, but don't worry!
+ECMA has updated the syntax for Harmony modules on February 8th, 2012.
+The parser currently used in **Shepherd** reads the previous version, but don't worry:
 
 I'm currently working on a new parser for the latest specification, which you can find in the branch parser-20120208.
 
