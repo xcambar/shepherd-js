@@ -1,3 +1,12 @@
+/**
+ * Missing:
+ * ========
+ *  
+ *  * Multiple declarations
+ *  * Exports
+ *  * moduleBody
+ */
+
 var parser = require('../shepherd_parser.js');
 describe ('ECMAScript:Harmony module definition parser', function () {
     it('should accept null requests', function () {
