@@ -1,30 +1,64 @@
 /* Jison generated parser */
-var harmonyModules = (function(){
+var shepherd_parser = (function(){
 var parser = {trace: function trace() { },
 yy: {},
-symbols_: {"error":2,"expressions":3,"Program":4,"EOF":5,"ProgramElement":6,"ModuleDeclaration":7,"module":8,"Id":9,"at":10,"Path":11,"EQUALS":12,"ImportSource":13,"OPEN_BRACE":14,"CLOSE_BRACE":15,"ModuleSpecifier":16,"StringLiteral":17,"from":18,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",8:"module",9:"Id",10:"at",11:"Path",12:"EQUALS",14:"OPEN_BRACE",15:"CLOSE_BRACE",18:"from"},
-productions_: [0,[3,2],[3,1],[4,1],[4,2],[6,1],[7,4],[7,4],[7,4],[16,1],[16,1],[17,1],[17,2],[13,1],[13,3]],
+symbols_: {"error":2,"Program":3,"ProgramElement":4,"EOF":5,"ModuleDeclaration":6,"ImportDeclaration":7,"ModuleSpecifier":8,"Path":9,"String":10,"module":11,"Id":12,"at":13,"SEMICOLON":14,"IS":15,"ImportSource":16,"OPEN_BRACE":17,"ModuleBody":18,"CLOSE_BRACE":19,"from":20,"import":21,"ImportSpecifierSet":22,"WILDCARD":23,"ImportSpecifier":24,"ImportSpecifierNext":25,"COMMA":26,"COLON":27,"ModuleElement":28,"PERIOD":29,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",10:"String",11:"module",12:"Id",13:"at",14:"SEMICOLON",15:"IS",17:"OPEN_BRACE",19:"CLOSE_BRACE",20:"from",21:"import",23:"WILDCARD",26:"COMMA",27:"COLON",29:"PERIOD"},
+productions_: [0,[3,2],[3,1],[3,0],[4,1],[4,1],[8,1],[8,1],[6,5],[6,5],[6,5],[16,1],[16,3],[7,5],[22,1],[22,1],[22,5],[25,2],[25,0],[24,1],[24,3],[18,2],[18,2],[18,0],[28,1],[28,1],[9,1],[9,3]],
 performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1:console.log('Done')
+case 1:console.log(this.$)
 break;
-case 5:console.log('module declaration');
+case 4:this.$ = {type: 'module', decl: $$[$0]};
 break;
-case 6:console.log('declaring module ' + $$[$0-2] + ' from module at path: ' + $$[$0]);
+case 5:this.$ = {type: 'import', decl: $$[$0]};
 break;
-case 7:console.log('declaring module ' + $$[$0-2] + ' equals import source: ' + $$[$0]);
+case 6:this.$ = $$[$0]
 break;
-case 13:console.log('Import source: ' + $$[$0]);
+case 7:this.$ = $$[$0]
 break;
-case 14:console.log('Import source: ' + Path + ' from ' + $$[$0]);
+case 8:this.$ = {id: $$[$0-3], path: $$[$0-1]}
+break;
+case 9:this.$ = {id: $$[$0-3], src: $$[$0-1]}
+break;
+case 10:this.$ = $$[$0-1]
+break;
+case 11:this.$ = $$[$0]
+break;
+case 12:this.$ = {path: $$[$0-2], module: $$[$0]}
+break;
+case 13:this.$ = {specifiers: $$[$0-3], from: $$[$0-1]}
+break;
+case 14:this.$ = $$[$0]
+break;
+case 15:this.$ = $$[$0]
+break;
+case 16: this.$ = [$$[$0-3], $$[$0-2]]
+break;
+case 17:this.$ = $$[$0]
+break;
+case 19:this.$ = $$[$0]
+break;
+case 20:this.$ = {local: $$[$0-2], remote: $$[$0]}
+break;
+case 21: this.$ = {type: 'module', decl : $$[$0-1]}
+break;
+case 22: this.$ = {type: 'import', decl : $$[$0-1]}
+break;
+case 24:this.$ = $$[$0]
+break;
+case 25:this.$ = $$[$0]
+break;
+case 26:this.$ = $$[$0]
+break;
+case 27:this.$ = $$[$0-2] + '.' + $$[$0]
 break;
 }
 },
-table: [{3:1,4:2,5:[1,3],6:4,7:5,8:[1,6]},{1:[3]},{5:[1,7],6:8,7:5,8:[1,6]},{1:[2,2]},{5:[2,3],8:[2,3]},{5:[2,5],8:[2,5]},{9:[1,9]},{1:[2,1]},{5:[2,4],8:[2,4]},{10:[1,10],12:[1,11],14:[1,12]},{11:[1,13]},{11:[1,15],13:14},{15:[1,16]},{5:[2,6],8:[2,6]},{5:[2,7],8:[2,7]},{5:[2,13],8:[2,13],18:[1,17]},{5:[2,8],8:[2,8]},{9:[1,21],11:[1,19],16:18,17:20},{5:[2,14],8:[2,14]},{5:[2,9],8:[2,9]},{5:[2,10],8:[2,10]},{5:[2,11],8:[2,11],9:[1,21],17:22},{5:[2,12],8:[2,12]}],
-defaultActions: {3:[2,2],7:[2,1]},
+table: [{1:[2,3],3:1,4:2,5:[1,3],6:4,7:5,11:[1,6],21:[1,7]},{1:[3]},{1:[2,3],3:8,4:2,5:[1,3],6:4,7:5,11:[1,6],21:[1,7]},{1:[2,2]},{1:[2,4],5:[2,4],11:[2,4],21:[2,4]},{1:[2,5],5:[2,5],11:[2,5],21:[2,5]},{12:[1,9]},{12:[1,11],17:[1,13],22:10,23:[1,12]},{1:[2,1]},{13:[1,14],15:[1,15],17:[1,16]},{20:[1,17]},{20:[2,14]},{20:[2,15]},{12:[1,19],24:18},{10:[1,20]},{12:[1,22],16:21},{6:24,7:25,11:[1,6],18:23,19:[2,23],21:[1,7]},{8:26,9:27,10:[1,28],12:[1,29]},{19:[2,18],25:30,26:[1,31]},{19:[2,19],26:[2,19],27:[1,32]},{14:[1,33]},{14:[1,34]},{14:[2,11],20:[1,35]},{19:[1,36]},{6:24,7:25,11:[1,6],18:37,19:[2,23],21:[1,7]},{6:24,7:25,11:[1,6],18:38,19:[2,23],21:[1,7]},{14:[1,39]},{14:[2,6]},{14:[2,7]},{14:[2,26],19:[2,26],26:[2,26],29:[1,40]},{19:[1,41]},{12:[1,19],24:42},{9:43,12:[1,29]},{1:[2,8],5:[2,8],11:[2,8],19:[2,8],21:[2,8]},{1:[2,9],5:[2,9],11:[2,9],19:[2,9],21:[2,9]},{8:44,9:27,10:[1,28],12:[1,29]},{1:[2,10],5:[2,10],11:[2,10],19:[2,10],21:[2,10]},{19:[2,21]},{19:[2,22]},{1:[2,13],5:[2,13],11:[2,13],19:[2,13],21:[2,13]},{9:45,12:[1,29]},{14:[1,46]},{19:[2,17]},{19:[2,20],26:[2,20]},{14:[2,12]},{14:[2,27],19:[2,27],26:[2,27]},{20:[2,16]}],
+defaultActions: {3:[2,2],8:[2,1],11:[2,14],12:[2,15],27:[2,6],28:[2,7],37:[2,21],38:[2,22],42:[2,17],44:[2,12],46:[2,16]},
 parseError: function parseError(str, hash) {
     throw new Error(str);
 },
@@ -349,43 +383,51 @@ case 1:
 break;
 case 2:
 break;
-case 3:return ";";
+case 3:return "SEMICOLON";
 break;
-case 4:return "OPEN_BRACE";
+case 4:return "COLON";
 break;
-case 5:return "CLOSE_BRACE";
+case 5:return "OPEN_BRACE";
 break;
-case 6:return "module";
+case 6:return "CLOSE_BRACE";
 break;
-case 7:return "import";
+case 7:return "module";
 break;
-case 8:return "export";
+case 8:return "import";
 break;
-case 9:return 10;
+case 9:return "export";
 break;
-case 10:return 12;
+case 10:return 13;
 break;
-case 11:return 18;
+case 11:return 15;
 break;
-case 12:return "Id";
+case 12:return 20;
 break;
-case 13:return "Path";
+case 13:return "WILDCARD";
 break;
-case 14:return ".";
+case 14:return 26;
 break;
-case 15:return 5;
+case 15:return 29;
+break;
+case 16:return "Id";
+break;
+case 17:return "String";
+break;
+case 18:return "String";
+break;
+case 19:return 5;
 break;
 }
 };
-lexer.rules = [/^\n+/,/^\s+/,/^\t+/,/^;/,/^\{/,/^\}/,/^module\b/,/^import\b/,/^export\b/,/^at\b/,/^=/,/^from\b/,/^[a-zA-Z_$][0-9a-zA-Z_$]*/,/^".+"/,/^\./,/^$/];
-lexer.conditions = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"inclusive":true}};
+lexer.rules = [/^\n+/,/^\s+/,/^\t+/,/^;/,/^:/,/^\{/,/^\}/,/^module\b/,/^import\b/,/^export\b/,/^at\b/,/^is\b/,/^from\b/,/^\*/,/^,/,/^\./,/^[a-zA-Z_$][0-9a-zA-Z_$]*/,/^".+"/,/^'.+'/,/^$/];
+lexer.conditions = {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"inclusive":true}};
 return lexer;})()
 parser.lexer = lexer;
 return parser;
 })();
 if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
-exports.parser = harmonyModules;
-exports.parse = function () { return harmonyModules.parse.apply(harmonyModules, arguments); }
+exports.parser = shepherd_parser;
+exports.parse = function () { return shepherd_parser.parse.apply(shepherd_parser, arguments); }
 exports.main = function commonjsMain(args) {
     if (!args[1])
         throw new Error('Usage: '+args[0]+' FILE');

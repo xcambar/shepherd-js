@@ -4,9 +4,6 @@
    String: quoted string. May indicate a path in the filesystem, on a server, an URL or ???
    Id: ASCII Identifier (Unicode upgrade will wait)
    
-   BUGS:
-    * Doesn't accept import a from b.c.d;
-    * conflicts with braces
  */
 %lex
 %%
