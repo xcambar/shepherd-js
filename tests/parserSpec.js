@@ -52,11 +52,11 @@ describe ('import definition parser', function () {
     });
     
     it('should allowd to import a subset of the entries of a module', function () {
-        expect(parser.parse('import {x, y, z} from a.b.c;').type).toBe('import');
-        expect(parser.parse('import {x, y, z} from a.b.c;').decl.specifiers[0]).toBe('x');
-        expect(parser.parse('import {x, y, z} from a.b.c;').decl.specifiers[1]).toBe('y');
-        expect(parser.parse('import {x, y, z} from a.b.c;').decl.specifiers[2]).toBe('z');
-        expect(parser.parse('import {x, y, z} from a.b.c;').decl.module).toBe('a.b.c');
+        expect(parser.parse('import {x, y, z} from "a.b.c";').type).toBe('import');
+        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.specifiers[0]).toBe('x');
+        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.specifiers[1]).toBe('y');
+        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.specifiers[2]).toBe('z');
+        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.module).toBe('"a.b.c"');
     });
     
     
