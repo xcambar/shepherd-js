@@ -24,7 +24,6 @@
 "at"                        return 'at';
 "is"                        return 'IS';
 "from"                      return 'from';
-"."                         return ".";
 "*"                         return "WILDCARD";
 ","                         return 'COMMA';
 "."                         return 'PERIOD';
@@ -77,7 +76,7 @@ ImportSource
   
 ImportDeclaration
   : import ImportSpecifierSet from ModuleSpecifier SEMICOLON
-    {$$ = {type: 'import', specifiers: $2, from: $4}}
+    {$$ = {specifiers: $2, from: $4}}
   ;
   
 ImportSpecifierSet
@@ -103,7 +102,11 @@ ImportSpecifier
   ;
   
 ModuleBody
-  :
+  : ModuleDeclaration ModuleBody
+    { $$ = {type: 'module', decl : $1}}
+  | ImportDeclaration ModuleBody
+    { $$ = {type: 'import', decl : $1}}
+  | 
   ;
   
 ModuleElement
@@ -117,6 +120,6 @@ Path
   : Id
     {$$ = $1}
   | Id PERIOD Path
-    {$$ = $1 + '.' + $2}
+    {$$ = $1 + '.' + $3}
   ;
   
