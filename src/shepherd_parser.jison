@@ -1,10 +1,62 @@
-/* 
+/*
+   Copyright (c) 2012, Xavier Cambar
+   Licensed under the MIT License (see LICENSE for details)
+   
+   Sources of inspiration (among others)
+   @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
+   @see http://addyosmani.com/writing-modular-js/
+   
+   
    StringLiteral: quoted string representing a path/URL (NB: Unused here)
    Path: unquoted path to a (sub)module, the module may be native or already loaded
    String: quoted string. May indicate a path in the filesystem, on a server, an URL or ???
    Id: ASCII Identifier (Unicode upgrade will wait)
    
- */
+   
+   
+   Grammer parsed (up to date by the 200120208 from http://wiki.ecmascript.org/doku.php?id=harmony:modules)
+   ========================================================================================================
+   
+   Program        ::= ProgramElement*
+   ProgramElement ::= Statement
+                   |  VariableDeclaration
+                   |  FunctionDeclaration
+                   |  ImportDeclaration
+                   |  ExportDeclaration
+                   |  ModuleDeclaration
+
+   ModuleSpecifier   ::= StringLiteral | Path
+   ModuleDeclaration ::= "module" Id "at" String ";"                                      /** Can only a file path / URI. What else ? **/
+                      |  "module" Id "is" ImportSource ";"
+                      |  "module" Id "{" ModuleBody "}"
+
+   ImportSource       ::=   Id ("from" ModuleSpecifier)?
+   ImportDeclaration  ::=   "import" ImportSpecifierSet "from" ModuleSpecifier ";"
+   ImportSpecifierSet ::=   Id
+                       |    "*"
+                       |    "{" ImportSpecifier ("," ImportSpecifier)* "}"
+   ImportSpecifier    ::=   Id (":" Id)?
+
+   ExportDeclaration  ::=  "export" ExportSpecifierSet ("," ExportSpecifierSet)* ";"
+                       |   "export" VariableDeclaration
+                       |   "export" FunctionDeclaration
+                       |   "export" ModuleDeclaration
+
+   ExportSpecifierSet ::=  "{" ExportSpecifier ("," ExportSpecifier)* "}"
+                       |   Id ("," Id)*
+                       |   "*" ("from" Path)?
+   ExportSpecifier    ::=  Id (":" Path)?
+
+   ModuleBody    ::= ModuleElement*
+   ModuleElement ::= Statement
+                  |  VariableDeclaration
+                  |  FunctionDeclaration
+                  |  ModuleDeclaration
+                  |  ImportDeclaration
+                  |  ExportDeclaration
+*/
+ 
+ 
 %lex
 %%
 
@@ -25,8 +77,8 @@
 ","                         return 'COMMA';
 "."                         return 'PERIOD';
 [a-zA-Z_$][0-9a-zA-Z_$]*    return "Id";
-\".+\"                      return "String";
 \'.+\'                      return "String";
+\".+\"                      return "String";
 <<EOF>>                     return 'EOF';
 
 /lex
@@ -35,10 +87,10 @@
 %%
   
 Program
-  : ProgramElement Program
-    {console.log($$)}
-  | EOF
-  | 
+  : EOF
+    { return {}}
+  | ProgramElement EOF
+    {return $1}
   ;
   
 ProgramElement
@@ -61,19 +113,19 @@ ModuleDeclaration
   | module Id IS ImportSource SEMICOLON
     {$$ = {id: $2, src: $4}}
   | module Id OPEN_BRACE ModuleBody CLOSE_BRACE
-    {$$ = $4}
+    {$$ = {id: $2, contents: $4}}
   ;
   
 ImportSource
   : Id
     {$$ = $1}
   | Id from ModuleSpecifier
-    {$$ = {path: $1, module: $3}}
+    {$$ = {id: $1, module: $3}}
   ;
   
 ImportDeclaration
   : import ImportSpecifierSet from ModuleSpecifier SEMICOLON
-    {$$ = {specifiers: $2, from: $4}}
+    {$$ = {specifiers: $2, module: $4}}
   ;
   
 ImportSpecifierSet
@@ -81,21 +133,23 @@ ImportSpecifierSet
     {$$ = $1}
   | WILDCARD
     {$$ = $1}
-  | OPEN_BRACE ImportSpecifier ImportSpecifierNext CLOSE_BRACE SEMICOLON
-    { $$ = [$2, $3]}
+  | OPEN_BRACE ImportSpecifierNext CLOSE_BRACE
+    { $$ = $2}
   ;
   
 ImportSpecifierNext
-  : COMMA ImportSpecifier
-    {$$ = $2}
-  |
+  : ImportSpecifier COMMA ImportSpecifierNext
+    {$$ = [$1].concat($3)}
+  | ImportSpecifier
+    {$$ = $1}
+  | 
   ;
   
 ImportSpecifier
   : Id
     {$$ = $1}
   | Id COLON Path
-    {$$ = {local: $1, remote: $3}}
+    {$$ = {remote: $1, local: $3}}
   ;
   
 ModuleBody
@@ -104,6 +158,7 @@ ModuleBody
   | ImportDeclaration ModuleBody
     { $$ = {type: 'import', decl : $1}}
   | 
+    {$$ = null}
   ;
   
 ModuleElement
