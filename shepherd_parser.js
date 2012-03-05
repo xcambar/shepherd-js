@@ -17,9 +17,9 @@ case 3:this.$ = {type: 'module', decl: $$[$0]};
 break;
 case 4:this.$ = {type: 'import', decl: $$[$0]};
 break;
-case 5:this.$ = $$[$0]
+case 5:this.$ = {type: 'module', path: $$[$0]}
 break;
-case 6:this.$ = $$[$0]
+case 6:this.$ = {type: 'uri', path: $$[$0]}
 break;
 case 7:this.$ = {id: $$[$0-3], path: $$[$0-1]}
 break;
@@ -29,9 +29,9 @@ case 9:this.$ = {id: $$[$0-3], contents: $$[$0-1]}
 break;
 case 10:this.$ = $$[$0]
 break;
-case 11:this.$ = {id: $$[$0-2], module: $$[$0]}
+case 11:var out = {id: $$[$0-2]}; out[$$[$0].type] = $$[$0].path; this.$ = out;
 break;
-case 12:this.$ = {specifiers: $$[$0-3], module: $$[$0-1]}
+case 12:var out = {specifiers: $$[$0-3]}; out[$$[$0-1].type] = $$[$0-1].path; this.$ = out;
 break;
 case 13:this.$ = $$[$0]
 break;

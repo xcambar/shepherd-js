@@ -26,7 +26,7 @@
                    |  ModuleDeclaration
 
    ModuleSpecifier   ::= StringLiteral | Path
-   ModuleDeclaration ::= "module" Id "at" String ";"                                      /** Can only a file path / URI. What else ? **/
+   ModuleDeclaration ::= "module" Id "at" String ";"                                      /** Can only be a file path / URI. What else ? **/
                       |  "module" Id "is" ImportSource ";"
                       |  "module" Id "{" ModuleBody "}"
 
@@ -102,9 +102,9 @@ ProgramElement
   
 ModuleSpecifier
   : Path
-    {$$ = $1}
+    {$$ = {type: 'module', path: $1}}
   | String
-    {$$ = $1}
+    {$$ = {type: 'uri', path: $1}}
   ;
   
 ModuleDeclaration
@@ -120,12 +120,12 @@ ImportSource
   : Id
     {$$ = $1}
   | Id from ModuleSpecifier
-    {$$ = {id: $1, module: $3}}
+    {var out = {id: $1}; out[$3.type] = $3.path; $$ = out;}
   ;
   
 ImportDeclaration
   : import ImportSpecifierSet from ModuleSpecifier SEMICOLON
-    {$$ = {specifiers: $2, module: $4}}
+    {var out = {specifiers: $2}; out[$4.type] = $4.path; $$ = out;}
   ;
   
 ImportSpecifierSet

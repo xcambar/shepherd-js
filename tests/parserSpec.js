@@ -28,7 +28,7 @@ describe ('ECMAScript:Harmony module definition parser', function () {
         expect(parser.parse('module $ is c from "http://example.com/a/b.js";').type).toBe('module');
         expect(parser.parse('module $ is c from "http://example.com/a/b.js";').decl.id).toBe('$');
         expect(parser.parse('module $ is c from "http://example.com/a/b.js";').decl.src.id).toBe('c');
-        expect(parser.parse('module $ is c from "http://example.com/a/b.js";').decl.src.module).toBe('"http://example.com/a/b.js"');
+        expect(parser.parse('module $ is c from "http://example.com/a/b.js";').decl.src.uri).toBe('"http://example.com/a/b.js"');
     });
     
     it('should accept empty module deinitions', function () {
@@ -45,7 +45,7 @@ describe ('import definition parser', function () {
     it('should allowd to import a single identifier from a path/URI', function () {
         expect(parser.parse('import X from "/modules/x.js";').type).toBe('import');
         expect(parser.parse('import X from "/modules/x.js";').decl.specifiers).toBe('X');
-        expect(parser.parse('import X from "/modules/x.js";').decl.module).toBe('"/modules/x.js"');
+        expect(parser.parse('import X from "/modules/x.js";').decl.uri).toBe('"/modules/x.js"');
     });
     
     it('should allowd to import a single identifier from a module reference', function () {
@@ -61,13 +61,12 @@ describe ('import definition parser', function () {
     });
     
     it('should allowd to import a subset of the entries of a module', function () {
-        expect(parser.parse('import {x, y, z} from "a.b.c";').type).toBe('import');
-        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.specifiers[0]).toBe('x');
-        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.specifiers[1]).toBe('y');
-        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.specifiers[2]).toBe('z');
-        expect(parser.parse('import {x, y, z} from "a.b.c";').decl.module).toBe('"a.b.c"');
+        expect(parser.parse('import {x, y, z} from "a/b/c.js";').type).toBe('import');
+        expect(parser.parse('import {x, y, z} from "a/b/c.js";').decl.specifiers[0]).toBe('x');
+        expect(parser.parse('import {x, y, z} from "a/b/c.js";').decl.specifiers[1]).toBe('y');
+        expect(parser.parse('import {x, y, z} from "a/b/c.js";').decl.specifiers[2]).toBe('z');
+        expect(parser.parse('import {x, y, z} from "a/b/c.js";').decl.uri).toBe('"a/b/c.js"');
     });
-    
     
     it('should allowd to import a subset of the entries of a module, with local renaming', function () {
         expect(parser.parse('import {x: A, y: B, z: C} from a.b.c;').type).toBe('import');
