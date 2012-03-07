@@ -2,9 +2,9 @@
 var shepherd_parser = (function(){
 var parser = {trace: function trace() { },
 yy: {},
-symbols_: {"error":2,"Program":3,"EOF":4,"ProgramElement":5,"ModuleDeclaration":6,"ImportDeclaration":7,"ModuleSpecifier":8,"Path":9,"String":10,"module":11,"Id":12,"at":13,"SEMICOLON":14,"IS":15,"ImportSource":16,"OPEN_BRACE":17,"ModuleBody":18,"CLOSE_BRACE":19,"from":20,"import":21,"ImportSpecifierSet":22,"WILDCARD":23,"ImportSpecifierNext":24,"ImportSpecifier":25,"COMMA":26,"COLON":27,"ModuleElement":28,"PERIOD":29,"$accept":0,"$end":1},
-terminals_: {2:"error",4:"EOF",10:"String",11:"module",12:"Id",13:"at",14:"SEMICOLON",15:"IS",17:"OPEN_BRACE",19:"CLOSE_BRACE",20:"from",21:"import",23:"WILDCARD",26:"COMMA",27:"COLON",29:"PERIOD"},
-productions_: [0,[3,1],[3,2],[5,1],[5,1],[8,1],[8,1],[6,5],[6,5],[6,5],[16,1],[16,3],[7,5],[22,1],[22,1],[22,3],[24,3],[24,1],[24,0],[25,1],[25,3],[18,2],[18,2],[18,0],[28,1],[28,1],[9,1],[9,3]],
+symbols_: {"error":2,"Program":3,"EOF":4,"ProgramElement":5,"ModuleDeclaration":6,"ImportDeclaration":7,"ExportDeclaration":8,"ModuleSpecifier":9,"Path":10,"String":11,"module":12,"Id":13,"at":14,"SEMICOLON":15,"IS":16,"ImportSource":17,"OPEN_BRACE":18,"ModuleBody":19,"CLOSE_BRACE":20,"from":21,"import":22,"ImportSpecifierSet":23,"WILDCARD":24,"ImportSpecifier":25,"ImportSpecifierNext":26,"COMMA":27,"COLON":28,"export":29,"ExportSpecifierSet":30,"ExportSpecifierSetNext":31,"ExportSpecifier":32,"ExportSpecifierNext":33,"ModuleElement":34,"PERIOD":35,"$accept":0,"$end":1},
+terminals_: {2:"error",4:"EOF",11:"String",12:"module",13:"Id",14:"at",15:"SEMICOLON",16:"IS",18:"OPEN_BRACE",20:"CLOSE_BRACE",21:"from",22:"import",24:"WILDCARD",27:"COMMA",28:"COLON",29:"export",35:"PERIOD"},
+productions_: [0,[3,1],[3,2],[5,1],[5,1],[5,1],[9,1],[9,1],[6,5],[6,5],[6,5],[17,1],[17,3],[7,5],[23,1],[23,1],[23,4],[26,3],[26,0],[25,1],[25,3],[8,4],[31,3],[31,0],[30,4],[30,1],[30,1],[32,1],[32,3],[33,3],[33,0],[19,2],[19,2],[19,0],[34,1],[34,1],[10,1],[10,3]],
 performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
@@ -17,54 +17,70 @@ case 3:this.$ = {type: 'module', decl: $$[$0]};
 break;
 case 4:this.$ = {type: 'import', decl: $$[$0]};
 break;
-case 5:this.$ = {type: 'module', path: $$[$0]}
+case 5:this.$ = {type: 'export', decl: $$[$0]};
 break;
-case 6:this.$ = {type: 'uri', path: $$[$0]}
+case 6:this.$ = {type: 'module', path: $$[$0]}
 break;
-case 7:this.$ = {id: $$[$0-3], path: $$[$0-1]}
+case 7:this.$ = {type: 'uri', path: $$[$0]}
 break;
-case 8:this.$ = {id: $$[$0-3], src: $$[$0-1]}
+case 8:this.$ = {id: $$[$0-3], path: $$[$0-1]}
 break;
-case 9:this.$ = {id: $$[$0-3], contents: $$[$0-1]}
+case 9:this.$ = {id: $$[$0-3], src: $$[$0-1]}
 break;
-case 10:this.$ = $$[$0]
+case 10:this.$ = {id: $$[$0-3], contents: $$[$0-1]}
 break;
-case 11:var out = {id: $$[$0-2]}; out[$$[$0].type] = $$[$0].path; this.$ = out;
+case 11:this.$ = $$[$0]
 break;
-case 12:var out = {specifiers: $$[$0-3]}; out[$$[$0-1].type] = $$[$0-1].path; this.$ = out;
+case 12:var out = {id: $$[$0-2]}; out[$$[$0].type] = $$[$0].path; this.$ = out;
 break;
-case 13:this.$ = $$[$0]
+case 13:var out = {specifiers: $$[$0-3]}; out[$$[$0-1].type] = $$[$0-1].path; this.$ = out;
 break;
 case 14:this.$ = $$[$0]
 break;
-case 15: this.$ = $$[$0-1]
+case 15:this.$ = $$[$0]
 break;
-case 16:this.$ = [$$[$0-2]].concat($$[$0])
+case 16: this.$ = [$$[$0-2]].concat($$[$0-1])
 break;
-case 17:this.$ = $$[$0]
+case 17:this.$ = [$$[$0-1]].concat($$[$0]);
 break;
 case 19:this.$ = $$[$0]
 break;
 case 20:this.$ = {remote: $$[$0-2], local: $$[$0]}
 break;
-case 21: this.$ = {type: 'module', decl : $$[$0-1]}
+case 21:this.$ = (typeof $$[$0-1] != 'undefined' ? $$[$0-2].concat($$[$0-1]) : $$[$0-2]);
 break;
-case 22: this.$ = {type: 'import', decl : $$[$0-1]}
+case 22:this.$ = (typeof $$[$0] != 'undefined' ? $$[$0-1].concat($$[$0]) : $$[$0-1]);
 break;
-case 23:this.$ = null
+case 24:this.$ = (typeof $$[$0-1] != 'undefined' ? [$$[$0-2]].concat($$[$0-1]) : [$$[$0-2]]);
 break;
-case 24:this.$ = $$[$0]
+case 25:this.$ = [$$[$0]];
 break;
-case 25:this.$ = $$[$0]
+case 26:this.$ = [$$[$0]];
 break;
-case 26:this.$ = $$[$0]
+case 27:this.$ = $$[$0];
 break;
-case 27:this.$ = $$[$0-2] + '.' + $$[$0]
+case 28:this.$ = {local: $$[$0-2], remote: $$[$0]};
+break;
+case 29:this.$ = (typeof $$[$0] != 'undefined' ? [$$[$0-1]].concat($$[$0]) : [$$[$0-1]]);
+break;
+case 31: this.$ = {type: 'module', decl : $$[$0-1]}
+break;
+case 32: this.$ = {type: 'import', decl : $$[$0-1]}
+break;
+case 33:this.$ = null
+break;
+case 34:this.$ = $$[$0]
+break;
+case 35:this.$ = $$[$0]
+break;
+case 36:this.$ = $$[$0]
+break;
+case 37:this.$ = $$[$0-2] + '.' + $$[$0]
 break;
 }
 },
-table: [{3:1,4:[1,2],5:3,6:4,7:5,11:[1,6],21:[1,7]},{1:[3]},{1:[2,1]},{4:[1,8]},{4:[2,3]},{4:[2,4]},{12:[1,9]},{12:[1,11],17:[1,13],22:10,23:[1,12]},{1:[2,2]},{13:[1,14],15:[1,15],17:[1,16]},{20:[1,17]},{20:[2,13]},{20:[2,14]},{12:[1,20],19:[2,18],24:18,25:19},{10:[1,21]},{12:[1,23],16:22},{6:25,7:26,11:[1,6],18:24,19:[2,23],21:[1,7]},{8:27,9:28,10:[1,29],12:[1,30]},{19:[1,31]},{19:[2,17],26:[1,32]},{19:[2,19],26:[2,19],27:[1,33]},{14:[1,34]},{14:[1,35]},{14:[2,10],20:[1,36]},{19:[1,37]},{6:25,7:26,11:[1,6],18:38,19:[2,23],21:[1,7]},{6:25,7:26,11:[1,6],18:39,19:[2,23],21:[1,7]},{14:[1,40]},{14:[2,5]},{14:[2,6]},{14:[2,26],19:[2,26],26:[2,26],29:[1,41]},{20:[2,15]},{12:[1,20],19:[2,18],24:42,25:19},{9:43,12:[1,30]},{4:[2,7],11:[2,7],19:[2,7],21:[2,7]},{4:[2,8],11:[2,8],19:[2,8],21:[2,8]},{8:44,9:28,10:[1,29],12:[1,30]},{4:[2,9],11:[2,9],19:[2,9],21:[2,9]},{19:[2,21]},{19:[2,22]},{4:[2,12],11:[2,12],19:[2,12],21:[2,12]},{9:45,12:[1,30]},{19:[2,16]},{19:[2,20],26:[2,20]},{14:[2,11]},{14:[2,27],19:[2,27],26:[2,27]}],
-defaultActions: {2:[2,1],4:[2,3],5:[2,4],8:[2,2],11:[2,13],12:[2,14],28:[2,5],29:[2,6],31:[2,15],38:[2,21],39:[2,22],42:[2,16],44:[2,11]},
+table: [{3:1,4:[1,2],5:3,6:4,7:5,8:6,12:[1,7],22:[1,8],29:[1,9]},{1:[3]},{1:[2,1]},{4:[1,10]},{4:[2,3]},{4:[2,4]},{4:[2,5]},{13:[1,11]},{13:[1,13],18:[1,15],23:12,24:[1,14]},{13:[1,18],18:[1,17],24:[1,19],30:16},{1:[2,2]},{14:[1,20],16:[1,21],18:[1,22]},{21:[1,23]},{21:[2,14]},{21:[2,15]},{13:[1,25],25:24},{15:[2,23],27:[1,27],31:26},{13:[1,29],32:28},{15:[2,25],27:[2,25]},{15:[2,26],27:[2,26]},{11:[1,30]},{13:[1,32],17:31},{6:34,7:35,12:[1,7],19:33,20:[2,33],22:[1,8]},{9:36,10:37,11:[1,38],13:[1,39]},{20:[2,18],26:40,27:[1,41]},{20:[2,19],27:[2,19],28:[1,42]},{15:[1,43]},{13:[1,18],18:[1,17],24:[1,19],30:44},{20:[2,30],27:[1,46],33:45},{20:[2,27],27:[2,27],28:[1,47]},{15:[1,48]},{15:[1,49]},{15:[2,11],21:[1,50]},{20:[1,51]},{6:34,7:35,12:[1,7],19:52,20:[2,33],22:[1,8]},{6:34,7:35,12:[1,7],19:53,20:[2,33],22:[1,8]},{15:[1,54]},{15:[2,6]},{15:[2,7]},{15:[2,36],20:[2,36],27:[2,36],35:[1,55]},{20:[1,56]},{13:[1,25],25:57},{10:58,13:[1,39]},{4:[2,21]},{15:[2,23],27:[1,27],31:59},{20:[1,60]},{13:[1,29],32:61},{10:62,13:[1,39]},{4:[2,8],12:[2,8],20:[2,8],22:[2,8]},{4:[2,9],12:[2,9],20:[2,9],22:[2,9]},{9:63,10:37,11:[1,38],13:[1,39]},{4:[2,10],12:[2,10],20:[2,10],22:[2,10]},{20:[2,31]},{20:[2,32]},{4:[2,13],12:[2,13],20:[2,13],22:[2,13]},{10:64,13:[1,39]},{21:[2,16]},{20:[2,18],26:65,27:[1,41]},{20:[2,20],27:[2,20]},{15:[2,22]},{15:[2,24],27:[2,24]},{20:[2,30],27:[1,46],33:66},{20:[2,28],27:[2,28]},{15:[2,12]},{15:[2,37],20:[2,37],27:[2,37]},{20:[2,17]},{20:[2,29]}],
+defaultActions: {2:[2,1],4:[2,3],5:[2,4],6:[2,5],10:[2,2],13:[2,14],14:[2,15],37:[2,6],38:[2,7],43:[2,21],52:[2,31],53:[2,32],56:[2,16],59:[2,22],63:[2,12],65:[2,17],66:[2,29]},
 parseError: function parseError(str, hash) {
     throw new Error(str);
 },
@@ -403,17 +419,17 @@ case 8:return "import";
 break;
 case 9:return "export";
 break;
-case 10:return 13;
+case 10:return 14;
 break;
-case 11:return 15;
+case 11:return 16;
 break;
-case 12:return 20;
+case 12:return 21;
 break;
 case 13:return "WILDCARD";
 break;
-case 14:return 26;
+case 14:return 27;
 break;
-case 15:return 29;
+case 15:return 35;
 break;
 case 16:return "Id";
 break;

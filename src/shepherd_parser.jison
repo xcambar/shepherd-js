@@ -2,10 +2,6 @@
    Copyright (c) 2012, Xavier Cambar
    Licensed under the MIT License (see LICENSE for details)
    
-   Sources of inspiration (among others)
-   @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
-   @see http://addyosmani.com/writing-modular-js/
-   
    
    StringLiteral: quoted string representing a path/URL (NB: Unused here)
    Path: unquoted path to a (sub)module, the module may be native or already loaded
@@ -43,7 +39,7 @@
                        |   "export" ModuleDeclaration
 
    ExportSpecifierSet ::=  "{" ExportSpecifier ("," ExportSpecifier)* "}"
-                       |   Id ("," Id)*
+                       |   Id ("," Id)*                                                   /** This rule generates a conflicting state **/
                        |   "*" ("from" Path)?
    ExportSpecifier    ::=  Id (":" Path)?
 
@@ -98,6 +94,8 @@ ProgramElement
     {$$ = {type: 'module', decl: $1};}
   | ImportDeclaration
     {$$ = {type: 'import', decl: $1};}
+  | ExportDeclaration
+    {$$ = {type: 'export', decl: $1};}
   ;
   
 ModuleSpecifier
@@ -133,15 +131,13 @@ ImportSpecifierSet
     {$$ = $1}
   | WILDCARD
     {$$ = $1}
-  | OPEN_BRACE ImportSpecifierNext CLOSE_BRACE
-    { $$ = $2}
+  | OPEN_BRACE ImportSpecifier ImportSpecifierNext CLOSE_BRACE
+    { $$ = [$2].concat($3)}
   ;
   
 ImportSpecifierNext
-  : ImportSpecifier COMMA ImportSpecifierNext
-    {$$ = [$1].concat($3)}
-  | ImportSpecifier
-    {$$ = $1}
+  : COMMA ImportSpecifier ImportSpecifierNext
+    {$$ = [$2].concat($3);}
   | 
   ;
   
@@ -150,6 +146,39 @@ ImportSpecifier
     {$$ = $1}
   | Id COLON Path
     {$$ = {remote: $1, local: $3}}
+  ;
+  
+ExportDeclaration
+  : export ExportSpecifierSet ExportSpecifierSetNext SEMICOLON
+    {$$ = (typeof $3 != 'undefined' ? $2.concat($3) : $2);}
+  ;
+  
+ExportSpecifierSetNext
+  : COMMA ExportSpecifierSet ExportSpecifierSetNext
+    {$$ = (typeof $3 != 'undefined' ? $2.concat($3) : $2);}
+  | 
+  ;
+  
+ExportSpecifierSet
+  : OPEN_BRACE ExportSpecifier ExportSpecifierNext CLOSE_BRACE
+    {$$ = (typeof $3 != 'undefined' ? [$2].concat($3) : [$2]);}
+  | Id
+    {$$ = [$1];}
+  | WILDCARD
+    {$$ = [$1];}
+  ;
+  
+ExportSpecifier
+  : Id
+    {$$ = $1;}
+  | Id COLON Path
+    {$$ = {local: $1, remote: $3};}
+  ;
+  
+ExportSpecifierNext
+  : COMMA ExportSpecifier ExportSpecifierNext
+    {$$ = (typeof $3 != 'undefined' ? [$2].concat($3) : [$2]);}
+  | 
   ;
   
 ModuleBody

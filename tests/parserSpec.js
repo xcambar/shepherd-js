@@ -8,6 +8,7 @@
  */
 
 var parser = require('../shepherd_parser.js');
+
 describe ('ECMAScript:Harmony module definition parser', function () {
     it('should accept null requests', function () {
         expect(parser.parse('')).toEqual({});
@@ -42,25 +43,25 @@ describe ('ECMAScript:Harmony module definition parser', function () {
 });
 
 describe ('import definition parser', function () {
-    it('should allowd to import a single identifier from a path/URI', function () {
+    it('should allow to import a single identifier from a path/URI', function () {
         expect(parser.parse('import X from "/modules/x.js";').type).toBe('import');
         expect(parser.parse('import X from "/modules/x.js";').decl.specifiers).toBe('X');
         expect(parser.parse('import X from "/modules/x.js";').decl.uri).toBe('"/modules/x.js"');
     });
     
-    it('should allowd to import a single identifier from a module reference', function () {
+    it('should allow to import a single identifier from a module reference', function () {
         expect(parser.parse('import X from a.b.c;').type).toBe('import');
         expect(parser.parse('import X from a.b.c;').decl.specifiers).toBe('X');
         expect(parser.parse('import X from a.b.c;').decl.module).toBe('a.b.c');
     });
     
-    it('should allowd to import all the entries of a module', function () {
+    it('should allow to import all the entries of a module', function () {
         expect(parser.parse('import * from a.b.c;').type).toBe('import');
         expect(parser.parse('import * from a.b.c;').decl.specifiers).toBe('*');
         expect(parser.parse('import * from a.b.c;').decl.module).toBe('a.b.c');
     });
     
-    it('should allowd to import a subset of the entries of a module', function () {
+    it('should allow to import a subset of the entries of a module', function () {
         expect(parser.parse('import {x, y, z} from "a/b/c.js";').type).toBe('import');
         expect(parser.parse('import {x, y, z} from "a/b/c.js";').decl.specifiers[0]).toBe('x');
         expect(parser.parse('import {x, y, z} from "a/b/c.js";').decl.specifiers[1]).toBe('y');
@@ -68,7 +69,7 @@ describe ('import definition parser', function () {
         expect(parser.parse('import {x, y, z} from "a/b/c.js";').decl.uri).toBe('"a/b/c.js"');
     });
     
-    it('should allowd to import a subset of the entries of a module, with local renaming', function () {
+    it('should allow to import a subset of the entries of a module, with local renaming', function () {
         expect(parser.parse('import {x: A, y: B, z: C} from a.b.c;').type).toBe('import');
         expect(parser.parse('import {x: A, y: B, z: C} from a.b.c;').decl.specifiers[0].remote).toBe('x');
         expect(parser.parse('import {x: A, y: B, z: C} from a.b.c;').decl.specifiers[1].remote).toBe('y');
@@ -77,5 +78,38 @@ describe ('import definition parser', function () {
         expect(parser.parse('import {x: A, y: B, z: C} from a.b.c;').decl.specifiers[1].local).toBe('B');
         expect(parser.parse('import {x: A, y: B, z: C} from a.b.c;').decl.specifiers[2].local).toBe('C');
         expect(parser.parse('import {x: A, y: B, z: C} from a.b.c;').decl.module).toBe('a.b.c');
+    });
+});
+
+describe ('export definition parser', function () {
+    it('should allow to export a single identifier', function () {
+        expect(parser.parse('export xyz;').type).toBe('export');
+        expect(parser.parse('export xyz;').decl.length).toBe(1);
+        expect(parser.parse('export xyz;').decl[0]).toBe('xyz');
+        expect(parser.parse('export {x};').type).toBe('export');
+        expect(parser.parse('export {x};').decl.length).toBe(1);
+        expect(parser.parse('export {xyz};').decl[0]).toBe('xyz');
+    });
+
+    it('should allow to export a list of references', function () {
+        expect(parser.parse('export x, y, z;').type).toBe('export');
+        expect(parser.parse('export x, y, z;').decl.length).toBe(3);
+        expect(parser.parse('export x, y, z;').decl).not.toBe('xyz');
+        expect(parser.parse('export x, y, z;').decl[0]).toBe('x');
+        expect(parser.parse('export x, y, z;').decl[1]).toBe('y');
+        expect(parser.parse('export x, y, z;').decl[2]).toBe('z');
+        
+        expect(parser.parse('export {x, y, z};').type).toBe('export');
+        expect(parser.parse('export {x, y, t};').decl.length).toBe(3);
+        expect(parser.parse('export {x, y, z};').decl).not.toBe('xyz');
+        expect(parser.parse('export {x, y, z};').decl[0]).toBe('x');
+        expect(parser.parse('export {x, y, z};').decl[1]).toBe('y');
+        expect(parser.parse('export {x, y, z};').decl[2]).toBe('z');
+    });
+
+    it('should allow to export *', function () {
+        expect(parser.parse('export *;').type).toBe('export');
+        expect(parser.parse('export *;').decl.length).toBe(1);
+        expect(parser.parse('export *;').decl[0]).toBe('*');
     });
 });
