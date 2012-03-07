@@ -111,7 +111,7 @@ ModuleDeclaration
   | module Id IS ImportSource SEMICOLON
     {$$ = {id: $2, src: $4}}
   | module Id OPEN_BRACE ModuleBody CLOSE_BRACE
-    {$$ = {id: $2, contents: $4}}
+    {$$ = {id: $2, expressions: $4}}
   ;
   
 ImportSource
@@ -128,9 +128,9 @@ ImportDeclaration
   
 ImportSpecifierSet
   : Id
-    {$$ = $1}
+    {$$ = [$1]}
   | WILDCARD
-    {$$ = $1}
+    {$$ = [$1]}
   | OPEN_BRACE ImportSpecifier ImportSpecifierNext CLOSE_BRACE
     { $$ = [$2].concat($3)}
   ;
@@ -185,11 +185,13 @@ ExportSpecifierNext
   
 ModuleBody
   : ModuleDeclaration ModuleBody
-    { $$ = {type: 'module', decl : $1}}
+    { $$ = [{type: 'module', decl : $1}].concat($2)}
   | ImportDeclaration ModuleBody
-    { $$ = {type: 'import', decl : $1}}
+    { $$ = [{type: 'import', decl : $1}].concat($2)}
+  | ExportDeclaration ModuleBody
+    { $$ = [{type: 'export', decl : $1}].concat($2)}
   | 
-    {$$ = null}
+    {$$ = []}
   ;
   
 ModuleElement

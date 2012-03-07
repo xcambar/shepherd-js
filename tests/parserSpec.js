@@ -35,7 +35,7 @@ describe ('ECMAScript:Harmony module definition parser', function () {
     it('should accept empty module deinitions', function () {
         expect(parser.parse('module myMod {}').type).toBe('module');
         expect(parser.parse('module myMod {}').decl.id).toBe('myMod');
-        expect(parser.parse('module myMod {}').decl.contents).toBe(null);
+        expect(parser.parse('module myMod {}').decl.expressions.length).toBe(0);
     });
     
     it('should accept module definitions with a body', function () {});
@@ -45,19 +45,19 @@ describe ('ECMAScript:Harmony module definition parser', function () {
 describe ('import definition parser', function () {
     it('should allow to import a single identifier from a path/URI', function () {
         expect(parser.parse('import X from "/modules/x.js";').type).toBe('import');
-        expect(parser.parse('import X from "/modules/x.js";').decl.vars).toBe('X');
+        expect(parser.parse('import X from "/modules/x.js";').decl.vars).toEqual(['X']);
         expect(parser.parse('import X from "/modules/x.js";').decl.from).toEqual({type: 'uri', path: '/modules/x.js'});
     });
     
     it('should allow to import a single identifier from a module reference', function () {
         expect(parser.parse('import X from a.b.c;').type).toBe('import');
-        expect(parser.parse('import X from a.b.c;').decl.vars).toBe('X');
+        expect(parser.parse('import X from a.b.c;').decl.vars).toEqual(['X']);
         expect(parser.parse('import X from a.b.c;').decl.from).toEqual({type: 'module', path: 'a.b.c'});
     });
     
     it('should allow to import all the entries of a module', function () {
         expect(parser.parse('import * from a.b.c;').type).toBe('import');
-        expect(parser.parse('import * from a.b.c;').decl.vars).toBe('*');
+        expect(parser.parse('import * from a.b.c;').decl.vars).toEqual(['*']);
         expect(parser.parse('import * from a.b.c;').decl.from).toEqual({type: 'module', path: 'a.b.c'});
     });
     
@@ -113,11 +113,35 @@ describe ('export definition parser', function () {
         expect(parser.parse('export * from a.b.c;').decl[0]).toEqual({from: 'a.b.c'});
     });
 
-    it('should allow to export * with renaming', function () {
+    it('should allow to export with renaming', function () {
         expect(parser.parse('export {local: remote};').type).toBe('export');
         expect(parser.parse('export {local: remote};').decl.length).toBe(1);
         expect(parser.parse('export {local: remote};').decl[0]).toEqual({local: 'local', remote: 'remote'});
     });
-    
-    //Misses export * from Path, export x: X, y:Y
+
+    it('should allow to export multiple vars with renaming', function () {
+        expect(parser.parse('export {local: remote, local2: remote2};').type).toBe('export');
+        expect(parser.parse('export {local: remote, local2: remote2};').decl.length).toBe(2);
+        expect(parser.parse('export {local: remote, local2: remote2};').decl[0]).toEqual({local: 'local', remote: 'remote'});
+        expect(parser.parse('export {local: remote, local2: remote2};').decl[1]).toEqual({local: 'local2', remote: 'remote2'});
+    });
+});
+
+describe ('export definition parser', function () {
+    it('should allow a module to define imports', function () {
+        expect(parser.parse('module myMod {import a from b.c;}').type).toBe('module');
+        expect(parser.parse('module myMod {import a from b.c;}').decl.id).toBe('myMod');
+        expect(parser.parse('module myMod {import a from b.c;}').decl.expressions[0].type).toEqual('import');
+        expect(parser.parse('module myMod {import a from b.c;}').decl.expressions[0].decl.vars).toEqual(['a']);
+        expect(parser.parse('module myMod {import a from b.c;}').decl.expressions[0].decl.from).toEqual({type: 'module', path: 'b.c'});
+    });
+    it('should allow a module to be defined with multiple expressions', function () {
+        expect(parser.parse('module myMod {import a from b.c; export Z;}').type).toBe('module');
+        expect(parser.parse('module myMod {import a from b.c; export Z;}').decl.id).toBe('myMod');
+        expect(parser.parse('module myMod {import a from b.c; export Z;}').decl.expressions[0].type).toEqual('import');
+        expect(parser.parse('module myMod {import a from b.c; export Z;}').decl.expressions[0].decl.vars).toEqual(['a']);
+        expect(parser.parse('module myMod {import a from b.c; export Z;}').decl.expressions[0].decl.from).toEqual({type: 'module', path: 'b.c'});
+        expect(parser.parse('module myMod {import a from b.c; export Z;}').decl.expressions[1].type).toEqual('export');
+        expect(parser.parse('module myMod {import a from b.c; export Z;}').decl.expressions[1].decl).toEqual(['Z']);
+    })
 });
