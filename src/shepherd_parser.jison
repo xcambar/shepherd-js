@@ -102,7 +102,7 @@ ModuleSpecifier
   : Path
     {$$ = {type: 'module', path: $1}}
   | String
-    {$$ = {type: 'uri', path: $1}}
+    {$$ = {type: 'uri', path: $1.replace(/^['"]/, '').replace(/['"]$/, '')}}
   ;
   
 ModuleDeclaration
@@ -123,7 +123,7 @@ ImportSource
   
 ImportDeclaration
   : import ImportSpecifierSet from ModuleSpecifier SEMICOLON
-    {var out = {specifiers: $2}; out[$4.type] = $4.path; $$ = out;}
+    {$$ = {from: $4, vars: $2};}
   ;
   
 ImportSpecifierSet
@@ -137,7 +137,7 @@ ImportSpecifierSet
   
 ImportSpecifierNext
   : COMMA ImportSpecifier ImportSpecifierNext
-    {$$ = [$2].concat($3);}
+    {$$ = (typeof $3 != 'undefined' ? [$2].concat($3) : $2);}
   | 
   ;
   
@@ -166,6 +166,8 @@ ExportSpecifierSet
     {$$ = [$1];}
   | WILDCARD
     {$$ = [$1];}
+  | WILDCARD from Path
+    {$$ = [{from: $3}];}
   ;
   
 ExportSpecifier
