@@ -45,7 +45,7 @@ describe('Declare modules by their paths', function () {
         });
     });
 
-    it ('should be able to import modules from an absolute path', function () {
+    it ('should be able to import modules from an absolute path (!! path in fixture file must be updated on your machine !!)', function () {
         this.loadModule('fixtures/importFromAbsolutePath.js');
         runs(function () {
             expect(s6d.get('fixtures/importFromAbsolutePath.js').imp1()).toEqual('external loaded');
