@@ -10,7 +10,7 @@
 (function (me) {
     var is = function (obj, type) { //Thanks Underscore ;)
         return Object.prototype.toString.call(obj).toLowerCase() == '[object ' + type.toLowerCase() + ']';
-    }
+    };
     var undefined = arguments[arguments.length];
     var modules = {},
         _errCb,
@@ -30,7 +30,7 @@
                 }
                 modules[globalVar] = me[globalVar];
                 return true;
-            }
+            };
             if (is(vars, 'array')) {
                 for (var i = 0; i < vars.length; i++) {
                     fn(vars[i]);
@@ -46,7 +46,7 @@
                 }
                 delete me[globalVar];
                 return true;
-            }
+            };
             if (is(vars, 'array')) {
                 for (var i = 0; i < vars.length; i++) {
                     fn(vars[i]);
@@ -84,10 +84,13 @@
                         _f = name;
                         break;
                     case 2:
-                        _d = name, _f = deps;
+                        _d = name;
+                         _f = deps;
                         break;
                     default:
-                        _n = name, _d = deps, _f = factory;
+                        _n = name;
+                        _d = deps;
+                        _f = factory;
                 }
                 if (_d) {
                     var deps = {};
@@ -151,7 +154,7 @@
         
         function moduleDeclaration (decl, conf) {
             return moduleDefinition(decl, conf) || moduleSpecifier(decl, conf);
-        };
+        }
         
         function moduleDefinition (decl, conf) {
             var namedMod = /^\s*module\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\{(.+)\}\s*;?\s*$/,
@@ -160,14 +163,14 @@
                 conf.name = match[1];
                 return moduleBody(match[2].trim(), conf);
             }
-            var unnamedMod = /^module\s+\{(.+)\}\s*;?\s*$/,
-                match = decl.match(unnamedMod);
+            var unnamedMod = /^module\s+\{(.+)\}\s*;?\s*$/;
+            match = decl.match(unnamedMod);
             if (match) {
                 conf.name = undefined;
                 return moduleBody(match[1].trim(), conf);
             }
             return false;
-        };
+        }
         
         function moduleSpecifier (decl, conf) {
             var re = /^\s*module\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s+from\s+(['"])?([^\s'"]+)(['"])?\s*;\s*$/,
@@ -183,7 +186,7 @@
                 return true;
             }
             return false;
-        };
+        }
         
         function moduleBody(decl, conf) { // @TODO: BEWARE MULTIPLE DECLARATIONS!!!!
             if (!decl) { return true; }
@@ -203,7 +206,7 @@
                 return importBindings(match[3], conf, match[2]);
             }
             return false;
-        };
+        }
         
         function importBindings(decl, conf, format) {
             var bindingRE = /^\s*([^\s]+)\s+from\s+(['"]?)([^\s'"]+)(['"]?)\s*;\s*$/;
@@ -214,7 +217,7 @@
                 return true;
             }
             return false;
-        };
+        }
         
         function exportDeclaration (decl, conf) {
             var exportRexp = /^\s*export\s+(\w+(\.\w+)*)(\s+as\s+(\w+))?\s*;\s*$/;
@@ -225,7 +228,7 @@
                 return true;
             }
             return false;
-        };
+        }
         
         var moduleObj = conf || {},
             decl = declaration.join(''),
@@ -300,6 +303,7 @@
         !moduleConf && (moduleConf = {});
         var conf = moduleConf.deps || {};
         var module;
+        var wrapperConf;
         if (!_isServer) {
             conf.window = {
                'document': window.document,
@@ -318,7 +322,7 @@
                 }
             }
             if (moduleConf.format && moduleConf.format.length) {
-                var wrapperConf = _loaderWrappers(moduleConf);
+                wrapperConf = _loaderWrappers(moduleConf);
                 argsName.push(wrapperConf.name);
                 moduleArgs.push(wrapperConf.fn);
             }
@@ -348,7 +352,7 @@
             var vm = require('vm');
             var context = conf;
             if (moduleConf.format && moduleConf.format.length) {
-                var wrapperConf = _loaderWrappers(moduleConf);
+                wrapperConf = _loaderWrappers(moduleConf);
                 context[wrapperConf.name] = wrapperConf.fn;
             }
             context.returns = {};
@@ -393,7 +397,7 @@
             }
             return function () {
                 !--_c && callback(conf);
-            }
+            };
         })();
         var importsLoader = function (name, ref) {
             if (modules[ref.ref]) {
