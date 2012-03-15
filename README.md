@@ -26,7 +26,7 @@ __Shepherd__:
 
 * is cross-side, which means it works well in the browser and in the server
 * has a ECMAScript Harmony compatible syntax
-* is non-destructive to your files. Your JS will execute even without Shepherd, but they'll do so much better with it! (think of "use strict"; it works just the same!)
+* is non-destructive to your files. Your JS will execute even without Shepherd, but they'll do so much better with it! (module declarations are within comments)
 * requires near-zero time to update your existing code 
 * Works even with files/libraries you can not modify (eg, jQuery from a CDN)
 
