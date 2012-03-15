@@ -82,11 +82,13 @@ var random = function () {
     <div class="after">
       <h3>Add sugar, let <strong>Shepherd</strong> operate: it's now a module!</h3>
       <pre>
-"module randomRange { ";
-"  export setMin;     ";
-"  export setMax;     ";
-"  export random;     ";
-"}                    ";
+/**
+module randomRange {
+  export setMin;
+  export setMax;
+  export random;
+}
+**/
 
 var _min = 0;
 var _max = 1000;
@@ -144,10 +146,11 @@ console.log(myModule); // Displays myModule to the console</pre>
 </dd>
     <dt>Import a module by its name</dt>
     <dd>Declaring a named module (myNamedModule.js):
-<pre>"module myNamedModule {   ";
-"  export doSomething;    ";
-"}                        ";
-
+<pre>/**
+module myNamedModule {
+  export doSomething;
+}
+**/
 var doSomething = function () {/* ... */};
 </pre>
 Using the named module (myApp.js):
@@ -157,8 +160,10 @@ Using the named module (myApp.js):
 myNamedModule.doSomething();
 </pre></dd>
     <dt>Export variables</dt>
-    <dd>File1.js : Defining a module <pre>"export myExportedVar";
-"export myExportedFn";
+    <dd>File1.js : Defining a module <pre>/**
+export myExportedVar;
+export myExportedFn;
+**/
 
 var a = 'This variable is private';
 var b = function () {
@@ -207,7 +212,9 @@ var expB = ['This', 'is', 'an', 'exported', 'array'];</pre>
 &lt;/script&gt;
 </pre>
 Using jQuery in a module (myModule.js):
-<pre>"module $;";
+<pre>/**
+module $;
+**/
 $.ajax(/*...*/);
 </pre>
 <div class="alert-message">Check out the live examples or the source code of this page too!</div>
