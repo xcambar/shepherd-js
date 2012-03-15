@@ -1,6 +1,8 @@
-"module {           ";
-"module fs from fs; ";
-"export stat;       ";
-"}";
+/**
+module {
+  module fs from fs;
+  export stat;
+}
+**/
 
 var stat = fs.stat;

@@ -1,9 +1,11 @@
-"module {                   ";
-"  module real_fs from fs;  ";
-"  export stat;             ";
-"  export shepherd_stat;    ";
-"  export native_stat;      ";
-"};                         ";
+/**
+module {
+  module real_fs from fs;
+  export stat;
+  export shepherd_stat;
+  export native_stat;
+};
+**/
 
 var stat            = require('real_fs').stat,
     shepherd_stat   = real_fs.stat,

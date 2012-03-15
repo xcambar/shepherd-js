@@ -1,8 +1,10 @@
+/**
+module {
+  export fn2;
+  export var2
+}
+**/
 "use strict";
-"module {";
-"  export fn2;";
-"  export var2;"
-"}";
 
 /**
  * ES-Harmony Syntax:

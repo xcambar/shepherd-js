@@ -1,3 +1,5 @@
+/**
 module.exports = {
     a: 'yep'
 };
+**/

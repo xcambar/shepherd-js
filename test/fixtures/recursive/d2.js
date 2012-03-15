@@ -1,3 +1,5 @@
-"export a;";
+/**
+export a;
+*/
 
 var a = "Module export";

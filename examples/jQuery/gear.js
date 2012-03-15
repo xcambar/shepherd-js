@@ -1,7 +1,9 @@
-"module {                                                   ";
-"  import jQuery from '../libs/jquery-1.7.1.min.js'; ";
-"  export gear;                                             ";
-"}                                                          ";
+/**
+    module {
+      import jQuery from '../libs/jquery-1.7.1.min.js';
+      export gear;
+    }
+**/
 
 var $ = jQuery;
 

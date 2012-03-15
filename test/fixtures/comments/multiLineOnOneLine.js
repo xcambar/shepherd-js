@@ -1,4 +1,6 @@
-/* This is an useless comment */
-"export loaded;";
 
+/**
+export loaded;
+**/
+/* This is an useless comment */
 var loaded = true;

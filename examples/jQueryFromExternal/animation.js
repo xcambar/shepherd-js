@@ -1,6 +1,8 @@
-"module {           ";
-"  export rebound;  ";
-"};                 ";
+/**
+module {
+  export rebound;
+};
+**/
 
 var direction = {
     x: 100 * Math.random(),

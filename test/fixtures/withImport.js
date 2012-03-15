@@ -1,10 +1,12 @@
-"use strict";
+/**
+module hasImport {
+  module m1 from m1;
+  export imp1;
+  export ref1;
+}
+**/
 
-"module hasImport {";
-"  module m1 from m1;";
-"  export imp1;";
-"  export ref1;";
-"}";
+"use strict";
 
 var imp1 = function () {
     return m1.fn1();

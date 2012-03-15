@@ -231,14 +231,13 @@
         }
         
         var moduleObj = conf || {},
-            decl = declaration.join(''),
-            isPlugin = pluginDeclaration(decl, moduleObj);
+            isPlugin = pluginDeclaration(declaration, moduleObj);
         
         if (is(isPlugin, 'string')) {
             return isPlugin;
         } else if (isPlugin) {
             return moduleObj;
-        } else if (!(moduleDeclaration(decl, moduleObj) || exportDeclaration(decl, moduleObj) || importDeclaration(decl, moduleObj))) {
+        } else if (!(moduleDeclaration(declaration, moduleObj) || exportDeclaration(declaration, moduleObj) || importDeclaration(declaration, moduleObj))) {
             return 'Not a module declaration: ' + declaration;
         }
         return moduleObj;
@@ -464,35 +463,20 @@
         var moduleConf = conf || {},
             callback = callback || function () {},
             errorFn = errorFn || function () {},
-            text = conf.contents ? conf.contents.split('\n') : [],
+            rawText = conf.contents ? conf.contents : [],
+            text = rawText.split('\n'),
             declaration = [],
             endComment = false,
             inComment = false;
-        for (var i = 0; i < text.length; i++) {
-            var cmd = text[i].trim();
-            if (!cmd) { continue; } //Empty lines are ignored
-            if (cmd.match(/^"\s*use\s+strict\s*"\s*;?$/)) { continue; } // "use strict"; statements are ignored
-            if (cmd.match(/^[^\\]?\/\/.*$/)) { continue; } // Single line comments are ignored
-            if (cmd.match(/^[^\\]?\/\*.*$/)) { // Multi line comments are ignored
-                inComment = true;
-            }
-            if (inComment) {
-                var match = cmd.match(/^.*[^\\]?\*\/(.*)$/);
-                if (match) {
-                    inComment = false;
-                    cmd = match[1];
-                    if (!cmd) { continue; }
-                } else {
-                    continue;
-                }
-            }
-            
-            var match = cmd.match(/^\s*"(.*)"\s*;?$/);
-            if (match) {
-                declaration.push(match[1].trim());
-            } else { // At the first line where we do not find a module-related command, we stop the module evaluation.
-                break;
-            }
+        var declaration = '';
+        var comments = rawText.match(/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg); //@TODO Fix: Doesn't handle single line commments (see libs/jquery-1.7.2.min.js)
+        if (!comments) {
+            return loadModule(moduleConf, callback);
+        }
+        // @TODO Enhance: Only a single declaration is allowed per file, as the first comment
+        var split = comments[0].split("\n");
+        for (var j = 0, _l2 = split.length; j < _l2; j++) {
+            declaration += split[j].trim().replace(/(^\/\*+)|(\*+\/?)/, '');
         }
         if (declaration.length) {
             moduleConf = parse(declaration, moduleConf);

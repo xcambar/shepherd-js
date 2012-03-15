@@ -1,8 +1,10 @@
-"module {                                                   ";
-"  import jQuery from '../libs/jquery-1.7.1.min.js'; ";
-"  import rebound from './animation.js';     ";
-"  import gear from './gear.js';             ";
-"};                                                         ";
+/**
+  module {
+    import jQuery from '../libs/jquery-1.7.1.min.js';
+    import rebound from './animation.js';
+    import gear from './gear.js';
+  };
+**/
 
 var $ = jQuery;
 

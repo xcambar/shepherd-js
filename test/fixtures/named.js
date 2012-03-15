@@ -1,7 +1,9 @@
-"module m1 {";
-"  export fn1;";
-"  export var1;";
-"}";
+/**
+module m1 {
+  export fn1;
+  export var1;
+}
+**/
 
 /**
  * ES-Harmony Syntax:
