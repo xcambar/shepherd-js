@@ -26,7 +26,7 @@ __Shepherd__:
 
 * is cross-side, which means it works well in the browser and in the server
 * has a ECMAScript Harmony compatible syntax
-* is non-destructive to your files. Your JS will execute even without Shepherd, but they'll do so much better with it! (think of "use strict"; it works just the same!)
+* is non-destructive to your files. Your JS will execute even without Shepherd, but they'll do so much better with it!
 * requires near-zero time to update your existing code 
 * Works even with files/libraries you can not modify (eg, jQuery from a CDN)
 
@@ -37,4 +37,7 @@ You may want to check out the [home page](http://xcambar.github.com/shepherd-js)
 # Enjoy!
 
 Have fun with __Shepherd__! Once it is in use, take a chair and enjoy the view, your valley is really gorgeous!
+
+# Roadmap
+
 
