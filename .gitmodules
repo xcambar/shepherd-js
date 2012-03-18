@@ -1,0 +1,3 @@
+[submodule "lib/harmony-parser"]
+	path = lib/harmony-parser
+	url = https://xcambar@github.com/xcambar/harmony-parser.git
