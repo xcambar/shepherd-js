@@ -11,9 +11,9 @@
     if (typeof parser.parse !== 'function') {
         throw'No parser provided.';
     }
-    var is = function (obj, type) { //Thanks Underscore ;)
+    function is (obj, type) { //Thanks Underscore ;)
         return Object.prototype.toString.call(obj).toLowerCase() == '[object ' + type.toLowerCase() + ']';
-    };
+    }
     var undefined = arguments[arguments.length];
     var modules = {},
         _errCb,
@@ -26,14 +26,14 @@
     // Native plugins
     //
     var _plugins = {
-        'modularize': function (vars) {
-            var fn = function (globalVar) {
+        'modularize': function modularizePlugin (vars) {
+            function fn (globalVar) {
                 if (!me.hasOwnProperty(globalVar)) {
                     return 'No global "' + globalVar + '"';
                 }
                 modules[globalVar] = me[globalVar];
                 return true;
-            };
+            }
             if (is(vars, 'array')) {
                 for (var i = 0; i < vars.length; i++) {
                     fn(vars[i]);
@@ -42,7 +42,7 @@
                 fn(vars);
             }
         },
-        'noGlobal': function (vars) {
+        'noGlobal': function noGlobalPlugin (vars) {
             var fn = function (globalVar) {
                 if (!me.hasOwnProperty(globalVar)) {
                     return 'No global "' + globalVar + '"';
@@ -70,7 +70,7 @@
              * The call to require(arg) ternary operator makes the loader non strict, but is used for convenience
              */
             return {
-                fn: function (arg) {
+                fn: function commonJSWrapper (arg) {
                     return (conf.deps && conf.deps.hasOwnProperty(arg)) ? conf.deps[arg] : require(arg);
                 },
                 name: 'require'
@@ -110,7 +110,7 @@
                     _n && (modConf.name = _n);
                     _f && (modConf.fn = _f);
                     modConf.src = conf.src;
-                    applyConfiguration(modConf, function (parsedConf) {
+                    applyConfiguration(modConf, function applyCallback (parsedConf) {
                         loadModule(parsedConf);
                     });
                 }
@@ -166,7 +166,7 @@
             if (typeof MINIFY == 'undefined') {
                 console.log(module);
             }
-            return _module;
+            return module;
         } catch (e) {
             return 'Invalid declaration \n' + e.message + '\nDeclaration: ' + declaration;
         }
@@ -180,11 +180,11 @@
     /**
      *  XHR request
      **/
-    var xhr = function (o) {
+    function xhr (o) {
         var http = ('XMLHttpRequest' in me) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
         http.open('GET', o.url, true);
         http.setRequestHeader('Accept', 'application/javascript, text/javascript');
-        http.onreadystatechange = function () {
+        http.onreadystatechange = function onReadyStateChange () {
             if (this.readyState == 4) {
                 if (/^20\d$/.test(this.status)) {
                     o.success && o.success(http);
@@ -196,7 +196,7 @@
             }
         };
         http.send();
-    };
+    }
     
     /**
      * This function is in charge of setting all the modules exports in the memory.
@@ -204,7 +204,7 @@
      * @param {Object} moduleConf The result of the parsing of the module configuration
      * @param {Function} callback The callback function to be called after the successful export
      */
-    var _handleExports = function (module, moduleConf, callback) {
+    function _handleExports (module, moduleConf, callback) {
         moduleConf.src && (modules[moduleConf.src] = module);
         if (moduleConf.hasOwnProperty('name')) {
             moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI             
@@ -218,7 +218,7 @@
         if (is(callback, 'function')) {
             callback(module || {} );
         }
-    };
+    }
     
     /**
      * Loads a module in its own wrapper function
@@ -227,7 +227,7 @@
      * The interface must be updated to reflect the need of one more level of async.
      * @TODO Change the process when using AMD (current example)
      */
-    var loadModule = function (moduleConf, callback) {
+    function loadModule (moduleConf, callback) {
         !moduleConf && (moduleConf = {});
         var conf = moduleConf.deps || {};
         var module;
@@ -259,7 +259,7 @@
                     head = document.getElementsByTagName('head')[0];
                 script.type = 'text/javascript';
                 var extDepIndex = _extDepsCount++;
-                script.innerHTML = '(function (' + argsName.join(', ') + ') {\n' + moduleConf.contents + '\n;s6d[' + extDepIndex + '](' + returns + ');\n}).apply({}, s6d[' + extDepIndex + ']())';
+                script.innerHTML = '(function runner (' + argsName.join(', ') + ') {\n' + moduleConf.contents + '\n;s6d[' + extDepIndex + '](' + returns + ');\n}).apply({}, s6d[' + extDepIndex + ']())';
                 moduleConf.src && script.setAttribute('data-src', moduleConf.src);
                 moduleConf.name && script.setAttribute('name', moduleConf.name);
                 me.s6d[extDepIndex] = function (exports) {
@@ -309,9 +309,9 @@
             }
             _handleExports(module, moduleConf, callback);
         }
-    };
+    }
     
-    var applyConfiguration = function (conf, callback, errorFn) {
+    function applyConfiguration (conf, callback, errorFn) {
         var depsPool = (function () {
             var _c = 0;
             for (var i in conf.import) {
@@ -323,11 +323,11 @@
             for (var i in conf.modulesByURI) {
                 conf.modulesByURI.hasOwnProperty(i) && _c++;
             }
-            return function () {
+            return function depsPool() {
                 !--_c && callback(conf);
             };
         })();
-        var importsLoader = function (name, ref) {
+        function importsLoader (name, ref) {
             if (modules[ref.ref]) {
                 conf.deps[name] = modules[ref.ref][i];
                 depsPool();
@@ -340,9 +340,9 @@
                     },
                     errorFn);
             }
-        };
+        }
         
-        var modulesLoader = function (name, ref) {
+        function modulesLoader (name, ref) {
             if (modules[ref]) {
                 conf.deps[name] = modules[ref];
                 depsPool();
@@ -355,9 +355,9 @@
                     },
                     errorFn);
             }
-        };
+        }
         
-        var modulesLoaderByRef = function (name, ref) {
+        function modulesLoaderByRef (name, ref) {
             var mod = modules[ref];
             if (!mod) {
                 if (_isServer) {
@@ -368,8 +368,7 @@
             }
             conf.deps[name] = mod;
             depsPool();
-        };
-        
+        }
         conf.deps = {};
         for (var i in conf.import) {
             conf.import.hasOwnProperty(i) && importsLoader(i, conf.import[i]);
@@ -386,9 +385,9 @@
         if (!conf.import && !conf.modules && !conf.modulesByURI) {
             return callback(conf);
         }
-    };
+    }
     
-    var _moduleSrc = function(conf, callback, errorFn) {
+    function _moduleSrc (conf, callback, errorFn) {
         var moduleConf = conf || {},
             callback = callback || function () {},
             errorFn = errorFn || function () {},
@@ -419,14 +418,14 @@
         } else {
             loadModule(moduleConf, callback);
         }
-    };
+    }
     
     //Path detection follows 3 steps
     // * resolution by require (ie, let Node try to do the job) in case it is a native module or a Node module
     // * "natural" path resolution (ie, let Node try to do the job)
     // * test the path from the location of shepherd.js
     // * test the path from the current working directory (via process.cwd())
-    var _serverPathDetection = function (uri) {
+    function _serverPathDetection (uri) {
         var path;
         try {
             path =  require.resolve(uri);
@@ -438,12 +437,12 @@
             path =  !path ? require('fs').statSync(process.cwd() + '/' + uri).isFile() && process.cwd() + '/' + uri : path;
         } catch (e) { /** Nothing here **/ }
         return path;
-    };
+    }
     
     /**
      * Retrieves the file corresponding to the module and declares it
      */
-    var _module = function (moduleSrc, callback, errorFn) {
+    function _module (moduleSrc, callback, errorFn) {
         var _error = function (msg) {
             _errModules = _errModules || [];
             _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
@@ -459,10 +458,10 @@
         var uri = is(moduleSrc, 'string') ? moduleSrc : moduleSrc.name;
         if (uri) {
             !_isServer && xhr({ url: uri,
-                error: function () {
+                error: function xhrError () {
                     _error('Unable to fetch the module "' + moduleSrc + '"');
                 },
-                success: function (res) {
+                success: function xhrSuccess (res) {
                     var responseText = res.responseText;
                     moduleConf.contents = responseText;
                     _moduleSrc(moduleConf, callback, _error);
@@ -486,7 +485,7 @@
                         res.on('error', _error);
                     });
                 } else {
-                    var modPath = _serverPathDetection(uri);
+                    modPath = _serverPathDetection(uri);
                     if (!modPath) {
                         _error('Unable to locate file ' + uri);
                         return;
@@ -507,12 +506,12 @@
         } else {
             is(moduleSrc, 'object') && _moduleSrc(moduleSrc, callback, _error);
         }
-    };
+    }
     
     /**
      * Parses the configuration objects
      */
-    var initConfig = function (confs) {
+    function initConfig (confs) {
         for (var i = 0; i < confs.length; i++) {
             var confStr = confs[i];
             var conf;
@@ -531,21 +530,21 @@
                 }
             }
         }
-    };
+    }
     /**
      * Runs through the modules' definition and loads them
      **/
-    var initModules = function (modules) {
+    function initModules (modules) {
         for (var i = 0; i < modules.length; i++) {
             var module = modules[i];
             var moduleSrc = module.getAttribute('data-src');
             moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
             !moduleSrc && module.innerHTML && _moduleSrc({contents: module.innerHTML});
         }
-    };
+    }
     
     //<script> tag evaluation
-    !_isServer && me.addEventListener && me.addEventListener('load', function () {
+    !_isServer && me.addEventListener && me.addEventListener('load', function onReady () {
         var confs = [];
         var modules = [];
         for (var i = 0; i < document.scripts.length; i++) {
@@ -559,7 +558,7 @@
         }
         initConfig(confs);
         initModules(modules);
-    });
+    })
     
     if (typeof MINIFY == 'undefined') {
         me.s6d = function (modulePath, cb) {
