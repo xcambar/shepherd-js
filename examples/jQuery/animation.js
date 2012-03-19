@@ -1,7 +1,7 @@
 /**
-    module {
+    module motion {
       export rebound;
-    };
+    }
 **/
 var direction = {
     x: 100 * Math.random(),

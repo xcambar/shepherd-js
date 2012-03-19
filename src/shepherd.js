@@ -1,13 +1,16 @@
 /**
- * 
+ *
  * Copyright (c) 2012, Xavier Cambar
  * Licensed under the MIT License (see LICENSE for details)
- * 
+ *
  * Sources of inspiration (among others)
  * @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
  * @see http://addyosmani.com/writing-modular-js/
  */
-(function (me) {
+(function (me, parser) {
+    if (typeof parser.parse !== 'function') {
+        throw'No parser provided.';
+    }
     var is = function (obj, type) { //Thanks Underscore ;)
         return Object.prototype.toString.call(obj).toLowerCase() == '[object ' + type.toLowerCase() + ']';
     };
@@ -57,10 +60,10 @@
         }
     };
     
-    // 
+    //
     // Wrappers for commonJS and AMD loaders
-    // 
-    var _loaderWrappers = function (conf) {
+    //
+    function _loaderWrappers (conf) {
         var name = conf.format;
         if (name === 'commonJS') {
             /**
@@ -76,58 +79,57 @@
             /**
              * Wraps the AMD's define function
              */
-            var wrapperFn = function (name, deps, factory) {
-                var _n, _d, _f;
-                switch (arguments.length) {
-                    case 1:
-                        _n = conf.name;
-                        _f = name;
-                        break;
-                    case 2:
-                        _d = name;
-                         _f = deps;
-                        break;
-                    default:
-                        _n = name;
-                        _d = deps;
-                        _f = factory;
-                }
-                if (_d) {
-                    var deps = {};
-                    for (var i = 0, _l = _d.length; i < _l; i++) {
-                        deps[_d[i]] = {format: 'amd', ref: _d[i]};
-                    }
-                    _d = deps;
-                }
-                var modConf = {};
-                _d && (modConf.import = _d);
-                _n && (modConf.name = _n);
-                _f && (modConf.fn = _f);
-                modConf.src = conf.src;
-                applyConfiguration(modConf, function (parsedConf) {
-                    loadModule(parsedConf);
-                });
-            };
             var wrapperName = 'define';
             return {
-                fn: wrapperFn,
-                name: wrapperName
-            };            
+                name: wrapperName,
+                fn: function wrapperFn (name, deps, factory) {
+                    var _n, _d, _f;
+                    switch (arguments.length) {
+                        case 1:
+                            _n = conf.name;
+                            _f = name;
+                            break;
+                        case 2:
+                            _d = name;
+                             _f = deps;
+                            break;
+                        default:
+                            _n = name;
+                            _d = deps;
+                            _f = factory;
+                    }
+                    if (_d) {
+                        var newDeps = {};
+                        for (var i = 0, _l = _d.length; i < _l; i++) {
+                            newDeps[_d[i]] = {format: 'amd', ref: _d[i]};
+                        }
+                        _d = newDeps;
+                    }
+                    var modConf = {};
+                    _d && (modConf.import = _d);
+                    _n && (modConf.name = _n);
+                    _f && (modConf.fn = _f);
+                    modConf.src = conf.src;
+                    applyConfiguration(modConf, function (parsedConf) {
+                        loadModule(parsedConf);
+                    });
+                }
+            };
         }
-    };
+    }
     
-    // 
-    // 
+    //
+    //
     // Module declaration parser
-    // 
-    // 
+    //
+    //
     
     /**
      * Parses the module declaration and prepares the execution context of the module
      * @param {Array} An array of text of lines. Each line is a fragment of a module declaration
-     * @return {Object|String} Returns the module's evaluated execution context or an error string 
+     * @return {Object|String} Returns the module's evaluated execution context or an error string
      */
-    var parse = function (declaration, conf) {
+    function parse (declaration, conf) {
         function pluginDeclaration (decl, conf) {
             var plugins = decl.split(';'),
                 pluginRe = /^\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\!([a-zA-Z_$][0-9a-zA-Z_$]*)\s*$/;
@@ -151,85 +153,6 @@
             }
             return true;
         }
-        
-        function moduleDeclaration (decl, conf) {
-            return moduleDefinition(decl, conf) || moduleSpecifier(decl, conf);
-        }
-        
-        function moduleDefinition (decl, conf) {
-            var namedMod = /^\s*module\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s*\{(.+)\}\s*;?\s*$/,
-                match = decl.match(namedMod);
-            if (match) {
-                conf.name = match[1];
-                return moduleBody(match[2].trim(), conf);
-            }
-            var unnamedMod = /^module\s+\{(.+)\}\s*;?\s*$/;
-            match = decl.match(unnamedMod);
-            if (match) {
-                conf.name = undefined;
-                return moduleBody(match[1].trim(), conf);
-            }
-            return false;
-        }
-        
-        function moduleSpecifier (decl, conf) {
-            var re = /^\s*module\s+([a-zA-Z_$][0-9a-zA-Z_$]*)\s+from\s+(['"])?([^\s'"]+)(['"])?\s*;\s*$/,
-                match = decl.match(re);
-            if (match) {
-                if (match[2] && match[4] && (match[2] === match[4])) {
-                    conf.modulesByURI = conf.modulesByURI || {};
-                    conf.modulesByURI[match[1]] = match[3];
-                } else if (!match[2] && !match[4]) {
-                    conf.modules = conf.modules || {};
-                    conf.modules[match[1]] = match[3];
-                }
-                return true;
-            }
-            return false;
-        }
-        
-        function moduleBody(decl, conf) { // @TODO: BEWARE MULTIPLE DECLARATIONS!!!!
-            if (!decl) { return true; }
-            var decls = decl.split(';');
-            for (var i = 0; i < decls.length, decls[i]; i++) {
-                if (!(importDeclaration(decls[i] + ';', conf) || exportDeclaration(decls[i] + ';', conf) || moduleSpecifier(decls[i] + ';', conf))) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        
-        function importDeclaration (decl, conf) {
-            var importRexp = /^\s*((\w*)\!)?import\s+(.*)$/;
-            var match = decl.match(importRexp);
-            if (match) {
-                return importBindings(match[3], conf, match[2]);
-            }
-            return false;
-        }
-        
-        function importBindings(decl, conf, format) {
-            var bindingRE = /^\s*([^\s]+)\s+from\s+(['"]?)([^\s'"]+)(['"]?)\s*;\s*$/;
-            var match = decl.match(bindingRE);
-            if (match) {
-                conf.import = conf.import || {};
-                conf.import[match[1]] = {ref: match[3] || match[1], format: format};
-                return true;
-            }
-            return false;
-        }
-        
-        function exportDeclaration (decl, conf) {
-            var exportRexp = /^\s*export\s+(\w+(\.\w+)*)(\s+as\s+(\w+))?\s*;\s*$/;
-            var match = decl.match(exportRexp);
-            if (match) {
-                conf.export = conf.export || [];
-                conf.export.push({src: match[1], dest: match[3] || match[1].substr(match[1].indexOf('.') + 1)});
-                return true;
-            }
-            return false;
-        }
-        
         var moduleObj = conf || {},
             isPlugin = pluginDeclaration(declaration, moduleObj);
         
@@ -237,11 +160,17 @@
             return isPlugin;
         } else if (isPlugin) {
             return moduleObj;
-        } else if (!(moduleDeclaration(declaration, moduleObj) || exportDeclaration(declaration, moduleObj) || importDeclaration(declaration, moduleObj))) {
-            return 'Not a module declaration: ' + declaration;
         }
-        return moduleObj;
-    };
+        try {
+            var module = parser.parse(declaration);
+            if (typeof MINIFY == 'undefined') {
+                console.log(module);
+            }
+            return _module;
+        } catch (e) {
+            return 'Invalid declaration \n' + e.message + '\nDeclaration: ' + declaration;
+        }
+    }
     
     //
     // UTILITY FUNCTIONS
@@ -436,7 +365,7 @@
                 } else {
                     throw new Error('Unable to load the module ' + name); //@TODO Plugin idea => browser-side auto loader by module name
                 }
-            }    
+            }
             conf.deps[name] = mod;
             depsPool();
         };
@@ -521,8 +450,7 @@
             if (is(errorFn, 'function')) {
                 errorFn();
             } else {
-                console.log('Error with: ', moduleSrc, msg);
-                throw new Error(msg);
+                throw new Error( '(' + moduleSrc + ') ' + msg);
             }
         };
         _error.origFn = errorFn;
@@ -633,31 +561,33 @@
         initModules(modules);
     });
     
-    me.s6d = function (modulePath, cb) {
-        if (is(modulePath, 'object')) {
-            initConfig([modulePath]);
-        } else {
-            _module(modulePath, cb, _errCb);
+    if (typeof MINIFY == 'undefined') {
+        me.s6d = function (modulePath, cb) {
+            if (is(modulePath, 'object')) {
+                initConfig([modulePath]);
+            } else {
+                _module(modulePath, cb, _errCb);
+            }
+        };
+        me.s6d.src = function (moduleSrc, cb) {
+            _moduleSrc({contents: moduleSrc}, cb, _errCb);
+        };
+        me.s6d.get = function (moduleName) {
+            return modules[moduleName];
+        };
+        me.s6d.error = function (cb) {
+            if (arguments.length === 0) {
+                return _errModules;
+            }
+            _errCb = cb;
+        };
+        me.s6d.reset = function () {
+            _errCb = undefined;
+            modules = {};
+            _errModules = null;
+        };
+        if (_isServer) {
+            exports = module.exports = me.s6d;
         }
-    };
-    me.s6d.src = function (moduleSrc, cb) {
-        _moduleSrc({contents: moduleSrc}, cb, _errCb);
-    };
-    me.s6d.get = function (moduleName) {
-        return modules[moduleName];
-    };
-    me.s6d.error = function (cb) {
-        if (arguments.length === 0) {
-            return _errModules;
-        }
-        _errCb = cb;
-    };
-    me.s6d.reset = function () {
-        _errCb = undefined;
-        modules = {};
-        _errModules = null;
     }
-    if (_isServer) {
-        exports = module.exports = me.s6d;
-    }
-})(this);
+})(this, harmonyParser);
