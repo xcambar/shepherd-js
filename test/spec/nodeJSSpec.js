@@ -1,4 +1,4 @@
-var s6d = require('../../shepherd.js');
+var s6d = require('../../build/shepherd.dev.js');
 
 describe('global.require function', function () {
     it ('has been replaced by a custom function', function () {
