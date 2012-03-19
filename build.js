@@ -33,7 +33,15 @@ function run (min) {
         output = pro.gen_code(devAst, {beautify: true});
     }
     fs.writeFileSync('./build/shepherd.' + (min ? 'min' : 'dev') + '.js', output);
-};
+}
 
-run();
-run(true);
+function build () {
+    run(true);
+    run();
+    console.log('Shepherd built on: ' + (new Date()).toString());
+}
+
+build();
+
+fs.watch(parserLocation, build);
+fs.watch(shepherdLocation, build);
