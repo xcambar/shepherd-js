@@ -822,7 +822,7 @@
                         break;
                     }
                 };
-                lexer.rules = [ /^\n+/, /^\s+/, /^\t+/, /^;/, /^:/, /^\{/, /^\}/, /^module\b/, /^import\b/, /^export\b/, /^at\b/, /^is\b/, /^from\b/, /^\*/, /^,/, /^\./, /^[a-zA-Z_$][0-9a-zA-Z_$]*/, /^'.+'/, /^".+"/, /^$/ ];
+                lexer.rules = [ /^\n+/, /^\s+/, /^\t+/, /^;/, /^:/, /^\{/, /^\}/, /^module\b/, /^import\b/, /^export\b/, /^at\b/, /^is\b/, /^from\b/, /^\*/, /^,/, /^\./, /^[a-zA-Z_$][0-9a-zA-Z_$]*/, /^'[^\']+'/, /^"[^\"]+"/, /^$/ ];
                 lexer.conditions = {
                     INITIAL: {
                         rules: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ],
@@ -900,7 +900,7 @@
                 }
             }
         };
-        var _loaderWrappers = function(conf) {
+        function _loaderWrappers(conf) {
             var name = conf.format;
             if (name === "commonJS") {
                 return {
@@ -910,48 +910,47 @@
                     name: "require"
                 };
             } else if (name === "amd") {
-                var wrapperFn = function(name, deps, factory) {
-                    var _n, _d, _f;
-                    switch (arguments.length) {
-                      case 1:
-                        _n = conf.name;
-                        _f = name;
-                        break;
-                      case 2:
-                        _d = name;
-                        _f = deps;
-                        break;
-                      default:
-                        _n = name;
-                        _d = deps;
-                        _f = factory;
-                    }
-                    if (_d) {
-                        var deps = {};
-                        for (var i = 0, _l = _d.length; i < _l; i++) {
-                            deps[_d[i]] = {
-                                format: "amd",
-                                ref: _d[i]
-                            };
-                        }
-                        _d = deps;
-                    }
-                    var modConf = {};
-                    _d && (modConf.import = _d);
-                    _n && (modConf.name = _n);
-                    _f && (modConf.fn = _f);
-                    modConf.src = conf.src;
-                    applyConfiguration(modConf, function(parsedConf) {
-                        loadModule(parsedConf);
-                    });
-                };
                 var wrapperName = "define";
                 return {
-                    fn: wrapperFn,
-                    name: wrapperName
+                    name: wrapperName,
+                    fn: function wrapperFn(name, deps, factory) {
+                        var _n, _d, _f;
+                        switch (arguments.length) {
+                          case 1:
+                            _n = conf.name;
+                            _f = name;
+                            break;
+                          case 2:
+                            _d = name;
+                            _f = deps;
+                            break;
+                          default:
+                            _n = name;
+                            _d = deps;
+                            _f = factory;
+                        }
+                        if (_d) {
+                            var newDeps = {};
+                            for (var i = 0, _l = _d.length; i < _l; i++) {
+                                newDeps[_d[i]] = {
+                                    format: "amd",
+                                    ref: _d[i]
+                                };
+                            }
+                            _d = newDeps;
+                        }
+                        var modConf = {};
+                        _d && (modConf.import = _d);
+                        _n && (modConf.name = _n);
+                        _f && (modConf.fn = _f);
+                        modConf.src = conf.src;
+                        applyConfiguration(modConf, function(parsedConf) {
+                            loadModule(parsedConf);
+                        });
+                    }
                 };
             }
-        };
+        }
         function parse(declaration, conf) {
             function pluginDeclaration(decl, conf) {
                 var plugins = decl.split(";"), pluginRe = /^\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\!([a-zA-Z_$][0-9a-zA-Z_$]*)\s*$/;
