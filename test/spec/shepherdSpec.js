@@ -162,8 +162,6 @@ describe('Importing named modules', function () {
         runs(function () {
             expect(s6d.get(modWithImport).imp1()).toBeTruthy();
             expect(s6d.get(modWithImport).ref1).toBe(s6d.get(importedMod).fn1);
-            console.log(s6d.get(modWithImport).ref1);
-            console.log(s6d.get(importedMod).fn1);
         });
     });
     
