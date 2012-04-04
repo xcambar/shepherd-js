@@ -1274,6 +1274,9 @@
             return path;
         }
         function _module(moduleSrc, callback, errorFn) {
+            if (modules.hasOwnProperty(moduleSrc)) {
+                return callback(modules[moduleSrc]);
+            }
             var _error = function(msg) {
                 _errModules = _errModules || [];
                 _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);

@@ -544,6 +544,9 @@
      * Retrieves the file corresponding to the module and declares it
      */
     function _module (moduleSrc, callback, errorFn) {
+        if (modules.hasOwnProperty(moduleSrc)) {
+            return callback(modules[moduleSrc]);
+        }
         var _error = function (msg) {
             _errModules = _errModules || [];
             _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
@@ -661,7 +664,7 @@
         initModules(modules);
     });
     
-    if (typeof MINIFY == 'undefined') {
+    if (typeof MINIFY == 'undefined') { // MINIFY is set by uglifyJS, the following code is absent from the minified build
         me.s6d = function (modulePath, cb) {
             if (is(modulePath, 'object')) {
                 initConfig([modulePath]);
