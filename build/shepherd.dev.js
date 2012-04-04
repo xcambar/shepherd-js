@@ -8,494 +8,535 @@
                 symbols_: {
                     error: 2,
                     Program: 3,
-                    EOF: 4,
+                    ProgramNext: 4,
                     ProgramElement: 5,
                     ModuleDeclaration: 6,
                     ImportDeclaration: 7,
                     ExportDeclaration: 8,
-                    ModuleSpecifier: 9,
-                    Path: 10,
-                    String: 11,
-                    module: 12,
-                    Id: 13,
-                    at: 14,
-                    SEMICOLON: 15,
-                    IS: 16,
-                    ImportSource: 17,
-                    OPEN_BRACE: 18,
-                    ModuleBody: 19,
-                    CLOSE_BRACE: 20,
-                    from: 21,
-                    "import": 22,
-                    ImportSpecifierSet: 23,
-                    WILDCARD: 24,
-                    ImportSpecifier: 25,
-                    ImportSpecifierNext: 26,
-                    COMMA: 27,
-                    COLON: 28,
-                    "export": 29,
-                    ExportSpecifierSet: 30,
-                    ExportSpecifierSetNext: 31,
-                    ExportSpecifier: 32,
-                    ExportSpecifierNext: 33,
-                    ModuleElement: 34,
-                    PERIOD: 35,
+                    EOF: 9,
+                    ModuleSpecifier: 10,
+                    Path: 11,
+                    String: 12,
+                    module: 13,
+                    Id: 14,
+                    at: 15,
+                    SEMICOLON: 16,
+                    IS: 17,
+                    ImportSource: 18,
+                    OPEN_BRACE: 19,
+                    ModuleBody: 20,
+                    CLOSE_BRACE: 21,
+                    from: 22,
+                    "import": 23,
+                    ImportSpecifierSet: 24,
+                    WILDCARD: 25,
+                    ImportSpecifier: 26,
+                    ImportSpecifierNext: 27,
+                    COMMA: 28,
+                    COLON: 29,
+                    "export": 30,
+                    ExportSpecifierSet: 31,
+                    ExportSpecifierSetNext: 32,
+                    ExportSpecifier: 33,
+                    ExportSpecifierNext: 34,
+                    ModuleElement: 35,
+                    PERIOD: 36,
                     $accept: 0,
                     $end: 1
                 },
                 terminals_: {
                     2: "error",
-                    4: "EOF",
-                    11: "String",
-                    12: "module",
-                    13: "Id",
-                    14: "at",
-                    15: "SEMICOLON",
-                    16: "IS",
-                    18: "OPEN_BRACE",
-                    20: "CLOSE_BRACE",
-                    21: "from",
-                    22: "import",
-                    24: "WILDCARD",
-                    27: "COMMA",
-                    28: "COLON",
-                    29: "export",
-                    35: "PERIOD"
+                    9: "EOF",
+                    12: "String",
+                    13: "module",
+                    14: "Id",
+                    15: "at",
+                    16: "SEMICOLON",
+                    17: "IS",
+                    19: "OPEN_BRACE",
+                    21: "CLOSE_BRACE",
+                    22: "from",
+                    23: "import",
+                    25: "WILDCARD",
+                    28: "COMMA",
+                    29: "COLON",
+                    30: "export",
+                    36: "PERIOD"
                 },
-                productions_: [ 0, [ 3, 1 ], [ 3, 2 ], [ 5, 1 ], [ 5, 1 ], [ 5, 1 ], [ 9, 1 ], [ 9, 1 ], [ 6, 5 ], [ 6, 5 ], [ 6, 5 ], [ 17, 1 ], [ 17, 3 ], [ 7, 5 ], [ 23, 1 ], [ 23, 1 ], [ 23, 4 ], [ 26, 3 ], [ 26, 0 ], [ 25, 1 ], [ 25, 3 ], [ 8, 4 ], [ 31, 3 ], [ 31, 0 ], [ 30, 4 ], [ 30, 1 ], [ 30, 1 ], [ 30, 3 ], [ 32, 1 ], [ 32, 3 ], [ 33, 3 ], [ 33, 0 ], [ 19, 2 ], [ 19, 2 ], [ 19, 2 ], [ 19, 0 ], [ 34, 1 ], [ 34, 1 ], [ 10, 1 ], [ 10, 3 ] ],
+                productions_: [ 0, [ 3, 1 ], [ 4, 1 ], [ 4, 2 ], [ 5, 1 ], [ 5, 1 ], [ 5, 1 ], [ 5, 1 ], [ 10, 1 ], [ 10, 1 ], [ 6, 5 ], [ 6, 5 ], [ 6, 5 ], [ 18, 1 ], [ 18, 3 ], [ 7, 5 ], [ 24, 1 ], [ 24, 1 ], [ 24, 4 ], [ 27, 3 ], [ 27, 0 ], [ 26, 1 ], [ 26, 3 ], [ 8, 4 ], [ 32, 3 ], [ 32, 0 ], [ 31, 4 ], [ 31, 1 ], [ 31, 1 ], [ 31, 3 ], [ 33, 1 ], [ 33, 3 ], [ 34, 3 ], [ 34, 0 ], [ 20, 2 ], [ 20, 2 ], [ 20, 2 ], [ 20, 0 ], [ 35, 1 ], [ 35, 1 ], [ 11, 1 ], [ 11, 3 ] ],
                 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
                     var $0 = $$.length - 1;
                     switch (yystate) {
                       case 1:
-                        return {};
+                        return $$[$0];
                         break;
                       case 2:
-                        return $$[$0 - 1];
+                        this.$ = $$[$0];
                         break;
                       case 3:
-                        this.$ = {
-                            type: "module",
-                            decl: $$[$0]
-                        };
+                        this.$ = $$[$0].length ? $$[$0 - 1].concat($$[$0]) : $$[$0 - 1];
                         break;
                       case 4:
-                        this.$ = {
-                            type: "import",
+                        this.$ = [ {
+                            type: "module",
                             decl: $$[$0]
-                        };
+                        } ];
                         break;
                       case 5:
-                        this.$ = {
-                            type: "export",
+                        this.$ = [ {
+                            type: "import",
                             decl: $$[$0]
-                        };
+                        } ];
                         break;
                       case 6:
+                        this.$ = [ {
+                            type: "export",
+                            decl: $$[$0]
+                        } ];
+                        break;
+                      case 7:
+                        this.$ = [];
+                        break;
+                      case 8:
                         this.$ = {
                             type: "module",
                             path: $$[$0]
                         };
                         break;
-                      case 7:
-                        this.$ = {
-                            type: "uri",
-                            path: $$[$0].replace(/^['"]/, "").replace(/['"]$/, "")
-                        };
-                        break;
-                      case 8:
-                        this.$ = {
-                            id: $$[$0 - 3],
-                            path: $$[$0 - 1]
-                        };
-                        break;
                       case 9:
                         this.$ = {
-                            id: $$[$0 - 3],
-                            src: $$[$0 - 1]
+                            type: "uri",
+                            path: $$[$0].trim().replace(/^(['"])(.*)\1$/, function(str, m1, m2, m3) {
+                                return m2;
+                            })
                         };
                         break;
                       case 10:
                         this.$ = {
                             id: $$[$0 - 3],
-                            expressions: $$[$0 - 1]
+                            path: $$[$0 - 1].trim().replace(/^(['"])(.*)\1$/, function(str, m1, m2, m3) {
+                                return m2;
+                            })
                         };
                         break;
                       case 11:
-                        this.$ = $$[$0];
+                        this.$ = {
+                            id: $$[$0 - 3],
+                            src: $$[$0 - 1]
+                        };
                         break;
                       case 12:
+                        this.$ = {
+                            id: $$[$0 - 3],
+                            expressions: $$[$0 - 1]
+                        };
+                        break;
+                      case 13:
+                        this.$ = $$[$0];
+                        break;
+                      case 14:
                         var out = {
                             id: $$[$0 - 2]
                         };
                         out[$$[$0].type] = $$[$0].path;
                         this.$ = out;
                         break;
-                      case 13:
+                      case 15:
                         this.$ = {
                             from: $$[$0 - 1],
                             vars: $$[$0 - 3]
                         };
                         break;
-                      case 14:
-                        this.$ = [ $$[$0] ];
-                        break;
-                      case 15:
-                        this.$ = [ $$[$0] ];
-                        break;
                       case 16:
-                        this.$ = [ $$[$0 - 2] ].concat($$[$0 - 1]);
+                        this.$ = [ $$[$0] ];
                         break;
                       case 17:
-                        this.$ = typeof $$[$0] != "undefined" ? [ $$[$0 - 1] ].concat($$[$0]) : $$[$0 - 1];
+                        this.$ = [ $$[$0] ];
+                        break;
+                      case 18:
+                        this.$ = [ $$[$0 - 2] ].concat($$[$0 - 1]);
                         break;
                       case 19:
+                        this.$ = typeof $$[$0] != "undefined" ? [ $$[$0 - 1] ].concat($$[$0]) : $$[$0 - 1];
+                        break;
+                      case 21:
                         this.$ = $$[$0];
                         break;
-                      case 20:
+                      case 22:
                         this.$ = {
                             remote: $$[$0 - 2],
                             local: $$[$0]
                         };
                         break;
-                      case 21:
+                      case 23:
                         this.$ = typeof $$[$0 - 1] != "undefined" ? $$[$0 - 2].concat($$[$0 - 1]) : $$[$0 - 2];
                         break;
-                      case 22:
+                      case 24:
                         this.$ = typeof $$[$0] != "undefined" ? $$[$0 - 1].concat($$[$0]) : $$[$0 - 1];
                         break;
-                      case 24:
+                      case 26:
                         this.$ = typeof $$[$0 - 1] != "undefined" ? [ $$[$0 - 2] ].concat($$[$0 - 1]) : [ $$[$0 - 2] ];
                         break;
-                      case 25:
-                        this.$ = [ $$[$0] ];
-                        break;
-                      case 26:
-                        this.$ = [ $$[$0] ];
-                        break;
                       case 27:
+                        this.$ = [ $$[$0] ];
+                        break;
+                      case 28:
+                        this.$ = [ $$[$0] ];
+                        break;
+                      case 29:
                         this.$ = [ {
                             from: $$[$0]
                         } ];
                         break;
-                      case 28:
+                      case 30:
                         this.$ = $$[$0];
                         break;
-                      case 29:
+                      case 31:
                         this.$ = {
                             local: $$[$0 - 2],
                             remote: $$[$0]
                         };
                         break;
-                      case 30:
+                      case 32:
                         this.$ = typeof $$[$0] != "undefined" ? [ $$[$0 - 1] ].concat($$[$0]) : [ $$[$0 - 1] ];
                         break;
-                      case 32:
+                      case 34:
                         this.$ = [ {
                             type: "module",
                             decl: $$[$0 - 1]
                         } ].concat($$[$0]);
                         break;
-                      case 33:
+                      case 35:
                         this.$ = [ {
                             type: "import",
                             decl: $$[$0 - 1]
                         } ].concat($$[$0]);
                         break;
-                      case 34:
+                      case 36:
                         this.$ = [ {
                             type: "export",
                             decl: $$[$0 - 1]
                         } ].concat($$[$0]);
                         break;
-                      case 35:
-                        this.$ = [];
-                        break;
-                      case 36:
-                        this.$ = $$[$0];
-                        break;
                       case 37:
-                        this.$ = $$[$0];
+                        this.$ = [];
                         break;
                       case 38:
                         this.$ = $$[$0];
                         break;
                       case 39:
+                        this.$ = $$[$0];
+                        break;
+                      case 40:
+                        this.$ = $$[$0];
+                        break;
+                      case 41:
                         this.$ = $$[$0 - 2] + "." + $$[$0];
                         break;
                     }
                 },
                 table: [ {
                     3: 1,
-                    4: [ 1, 2 ],
+                    4: 2,
                     5: 3,
                     6: 4,
                     7: 5,
                     8: 6,
-                    12: [ 1, 7 ],
-                    22: [ 1, 8 ],
-                    29: [ 1, 9 ]
+                    9: [ 1, 7 ],
+                    13: [ 1, 8 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
                 }, {
                     1: [ 3 ]
                 }, {
                     1: [ 2, 1 ]
                 }, {
-                    4: [ 1, 10 ]
+                    1: [ 2, 2 ],
+                    4: 11,
+                    5: 3,
+                    6: 4,
+                    7: 5,
+                    8: 6,
+                    9: [ 1, 7 ],
+                    13: [ 1, 8 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
                 }, {
-                    4: [ 2, 3 ]
+                    1: [ 2, 4 ],
+                    9: [ 2, 4 ],
+                    13: [ 2, 4 ],
+                    23: [ 2, 4 ],
+                    30: [ 2, 4 ]
                 }, {
-                    4: [ 2, 4 ]
+                    1: [ 2, 5 ],
+                    9: [ 2, 5 ],
+                    13: [ 2, 5 ],
+                    23: [ 2, 5 ],
+                    30: [ 2, 5 ]
                 }, {
-                    4: [ 2, 5 ]
+                    1: [ 2, 6 ],
+                    9: [ 2, 6 ],
+                    13: [ 2, 6 ],
+                    23: [ 2, 6 ],
+                    30: [ 2, 6 ]
                 }, {
-                    13: [ 1, 11 ]
+                    1: [ 2, 7 ],
+                    9: [ 2, 7 ],
+                    13: [ 2, 7 ],
+                    23: [ 2, 7 ],
+                    30: [ 2, 7 ]
                 }, {
-                    13: [ 1, 13 ],
-                    18: [ 1, 15 ],
-                    23: 12,
-                    24: [ 1, 14 ]
+                    14: [ 1, 12 ]
                 }, {
-                    13: [ 1, 18 ],
-                    18: [ 1, 17 ],
-                    24: [ 1, 19 ],
-                    30: 16
+                    14: [ 1, 14 ],
+                    19: [ 1, 16 ],
+                    24: 13,
+                    25: [ 1, 15 ]
                 }, {
-                    1: [ 2, 2 ]
+                    14: [ 1, 19 ],
+                    19: [ 1, 18 ],
+                    25: [ 1, 20 ],
+                    31: 17
                 }, {
-                    14: [ 1, 20 ],
-                    16: [ 1, 21 ],
-                    18: [ 1, 22 ]
+                    1: [ 2, 3 ]
                 }, {
-                    21: [ 1, 23 ]
+                    15: [ 1, 21 ],
+                    17: [ 1, 22 ],
+                    19: [ 1, 23 ]
                 }, {
-                    21: [ 2, 14 ]
+                    22: [ 1, 24 ]
                 }, {
-                    21: [ 2, 15 ]
+                    22: [ 2, 16 ]
                 }, {
-                    13: [ 1, 25 ],
-                    25: 24
+                    22: [ 2, 17 ]
                 }, {
-                    15: [ 2, 23 ],
-                    27: [ 1, 27 ],
-                    31: 26
+                    14: [ 1, 26 ],
+                    26: 25
                 }, {
-                    13: [ 1, 29 ],
-                    32: 28
+                    16: [ 2, 25 ],
+                    28: [ 1, 28 ],
+                    32: 27
                 }, {
-                    15: [ 2, 25 ],
-                    27: [ 2, 25 ]
+                    14: [ 1, 30 ],
+                    33: 29
                 }, {
-                    15: [ 2, 26 ],
-                    21: [ 1, 30 ],
-                    27: [ 2, 26 ]
+                    16: [ 2, 27 ],
+                    28: [ 2, 27 ]
                 }, {
-                    11: [ 1, 31 ]
+                    16: [ 2, 28 ],
+                    22: [ 1, 31 ],
+                    28: [ 2, 28 ]
                 }, {
-                    13: [ 1, 33 ],
-                    17: 32
+                    12: [ 1, 32 ]
                 }, {
-                    6: 35,
-                    7: 36,
-                    8: 37,
-                    12: [ 1, 7 ],
-                    19: 34,
-                    20: [ 2, 35 ],
-                    22: [ 1, 8 ],
-                    29: [ 1, 9 ]
+                    14: [ 1, 34 ],
+                    18: 33
                 }, {
-                    9: 38,
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 35,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
+                }, {
                     10: 39,
-                    11: [ 1, 40 ],
-                    13: [ 1, 41 ]
+                    11: 40,
+                    12: [ 1, 41 ],
+                    14: [ 1, 42 ]
                 }, {
-                    20: [ 2, 18 ],
-                    26: 42,
-                    27: [ 1, 43 ]
-                }, {
-                    20: [ 2, 19 ],
-                    27: [ 2, 19 ],
+                    21: [ 2, 20 ],
+                    27: 43,
                     28: [ 1, 44 ]
                 }, {
-                    15: [ 1, 45 ]
+                    21: [ 2, 21 ],
+                    28: [ 2, 21 ],
+                    29: [ 1, 45 ]
                 }, {
-                    13: [ 1, 18 ],
-                    18: [ 1, 17 ],
-                    24: [ 1, 19 ],
-                    30: 46
+                    16: [ 1, 46 ]
                 }, {
-                    20: [ 2, 31 ],
-                    27: [ 1, 48 ],
-                    33: 47
+                    14: [ 1, 19 ],
+                    19: [ 1, 18 ],
+                    25: [ 1, 20 ],
+                    31: 47
                 }, {
-                    20: [ 2, 28 ],
-                    27: [ 2, 28 ],
-                    28: [ 1, 49 ]
+                    21: [ 2, 33 ],
+                    28: [ 1, 49 ],
+                    34: 48
                 }, {
-                    10: 50,
-                    13: [ 1, 41 ]
+                    21: [ 2, 30 ],
+                    28: [ 2, 30 ],
+                    29: [ 1, 50 ]
                 }, {
-                    15: [ 1, 51 ]
+                    11: 51,
+                    14: [ 1, 42 ]
                 }, {
-                    15: [ 1, 52 ]
+                    16: [ 1, 52 ]
                 }, {
-                    15: [ 2, 11 ],
-                    21: [ 1, 53 ]
+                    16: [ 1, 53 ]
                 }, {
-                    20: [ 1, 54 ]
+                    16: [ 2, 13 ],
+                    22: [ 1, 54 ]
                 }, {
-                    6: 35,
-                    7: 36,
-                    8: 37,
-                    12: [ 1, 7 ],
-                    19: 55,
-                    20: [ 2, 35 ],
-                    22: [ 1, 8 ],
-                    29: [ 1, 9 ]
+                    21: [ 1, 55 ]
                 }, {
-                    6: 35,
-                    7: 36,
-                    8: 37,
-                    12: [ 1, 7 ],
-                    19: 56,
-                    20: [ 2, 35 ],
-                    22: [ 1, 8 ],
-                    29: [ 1, 9 ]
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 56,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
                 }, {
-                    6: 35,
-                    7: 36,
-                    8: 37,
-                    12: [ 1, 7 ],
-                    19: 57,
-                    20: [ 2, 35 ],
-                    22: [ 1, 8 ],
-                    29: [ 1, 9 ]
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 57,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
                 }, {
-                    15: [ 1, 58 ]
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 58,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
                 }, {
-                    15: [ 2, 6 ]
+                    16: [ 1, 59 ]
                 }, {
-                    15: [ 2, 7 ]
+                    16: [ 2, 8 ]
                 }, {
-                    15: [ 2, 38 ],
-                    20: [ 2, 38 ],
-                    27: [ 2, 38 ],
-                    35: [ 1, 59 ]
+                    16: [ 2, 9 ]
                 }, {
-                    20: [ 1, 60 ]
+                    16: [ 2, 40 ],
+                    21: [ 2, 40 ],
+                    28: [ 2, 40 ],
+                    36: [ 1, 60 ]
                 }, {
-                    13: [ 1, 25 ],
-                    25: 61
+                    21: [ 1, 61 ]
                 }, {
-                    10: 62,
-                    13: [ 1, 41 ]
+                    14: [ 1, 26 ],
+                    26: 62
                 }, {
-                    4: [ 2, 21 ],
-                    12: [ 2, 21 ],
-                    20: [ 2, 21 ],
-                    22: [ 2, 21 ],
-                    29: [ 2, 21 ]
+                    11: 63,
+                    14: [ 1, 42 ]
                 }, {
-                    15: [ 2, 23 ],
-                    27: [ 1, 27 ],
-                    31: 63
+                    1: [ 2, 23 ],
+                    9: [ 2, 23 ],
+                    13: [ 2, 23 ],
+                    21: [ 2, 23 ],
+                    23: [ 2, 23 ],
+                    30: [ 2, 23 ]
                 }, {
-                    20: [ 1, 64 ]
+                    16: [ 2, 25 ],
+                    28: [ 1, 28 ],
+                    32: 64
                 }, {
-                    13: [ 1, 29 ],
-                    32: 65
+                    21: [ 1, 65 ]
                 }, {
-                    10: 66,
-                    13: [ 1, 41 ]
+                    14: [ 1, 30 ],
+                    33: 66
                 }, {
-                    15: [ 2, 27 ],
-                    27: [ 2, 27 ]
+                    11: 67,
+                    14: [ 1, 42 ]
                 }, {
-                    4: [ 2, 8 ],
-                    12: [ 2, 8 ],
-                    20: [ 2, 8 ],
-                    22: [ 2, 8 ],
-                    29: [ 2, 8 ]
+                    16: [ 2, 29 ],
+                    28: [ 2, 29 ]
                 }, {
-                    4: [ 2, 9 ],
-                    12: [ 2, 9 ],
-                    20: [ 2, 9 ],
-                    22: [ 2, 9 ],
-                    29: [ 2, 9 ]
+                    1: [ 2, 10 ],
+                    9: [ 2, 10 ],
+                    13: [ 2, 10 ],
+                    21: [ 2, 10 ],
+                    23: [ 2, 10 ],
+                    30: [ 2, 10 ]
                 }, {
-                    9: 67,
-                    10: 39,
-                    11: [ 1, 40 ],
-                    13: [ 1, 41 ]
-                }, {
-                    4: [ 2, 10 ],
-                    12: [ 2, 10 ],
-                    20: [ 2, 10 ],
-                    22: [ 2, 10 ],
-                    29: [ 2, 10 ]
-                }, {
-                    20: [ 2, 32 ]
-                }, {
-                    20: [ 2, 33 ]
-                }, {
-                    20: [ 2, 34 ]
-                }, {
-                    4: [ 2, 13 ],
-                    12: [ 2, 13 ],
-                    20: [ 2, 13 ],
-                    22: [ 2, 13 ],
-                    29: [ 2, 13 ]
+                    1: [ 2, 11 ],
+                    9: [ 2, 11 ],
+                    13: [ 2, 11 ],
+                    21: [ 2, 11 ],
+                    23: [ 2, 11 ],
+                    30: [ 2, 11 ]
                 }, {
                     10: 68,
-                    13: [ 1, 41 ]
+                    11: 40,
+                    12: [ 1, 41 ],
+                    14: [ 1, 42 ]
                 }, {
-                    21: [ 2, 16 ]
+                    1: [ 2, 12 ],
+                    9: [ 2, 12 ],
+                    13: [ 2, 12 ],
+                    21: [ 2, 12 ],
+                    23: [ 2, 12 ],
+                    30: [ 2, 12 ]
                 }, {
-                    20: [ 2, 18 ],
-                    26: 69,
-                    27: [ 1, 43 ]
+                    21: [ 2, 34 ]
                 }, {
-                    20: [ 2, 20 ],
-                    27: [ 2, 20 ]
+                    21: [ 2, 35 ]
                 }, {
-                    15: [ 2, 22 ]
+                    21: [ 2, 36 ]
                 }, {
-                    15: [ 2, 24 ],
-                    27: [ 2, 24 ]
+                    1: [ 2, 15 ],
+                    9: [ 2, 15 ],
+                    13: [ 2, 15 ],
+                    21: [ 2, 15 ],
+                    23: [ 2, 15 ],
+                    30: [ 2, 15 ]
                 }, {
-                    20: [ 2, 31 ],
-                    27: [ 1, 48 ],
-                    33: 70
+                    11: 69,
+                    14: [ 1, 42 ]
                 }, {
-                    20: [ 2, 29 ],
-                    27: [ 2, 29 ]
+                    22: [ 2, 18 ]
                 }, {
-                    15: [ 2, 12 ]
+                    21: [ 2, 20 ],
+                    27: 70,
+                    28: [ 1, 44 ]
                 }, {
-                    15: [ 2, 39 ],
-                    20: [ 2, 39 ],
-                    27: [ 2, 39 ]
+                    21: [ 2, 22 ],
+                    28: [ 2, 22 ]
                 }, {
-                    20: [ 2, 17 ]
+                    16: [ 2, 24 ]
                 }, {
-                    20: [ 2, 30 ]
+                    16: [ 2, 26 ],
+                    28: [ 2, 26 ]
+                }, {
+                    21: [ 2, 33 ],
+                    28: [ 1, 49 ],
+                    34: 71
+                }, {
+                    21: [ 2, 31 ],
+                    28: [ 2, 31 ]
+                }, {
+                    16: [ 2, 14 ]
+                }, {
+                    16: [ 2, 41 ],
+                    21: [ 2, 41 ],
+                    28: [ 2, 41 ]
+                }, {
+                    21: [ 2, 19 ]
+                }, {
+                    21: [ 2, 32 ]
                 } ],
                 defaultActions: {
                     2: [ 2, 1 ],
-                    4: [ 2, 3 ],
-                    5: [ 2, 4 ],
-                    6: [ 2, 5 ],
-                    10: [ 2, 2 ],
-                    13: [ 2, 14 ],
-                    14: [ 2, 15 ],
-                    39: [ 2, 6 ],
-                    40: [ 2, 7 ],
-                    55: [ 2, 32 ],
-                    56: [ 2, 33 ],
-                    57: [ 2, 34 ],
-                    60: [ 2, 16 ],
-                    63: [ 2, 22 ],
-                    67: [ 2, 12 ],
-                    69: [ 2, 17 ],
-                    70: [ 2, 30 ]
+                    11: [ 2, 3 ],
+                    14: [ 2, 16 ],
+                    15: [ 2, 17 ],
+                    40: [ 2, 8 ],
+                    41: [ 2, 9 ],
+                    56: [ 2, 34 ],
+                    57: [ 2, 35 ],
+                    58: [ 2, 36 ],
+                    61: [ 2, 18 ],
+                    64: [ 2, 24 ],
+                    68: [ 2, 14 ],
+                    70: [ 2, 19 ],
+                    71: [ 2, 32 ]
                 },
                 parseError: function parseError(str, hash) {
                     throw new Error(str);
@@ -791,22 +832,22 @@
                         return "export";
                         break;
                       case 10:
-                        return 14;
+                        return 15;
                         break;
                       case 11:
-                        return 16;
+                        return 17;
                         break;
                       case 12:
-                        return 21;
+                        return 22;
                         break;
                       case 13:
                         return "WILDCARD";
                         break;
                       case 14:
-                        return 27;
+                        return 28;
                         break;
                       case 15:
-                        return 35;
+                        return 36;
                         break;
                       case 16:
                         return "Id";
@@ -818,7 +859,7 @@
                         return "String";
                         break;
                       case 19:
-                        return 4;
+                        return 9;
                         break;
                     }
                 };
@@ -861,20 +902,20 @@
         if (typeof parser.parse !== "function") {
             throw "No parser provided.";
         }
-        var is = function(obj, type) {
+        function is(obj, type) {
             return Object.prototype.toString.call(obj).toLowerCase() == "[object " + type.toLowerCase() + "]";
-        };
+        }
         var undefined = arguments[arguments.length];
         var modules = {}, _errCb, _errModules = null, _isServer = typeof window == "undefined", _extDepsCount = 0, _debug;
         var _plugins = {
-            modularize: function(vars) {
-                var fn = function(globalVar) {
+            modularize: function modularizePlugin(vars) {
+                function fn(globalVar) {
                     if (!me.hasOwnProperty(globalVar)) {
                         return 'No global "' + globalVar + '"';
                     }
                     modules[globalVar] = me[globalVar];
                     return true;
-                };
+                }
                 if (is(vars, "array")) {
                     for (var i = 0; i < vars.length; i++) {
                         fn(vars[i]);
@@ -883,7 +924,7 @@
                     fn(vars);
                 }
             },
-            noGlobal: function(vars) {
+            noGlobal: function noGlobalPlugin(vars) {
                 var fn = function(globalVar) {
                     if (!me.hasOwnProperty(globalVar)) {
                         return 'No global "' + globalVar + '"';
@@ -904,7 +945,7 @@
             var name = conf.format;
             if (name === "commonJS") {
                 return {
-                    fn: function(arg) {
+                    fn: function commonJSWrapper(arg) {
                         return conf.deps && conf.deps.hasOwnProperty(arg) ? conf.deps[arg] : require(arg);
                     },
                     name: "require"
@@ -944,7 +985,8 @@
                         _n && (modConf.name = _n);
                         _f && (modConf.fn = _f);
                         modConf.src = conf.src;
-                        applyConfiguration(modConf, function(parsedConf) {
+                        applyConfiguration(modConf, function applyCallback(parsedConf) {
+                            throw new Error("AMD not handled yet");
                             loadModule(parsedConf);
                         });
                     }
@@ -986,16 +1028,16 @@
                 if (typeof MINIFY == "undefined") {
                     console.log(module);
                 }
-                return _module;
+                return module;
             } catch (e) {
                 return "Invalid declaration \n" + e.message + "\nDeclaration: " + declaration;
             }
         }
-        var xhr = function(o) {
+        function xhr(o) {
             var http = "XMLHttpRequest" in me ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP");
             http.open("GET", o.url, true);
             http.setRequestHeader("Accept", "application/javascript, text/javascript");
-            http.onreadystatechange = function() {
+            http.onreadystatechange = function onReadyStateChange() {
                 if (this.readyState == 4) {
                     if (/^20\d$/.test(this.status)) {
                         o.success && o.success(http);
@@ -1007,25 +1049,19 @@
                 }
             };
             http.send();
-        };
-        var _handleExports = function(module, moduleConf, callback) {
-            moduleConf.src && (modules[moduleConf.src] = module);
+        }
+        function _handleExports(module, moduleConf, callback) {
+            moduleConf._internals.src && (modules[moduleConf._internals.src] = module);
             if (moduleConf.hasOwnProperty("name")) {
                 moduleConf.name && (modules[moduleConf.name] = module);
-            } else {
-                for (var i in module) {
-                    if (module.hasOwnProperty(i)) {
-                        modules[i] = module[i];
-                    }
-                }
-            }
+            } else {}
             if (is(callback, "function")) {
                 callback(module || {});
             }
-        };
-        var loadModule = function(moduleConf, callback) {
+        }
+        function loadModule(moduleConf, contents, callback) {
             !moduleConf && (moduleConf = {});
-            var conf = moduleConf.deps || {};
+            var conf = moduleConf.imports || {};
             var module;
             var wrapperConf;
             if (!_isServer) {
@@ -1034,7 +1070,7 @@
                     navigator: window.navigator,
                     location: window.location
                 };
-                var returns = moduleConf.export ? "{" + moduleConf.export.map(function(v) {
+                var returns = moduleConf.exports ? "{" + moduleConf.exports.map(function(v) {
                     return v.dest + ":" + v.src;
                 }).join(",") + "}" : "{}";
                 var moduleArgs = [];
@@ -1054,7 +1090,7 @@
                     var script = document.createElement("script"), head = document.getElementsByTagName("head")[0];
                     script.type = "text/javascript";
                     var extDepIndex = _extDepsCount++;
-                    script.innerHTML = "(function (" + argsName.join(", ") + ") {\n" + moduleConf.contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
+                    script.innerHTML = "(function runner (" + argsName.join(", ") + ") {\n" + moduleConf.contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
                     moduleConf.src && script.setAttribute("data-src", moduleConf.src);
                     moduleConf.name && script.setAttribute("name", moduleConf.name);
                     me.s6d[extDepIndex] = function(exports) {
@@ -1067,7 +1103,12 @@
                     };
                     head.appendChild(script);
                 } else {
-                    var fn = moduleConf.fn || Function.apply({}, argsName.concat([ moduleConf.contents + ";\nreturn " + returns ]));
+                    var fn;
+                    if (contents.apply && contents.call) {
+                        fn = contents;
+                    } else {
+                        fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
+                    }
                     module = fn.apply({}, moduleArgs);
                     _handleExports(module, moduleConf, callback);
                 }
@@ -1103,80 +1144,96 @@
                 }
                 _handleExports(module, moduleConf, callback);
             }
-        };
-        var applyConfiguration = function(conf, callback, errorFn) {
+        }
+        function applyConfiguration(conf, callback, errorFn) {
+            var moduleConf = {};
+            moduleConf._internals = conf._internals;
             var depsPool = function() {
                 var _c = 0;
-                for (var i in conf.import) {
-                    conf.import.hasOwnProperty(i) && _c++;
+                if (conf.type === "module" && conf.decl.expressions) {
+                    for (var i = 0, _l = conf.decl.expressions.length; i < _l; i++) {
+                        _c++;
+                    }
+                } else if (conf.type === "export") {
+                    _c++;
                 }
-                for (var i in conf.modules) {
-                    conf.modules.hasOwnProperty(i) && _c++;
-                }
-                for (var i in conf.modulesByURI) {
-                    conf.modulesByURI.hasOwnProperty(i) && _c++;
-                }
-                return function() {
-                    !--_c && callback(conf);
+                return function depsPool() {
+                    if (!--_c) {
+                        callback(moduleConf);
+                    }
                 };
             }();
-            var importsLoader = function(name, ref) {
-                if (modules[ref.ref]) {
-                    conf.deps[name] = modules[ref.ref][i];
-                    depsPool();
-                } else {
-                    _module({
-                        name: ref.ref || name,
-                        format: ref.format
-                    }, function(module) {
-                        conf.deps[name] = module[name || ref.ref];
-                        depsPool();
-                    }, errorFn);
+            function importLoader(declaration) {
+                throw new Error("not implemented");
+            }
+            function exportLoader(declaration) {
+                for (var i = 0, _l = declaration.length; i < _l; i++) {
+                    moduleConf.exports = moduleConf.exports || [];
+                    moduleConf.exports.push({
+                        src: declaration[i],
+                        dest: declaration[i]
+                    });
                 }
-            };
-            var modulesLoader = function(name, ref) {
-                if (modules[ref]) {
-                    conf.deps[name] = modules[ref];
-                    depsPool();
+                depsPool();
+            }
+            function moduleLoader(declaration) {
+                moduleConf.name = conf.decl.id;
+                if (declaration.expressions) {
+                    for (var i = 0, _l = declaration.expressions.length; i < _l; i++) {
+                        var expr = declaration.expressions[i];
+                        if (expr.type === "export") {
+                            exportLoader(expr.decl);
+                        } else if (expr.type === "import") {
+                            importLoader(expr.decl);
+                        } else if (expr.type === "module") {
+                            moduleLoader(expr.decl);
+                        }
+                    }
                 } else {
-                    _module(ref || name, function(module) {
-                        conf.deps[name] = module;
+                    moduleConf.imports = moduleConf.imports || [];
+                    if (declaration.path) {
+                        _module(declaration.path, function(module) {
+                            moduleConf.imports[declaration.id] = module;
+                            depsPool();
+                        }, errorFn);
+                    } else if (modules[declaration.src]) {
+                        moduleConf.imports[declaration.id] = modules[declaration.src];
                         depsPool();
-                    }, errorFn);
-                }
-            };
-            var modulesLoaderByRef = function(name, ref) {
-                var mod = modules[ref];
-                if (!mod) {
-                    if (_isServer) {
-                        mod = modules[ref] = require(ref);
                     } else {
-                        throw new Error("Unable to load the module " + name);
+                        throw new Error("The required module %1 doesn't exist".replace("%1", declaration.src));
                     }
                 }
-                conf.deps[name] = mod;
-                depsPool();
-            };
-            conf.deps = {};
-            for (var i in conf.import) {
-                conf.import.hasOwnProperty(i) && importsLoader(i, conf.import[i]);
             }
-            for (var i in conf.modules) {
-                conf.modules.hasOwnProperty(i) && modulesLoaderByRef(i, conf.modules[i]);
-            }
-            for (var i in conf.modulesByURI) {
-                conf.modulesByURI.hasOwnProperty(i) && modulesLoader(i, conf.modulesByURI[i]);
-            }
-            if (!conf.import && !conf.modules && !conf.modulesByURI) {
+            if (conf.length === 0) {
                 return callback(conf);
             }
-        };
-        var _moduleSrc = function(conf, callback, errorFn) {
-            var moduleConf = conf || {}, callback = callback || function() {}, errorFn = errorFn || function() {}, rawText = conf.contents ? conf.contents : [], text = rawText.split("\n"), declaration = [], endComment = false, inComment = false;
-            var declaration = "";
+            if (conf.type === "module") {
+                moduleConf.name = conf.decl.id;
+                moduleLoader(conf.decl);
+            } else if (conf.type === "export") {
+                exportLoader(conf.decl);
+            }
+            return;
+            for (var i in conf) {
+                if (!conf.hasOwnProperty(i)) {
+                    continue;
+                }
+                if (conf[i].type === "module") {
+                    modulesLoader(i, conf[i].decl);
+                } else if (conf[i].type === "import") {
+                    importsLoader(i, conf[i].decl);
+                }
+            }
+        }
+        function _moduleSrc(conf, callback, errorFn) {
+            var moduleConf = conf || {}, callback = callback || function() {}, errorFn = errorFn || function() {}, rawText = conf.contents ? conf.contents : "", declaration = "";
             var comments = rawText.match(/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg);
             if (!comments) {
-                return loadModule(moduleConf, callback);
+                return loadModule({
+                    _internals: {
+                        src: conf.src
+                    }
+                }, rawText, callback);
             }
             var split = comments[0].split("\n");
             for (var j = 0, _l2 = split.length; j < _l2; j++) {
@@ -1187,15 +1244,23 @@
                 if (is(moduleConf, "string")) {
                     errorFn(moduleConf);
                 } else {
-                    applyConfiguration(moduleConf, function(parsedConf) {
-                        loadModule(parsedConf, callback);
+                    var usedConf = moduleConf[0];
+                    usedConf._internals = {
+                        src: conf.src
+                    };
+                    applyConfiguration(usedConf, function(parsedConf) {
+                        loadModule(parsedConf, rawText, callback);
                     }, errorFn.origFn);
                 }
             } else {
-                loadModule(moduleConf, callback);
+                loadModule({
+                    _internals: {
+                        src: conf.src
+                    }
+                }, rawText, callback);
             }
-        };
-        var _serverPathDetection = function(uri) {
+        }
+        function _serverPathDetection(uri) {
             var path;
             try {
                 path = require.resolve(uri);
@@ -1207,8 +1272,8 @@
                 path = !path ? require("fs").statSync(process.cwd() + "/" + uri).isFile() && process.cwd() + "/" + uri : path;
             } catch (e) {}
             return path;
-        };
-        var _module = function(moduleSrc, callback, errorFn) {
+        }
+        function _module(moduleSrc, callback, errorFn) {
             var _error = function(msg) {
                 _errModules = _errModules || [];
                 _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
@@ -1227,10 +1292,10 @@
             if (uri) {
                 !_isServer && xhr({
                     url: uri,
-                    error: function() {
+                    error: function xhrError() {
                         _error('Unable to fetch the module "' + moduleSrc + '"');
                     },
-                    success: function(res) {
+                    success: function xhrSuccess(res) {
                         var responseText = res.responseText;
                         moduleConf.contents = responseText;
                         _moduleSrc(moduleConf, callback, _error);
@@ -1257,7 +1322,7 @@
                             res.on("error", _error);
                         });
                     } else {
-                        var modPath = _serverPathDetection(uri);
+                        modPath = _serverPathDetection(uri);
                         if (!modPath) {
                             _error("Unable to locate file " + uri);
                             return;
@@ -1278,8 +1343,8 @@
             } else {
                 is(moduleSrc, "object") && _moduleSrc(moduleSrc, callback, _error);
             }
-        };
-        var initConfig = function(confs) {
+        }
+        function initConfig(confs) {
             for (var i = 0; i < confs.length; i++) {
                 var confStr = confs[i];
                 var conf;
@@ -1300,8 +1365,8 @@
                     }
                 }
             }
-        };
-        var initModules = function(modules) {
+        }
+        function initModules(modules) {
             for (var i = 0; i < modules.length; i++) {
                 var module = modules[i];
                 var moduleSrc = module.getAttribute("data-src");
@@ -1310,8 +1375,8 @@
                     contents: module.innerHTML
                 });
             }
-        };
-        !_isServer && me.addEventListener && me.addEventListener("load", function() {
+        }
+        !_isServer && me.addEventListener && me.addEventListener("load", function onReady() {
             var confs = [];
             var modules = [];
             for (var i = 0; i < document.scripts.length; i++) {
