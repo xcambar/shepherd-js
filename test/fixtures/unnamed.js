@@ -1,4 +1,5 @@
 /**
+@ DEPRECATED
 module {
   export fn2;
   export var2

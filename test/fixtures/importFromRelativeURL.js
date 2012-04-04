@@ -1,6 +1,6 @@
 /**
 module externalModule {
-module externalModule from 'fixtures/external.js';
+module externalModule at 'fixtures/external.js';
 export imp1;
 export ref1;
 }

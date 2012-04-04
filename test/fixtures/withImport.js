@@ -1,6 +1,6 @@
 /**
 module hasImport {
-  module m1 from m1;
+  module m1 is m1;
   export imp1;
   export ref1;
 }

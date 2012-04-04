@@ -5,15 +5,7 @@ module m1 {
 }
 **/
 
-/**
- * ES-Harmony Syntax:
- * 
- * module math {
- *   export fn1;*\/
- *   export var1;
- * }
- */
-
+"use strict";
 
 var fn1 = function () {
     return true;
