@@ -1,5 +1,5 @@
 if (typeof window == 'undefined') {
-    var s6d = require('../../shepherd.js');
+    var s6d = require('../../build/shepherd.dev.js');
 }
 
 beforeEach(function () {
@@ -33,7 +33,7 @@ beforeEach(function () {
         });
         waitsFor(function () {
             return !!s6d.get(moduleName);
-        }, 'The module has been loaded', 2000);
+        }, 'The module has been loaded', 200);
         
         return spy;
     };

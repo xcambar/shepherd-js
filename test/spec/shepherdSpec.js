@@ -1,14 +1,14 @@
 if (typeof window == 'undefined') {
-    var s6d = require('../../shepherd.js');
+    var s6d = require('../../build/shepherd.dev.js');
 }
 
 describe('Generic features of the Loader', function () {
     it('should reset its state at will', function () {
-        var modPath = 'fixtures/unnamed.js';
+        var modPath = 'fixtures/named.js';
         s6d.reset();
         expect(s6d.error()).toBeNull();
         expect(s6d.get(modPath)).toBeUndefined();
-    })
+    });
     
     it('should contain no erroneous module at init', function () {
         expect(s6d.error()).toBeNull();
@@ -61,12 +61,12 @@ describe('Parsing a module definition', function () {
     });
 
     it('should skip "use strict"; statements', function () {
-        var module = 'fixtures/unnamed.js';
+        var module = 'fixtures/named.js';
         var spy = this.loadModule(module);
         runs(function () {
             expect(spy).toHaveBeenCalled();
             //Ensure the module loaded correctly
-            expect(s6d.get(module)).toHaveMembers(['var2', 'fn2']);
+            expect(s6d.get(module)).toHaveMembers(['var1', 'fn1']);
             expect(s6d.get(module)).toHaveNumberOfMembers(2);
         });
     });
@@ -100,27 +100,7 @@ describe('Parsing a module definition', function () {
             expect(s6d.get(module).loaded).toBe(true);
         });
     });
-});
-
-describe('Declaring an unnamed module', function () {
-    it('should load an unnamed module and call the optionnally provided callback', function () {
-        s6d.reset();
-        var modPath = 'fixtures/unnamed.js';
-        var spy = this.loadModule(modPath);
-        runs(function () {
-            expect(spy).toHaveBeenCalled();
-            expect(spy.callCount).toEqual(1);
-        });
-    });
-
-    it('should return an available module by its path', function () {
-        var module = s6d.get('fixtures/unnamed.js');
-        expect(module).toHaveMembers(['fn2', 'var2']);
-        expect(module.var2).toBe('EXPORTED!!')
-        expect(typeof module.fn2).toBe('function');
-    });
-    
-    it('should raise an exception if an invalid token is encountered', function () {
+    it('should raise an exception if an invalid declaration is encountered', function () {
         s6d.reset();
         var modPath = 'fixtures/invalidToken.js';
         var spy = jasmine.createSpy();
@@ -174,17 +154,25 @@ describe('Declaring an named module', function () {
 describe('Importing named modules', function () {
     var modWithImport = 'fixtures/withImport.js';
     var importedMod = 'fixtures/named.js';
-    
     it('should be able to load an available module from its import name', function () {
-        var spy = this.loadModule(modWithImport);
+        this.loadModule(importedMod);
+        runs(function () {
+            this.loadModule(modWithImport);
+        });
         runs(function () {
             expect(s6d.get(modWithImport).imp1()).toBeTruthy();
             expect(s6d.get(modWithImport).ref1).toBe(s6d.get(importedMod).fn1);
+            console.log(s6d.get(modWithImport).ref1);
+            console.log(s6d.get(importedMod).fn1);
         });
     });
     
     it ('should load modules and rename its imports', function () {
-        var spy = this.loadModule('fixtures/withRenamedImport.js');
+        var importedMod = 'fixtures/named.js';
+        this.loadModule(importedMod);
+        runs(function () {
+            this.loadModule('fixtures/withRenamedImport.js');
+        });
         runs(function () {
             expect(s6d.get('fixtures/withRenamedImport.js').imp1()).toBeTruthy();
             expect(s6d.get('fixtures/withRenamedImport.js').ref1).toBe(s6d.get(importedMod).fn1);
