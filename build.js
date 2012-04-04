@@ -36,9 +36,15 @@ function run (min) {
 }
 
 function build () {
-    run(true);
-    run();
-    console.log('Shepherd built on: ' + (new Date()).toString());
+    var msg;
+    try {
+        run(true);
+        run();
+        msg = 'Shepherd built on: ' + (new Date()).toString();
+    } catch (e) {
+        msg = 'Build failed. (' + e.message + ')';
+    }
+    console.log(msg);
 }
 
 build();
