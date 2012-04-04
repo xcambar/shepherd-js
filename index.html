@@ -39,9 +39,9 @@
           <h1 class="brand"><a  href="#">Shepherd-js</a></h1>
           <ul class="nav">
             <li><a href="#tldr">[ tl;dr ]</a></li>
-            <li><a href="#examples">Examples</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#usage">How to use</a></li>
+            <li><a href="#examples">Examples</a></li>
             <li><a href="#about">About</a></li>
           </ul>
           <p class="pull-right fork"><a href="https://github.com/xcambar/shepherd-js">&raquo; gitHub &laquo;</a></p>
@@ -81,13 +81,13 @@ var random = function () {
     </div>
     <div class="after">
       <h3>Add sugar, let <strong>Shepherd</strong> operate: it's now a module!</h3>
-      <pre>
-"module randomRange { ";
-"  export setMin;     ";
-"  export setMax;     ";
-"  export random;     ";
-"}                    ";
-
+      <pre>/**
+module randomRange {
+  export setMin;    
+  export setMax;    
+  export random;    
+}                   
+**/
 var _min = 0;
 var _max = 1000;
 var _lte = function (a, b) { return a &lt;= b;};
@@ -137,28 +137,36 @@ var random = function () {
   <div class="container">
     <dl class="unstyled examples">
     <dt>Import a module from its URI</dt>
-    <dd>file.js:<pre>"module myModule from 'path/to/my/awesome/module.js'";
+    <dd>file.js:<pre>/**
+  module myModule at 'path/to/my/awesome/module.js'
+**/
 
 console.log(myModule); // Displays myModule to the console</pre>
 <div class="alert-message"><code>myModule</code> is not available anywhere else in your application <small>(unless you repeat the declaration in another module)</small></div>
 </dd>
     <dt>Import a module by its name</dt>
     <dd>Declaring a named module (myNamedModule.js):
-<pre>"module myNamedModule {   ";
-"  export doSomething;    ";
-"}                        ";
+<pre>/**
+  module myNamedModule {
+    export doSomething;
+}
+**/
 
 var doSomething = function () {/* ... */};
 </pre>
 Using the named module (myApp.js):
-<pre>"module myNamedModule;";
+<pre>/**
+  module myNamedModule;
+**/
 // The above declaration specifies we want to use the module 'myNamedModule'
 
 myNamedModule.doSomething();
 </pre></dd>
     <dt>Export variables</dt>
-    <dd>File1.js : Defining a module <pre>"export myExportedVar";
-"export myExportedFn";
+    <dd>File1.js : Defining a module <pre>/**
+  export myExportedVar;
+  export myExportedFn;
+**/
 
 var a = 'This variable is private';
 var b = function () {
@@ -169,13 +177,17 @@ var myExportedVar = 'This variable is publicly available';
 var myExportedFn = function () {
   return 'This function is publicly available';
 }</pre>
-File2.js : Importing a portion of the module <pre>"import myExportedVar from 'File1.js'";
+File2.js : Importing a portion of the module <pre>/**
+  import myExportedVar from 'File1.js';
+**/
 
 console.log(a); //undefined
 console.log(b); //undefined
 console.log(myExportedFn); //undefined
 console.log(myExportedVar); //"This variable is publicly available"</pre>
-File2a.js : Importing the whole module<pre>"module 'File1.js'";
+File2a.js : Importing the whole module<pre>/**
+  module 'File1.js';
+**/
 
 console.log(a); //undefined
 console.log(b); //undefined
@@ -183,14 +195,16 @@ console.log(myExportedFn()); //"This function is publicly available"
 console.log(myExportedVar); //"This variable is publicly available"</pre>
 </dd>
     <dt>Turn your existing files into modules. </dt>
-    <dd><pre>"module myModule {                          ";
-"  import imp1 from '/path/to/import.js';   ";
-"  import imp2 from namedImportedModule;    ";
-"  module mod1 from '/path/to/module.js';   ";
-"  module mod2 from myImportedModule;       ";
-"  export expA;                             ";
-"  export expB;                             ";
-"}                                          ";
+    <dd><pre>/**
+module myModule {
+  import imp1 from '/path/to/import.js';
+  import imp2 from namedImportedModule; 
+  module mod1 from '/path/to/module.js';
+  module mod2 from myImportedModule;    
+  export expA;                          
+  export expB;                          
+}                                       
+**/
 
 /** Here after goes the code of your module **/
 
@@ -207,7 +221,10 @@ var expB = ['This', 'is', 'an', 'exported', 'array'];</pre>
 &lt;/script&gt;
 </pre>
 Using jQuery in a module (myModule.js):
-<pre>"module $;";
+<pre>/**
+module $ from jQuery;
+**/
+
 $.ajax(/*...*/);
 </pre>
 <div class="alert-message">Check out the live examples or the source code of this page too!</div>
