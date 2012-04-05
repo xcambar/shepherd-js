@@ -209,13 +209,6 @@
         moduleConf._internals.src && (modules[moduleConf._internals.src] = module);
         if (moduleConf.hasOwnProperty('name')) {
             moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI
-        } else {
-            //@TODO This seems absolutely useless... Got to check it out.
-            // for (var i in module) {
-            //     if (module.hasOwnProperty(i)) {
-            //         modules[i] = module[i];
-            //     }
-            // }
         }
         if (is(callback, 'function')) {
             callback(module || {} );
@@ -345,64 +338,15 @@
                 }
             } else if (conf.type === 'export') {
                 _c++;
+            } else if (conf.type === 'import') {
+                _c++;
             }
-            // for (var i in conf.import) {
-            //     conf.import.hasOwnProperty(i) && _c++;
-            // }
-            // for (var i in conf.modules) {
-            //     conf.modules.hasOwnProperty(i) && _c++;
-            // }
-            // for (var i in conf.modulesByURI) {
-            //     conf.modulesByURI.hasOwnProperty(i) && _c++;
-            // }
             return function depsPool() {
                 if(!--_c) {
                     callback(moduleConf);
                 }
             };
         })();
-        // function importsLoader (name, ref) {
-        //     if (modules[ref.ref]) {
-        //         conf.deps[name] = modules[ref.ref][i];
-        //         depsPool();
-        //     } else {
-        //         _module(
-        //             {name: ref.ref || name, format: ref.format},
-        //             function (module) {
-        //                 conf.deps[name] = module[name || ref.ref];
-        //                 depsPool();
-        //             },
-        //             errorFn);
-        //     }
-        // }
-        
-        // function modulesLoader (name, ref) {
-        //     if (modules[ref.id]) {
-        //         conf.deps[name] = modules[ref.id];
-        //         depsPool();
-        //     } else {
-        //         _module(
-        //             ref || name,
-        //             function (module) {
-        //                 conf.deps[ref.id] = module;
-        //                 depsPool();
-        //             },
-        //             errorFn);
-        //     }
-        // }
-        
-        // function modulesLoaderByRef (name, ref) {
-        //     var mod = modules[ref];
-        //     if (!mod) {
-        //         if (_isServer) {
-        //             mod = modules[ref] = require(ref);
-        //         } else {
-        //             throw new Error('Unable to load the module ' + name); //@TODO Plugin idea => browser-side auto loader by module name
-        //         }
-        //     }
-        //     conf.deps[name] = mod;
-        //     depsPool();
-        // }
 
         function importLoader (declaration) {
             moduleConf.imports = moduleConf.imports || {};
@@ -510,22 +454,6 @@
                 importsLoader(i, conf[i].decl);
             }
         }
-
-        // for (var i in conf.import) {
-        //     conf.import.hasOwnProperty(i) && importsLoader(i, conf.import[i]);
-        // }
-        
-        // for (var i in conf.modules) {
-        //     conf.modules.hasOwnProperty(i) && modulesLoaderByRef(i, conf.modules[i]);
-        // }
-        
-        // for (var i in conf.modulesByURI) {
-        //     conf.modulesByURI.hasOwnProperty(i) && modulesLoader(i, conf.modulesByURI[i]);
-        // }
-        
-        // if (!conf.import && !conf.modules && !conf.modulesByURI) {
-        //     return callback(conf);
-        // }
     }
     
     function _moduleSrc (conf, callback, errorFn) {

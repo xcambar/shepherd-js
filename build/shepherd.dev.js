@@ -1054,7 +1054,7 @@
             moduleConf._internals.src && (modules[moduleConf._internals.src] = module);
             if (moduleConf.hasOwnProperty("name")) {
                 moduleConf.name && (modules[moduleConf.name] = module);
-            } else {}
+            }
             if (is(callback, "function")) {
                 callback(module || {});
             }
@@ -1161,6 +1161,8 @@
                         _c++;
                     }
                 } else if (conf.type === "export") {
+                    _c++;
+                } else if (conf.type === "import") {
                     _c++;
                 }
                 return function depsPool() {
