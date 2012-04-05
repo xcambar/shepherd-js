@@ -1,4 +1,4 @@
-(typeof s6d != 'undefined') && describe('Declare modules by their URLs', function () {
+(typeof window != 'undefined') && describe('Declare modules by their URLs', function () {
     it ('should be able to import modules from a relative URL', function () {
         var spy = this.loadModule('fixtures/importFromRelativeURL.js');
         runs(function () {

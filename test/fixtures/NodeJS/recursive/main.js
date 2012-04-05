@@ -1,8 +1,8 @@
 /**
-module {
-  module a from 'fixtures/NodeJS/recursive/a.js';
+module mainFixture {
+  module a at 'fixtures/NodeJS/recursive/a.js';
   export test;
-};
+}
 **/
 
 var test = a.b.c.test;

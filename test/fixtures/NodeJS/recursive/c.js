@@ -1,8 +1,8 @@
 /**
-module {
+module cFixture {
   export test;
   export test2;
-};
+}
 **/
 
 var test = 'test value';

@@ -1,6 +1,6 @@
 /**
-module {
-  module fs from fs;
+module load_fsFixture {
+  module fs is fs;
   export stat;
 }
 **/

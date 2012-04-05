@@ -1,5 +1,5 @@
 /**
-module externalModule {
+module importFromRelativeURL {
 module externalModule at 'fixtures/external.js';
 export imp1;
 export ref1;
