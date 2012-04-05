@@ -1125,10 +1125,16 @@
                 context.module = {
                     exports: {}
                 };
-                var returnStatement = moduleConf.export ? moduleConf.export.map(function(v) {
+                context.require = function(arg) {
+                    if (context[arg]) {
+                        return context[arg];
+                    }
+                    return require(arg);
+                };
+                var returnStatement = moduleConf.exports ? moduleConf.exports.map(function(v) {
                     return "returns." + v.dest + " = " + v.src;
                 }).join(";\n") : "";
-                vm.runInNewContext(moduleConf.contents + ";\n" + returnStatement, context, moduleConf.src + ".vm");
+                vm.runInNewContext(contents + ";\n" + returnStatement, context, moduleConf._internals.src + ".vm");
                 module = context.returns;
                 for (var i in context.exports) {
                     if (context.exports.hasOwnProperty(i)) {
@@ -1191,16 +1197,28 @@
                     }
                 } else {
                     moduleConf.imports = moduleConf.imports || [];
-                    if (declaration.path) {
+                    var ref = declaration.path || declaration.src;
+                    if (modules[ref]) {
+                        moduleConf.imports[declaration.id] = modules[declaration.src];
+                        depsPool();
+                    } else if (declaration.path) {
                         _module(declaration.path, function(module) {
                             moduleConf.imports[declaration.id] = module;
                             depsPool();
                         }, errorFn);
-                    } else if (modules[declaration.src]) {
-                        moduleConf.imports[declaration.id] = modules[declaration.src];
-                        depsPool();
                     } else {
-                        throw new Error("The required module %1 doesn't exist".replace("%1", declaration.src));
+                        if (_isServer) {
+                            var _dep;
+                            try {
+                                _dep = require(declaration.src);
+                            } catch (e) {
+                                throw new Error("The required module %1 doesn't exist".replace("%1", declaration.src));
+                            }
+                            moduleConf.imports[declaration.id] = _dep;
+                            depsPool();
+                        } else {
+                            throw new Error("The required module %1 doesn't exist".replace("%1", declaration.src));
+                        }
                     }
                 }
             }
