@@ -1,6 +1,6 @@
 /**
 module importFromAbsolutePathFixture {
-module externalModule at '/Users/xaviercambar/git/shepherd/test/fixtures/external.js';
+module externalModule at '/Users/xaviercambar/git/shepherd/code/test/fixtures/external.js';
 export imp1;
 export ref1;
 }
