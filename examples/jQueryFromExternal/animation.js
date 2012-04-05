@@ -1,7 +1,7 @@
 /**
-module {
+module animationExample {
   export rebound;
-};
+}
 **/
 
 var direction = {
