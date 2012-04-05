@@ -405,10 +405,31 @@
         // }
 
         function importLoader (declaration) {
-            throw new Error('not implemented');
+            moduleConf.imports = moduleConf.imports || {};
+            var _dep = modules[declaration.from.path];
+            if (_dep) {
+                for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                    var _importName = declaration.vars[i];
+                    moduleConf.imports[_importName] = _dep[_importName];
+                }
+                depsPool();
+            } else {
+                _module(
+                    declaration.from.path,
+                    function (module) {
+                        for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                            var _importName = declaration.vars[i];
+                            moduleConf.imports[_importName] = module[_importName];
+                        }
+                        depsPool();
+                    },
+                    errorFn
+                );
+            }
+
         }
 
-        function exportLoader (declaration) {
+        function exportLoader (declaration) { //@TODO Handle export renaming
             for (var i = 0, _l = declaration.length; i < _l; i++) {
                 moduleConf.exports = moduleConf.exports || [];
                 moduleConf.exports.push({src: declaration[i], dest: declaration[i]});
