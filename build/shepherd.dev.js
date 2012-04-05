@@ -1071,7 +1071,7 @@
                     location: window.location
                 };
                 var returns = moduleConf.exports ? "{" + moduleConf.exports.map(function(v) {
-                    return v.dest + ":" + v.src;
+                    return v.dest + ":(" + [ "window." + v.src, "this." + v.src, v.src ].join("||") + ")";
                 }).join(",") + "}" : "{}";
                 var moduleArgs = [];
                 var argsName = [];
@@ -1170,7 +1170,23 @@
                 };
             }();
             function importLoader(declaration) {
-                throw new Error("not implemented");
+                moduleConf.imports = moduleConf.imports || {};
+                var _dep = modules[declaration.from.path];
+                if (_dep) {
+                    for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                        var _importName = declaration.vars[i];
+                        moduleConf.imports[_importName] = _dep[_importName];
+                    }
+                    depsPool();
+                } else {
+                    _module(declaration.from.path, function(module) {
+                        for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                            var _importName = declaration.vars[i];
+                            moduleConf.imports[_importName] = module[_importName];
+                        }
+                        depsPool();
+                    }, errorFn);
+                }
             }
             function exportLoader(declaration) {
                 for (var i = 0, _l = declaration.length; i < _l; i++) {

@@ -245,7 +245,7 @@
                'location': window.location
             };
             var returns = moduleConf.exports ?
-                '{' + moduleConf.exports.map(function (v) { return v.dest + ':' + v.src; }).join(',') + '}'
+                '{' + moduleConf.exports.map(function (v) { return v.dest + ':(' + ['window.' + v.src, 'this.' + v.src, v.src].join('||') + ')'; }).join(',') + '}'
                 : '{}';
             var moduleArgs = [];
             var argsName = [];
@@ -268,7 +268,7 @@
                 script.innerHTML = '(function runner (' + argsName.join(', ') + ') {\n' + moduleConf.contents + '\n;s6d[' + extDepIndex + '](' + returns + ');\n}).apply({}, s6d[' + extDepIndex + ']())';
                 moduleConf.src && script.setAttribute('data-src', moduleConf.src);
                 moduleConf.name && script.setAttribute('name', moduleConf.name);
-                me.s6d[extDepIndex] = function (exports) {
+                me.s6d[extDepIndex] = function (exports) { //@TODO What is this supposed to be useful to ? o_O
                     if (exports) {
                         delete me.s6d[extDepIndex];
                         _handleExports(exports, moduleConf, callback);
@@ -301,7 +301,7 @@
             context.require = function (arg) {
                 if (context[arg]) {
                     return context[arg];
-                } 
+                }
                 return require(arg);
             };
             var returnStatement = moduleConf.exports ? moduleConf.exports.map(function (v) {return 'returns.' + v.dest + ' = ' + v.src}).join(';\n') : '';
@@ -498,7 +498,7 @@
             exportLoader(conf.decl);
         }
 
-        //@TODO Will probably be useful later, when handling multiple module items per file
+        //@TODO Will probably be useful later, when handling multiple module definitions per file
         return;
         for (var i in conf) {
             if (!conf.hasOwnProperty(i)) {
