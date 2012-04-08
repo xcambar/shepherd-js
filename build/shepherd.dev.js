@@ -898,15 +898,14 @@
         }
         return harmony_parser;
     }();
-    (function(me, parser) {
+    (function(me, parser, undefined) {
         if (typeof parser.parse !== "function") {
             throw "No parser provided.";
         }
         function is(obj, type) {
             return Object.prototype.toString.call(obj).toLowerCase() == "[object " + type.toLowerCase() + "]";
         }
-        var undefined = arguments[arguments.length];
-        var modules = {}, _errCb, _errModules = null, _isServer = typeof window == "undefined", _extDepsCount = 0, _debug;
+        var modules = {}, _errModules = null, _isServer = typeof window == "undefined", _extDepsCount = 0, _debug;
         var _plugins = {
             modularize: function modularizePlugin(vars) {
                 function fn(globalVar) {
@@ -994,7 +993,7 @@
             }
         }
         function parse(declaration, conf) {
-            function pluginDeclaration(decl, conf) {
+            function pluginDeclaration(decl) {
                 var plugins = decl.split(";"), pluginRe = /^\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\!([a-zA-Z_$][0-9a-zA-Z_$]*)\s*$/;
                 for (var i = 0; i < plugins.length; i++) {
                     if (!plugins[i]) {
@@ -1017,7 +1016,7 @@
                 }
                 return true;
             }
-            var moduleObj = conf || {}, isPlugin = pluginDeclaration(declaration, moduleObj);
+            var moduleObj = conf || {}, isPlugin = pluginDeclaration(declaration);
             if (is(isPlugin, "string")) {
                 return isPlugin;
             } else if (isPlugin) {
@@ -1059,96 +1058,103 @@
                 callback(module || {});
             }
         }
-        function loadModule(moduleConf, contents, callback) {
-            !moduleConf && (moduleConf = {});
+        function loadClientSideModule(moduleConf, contents, callback) {
             var conf = moduleConf.imports || {};
             var module;
             var wrapperConf;
-            if (!_isServer) {
-                conf.window = {
-                    document: window.document,
-                    navigator: window.navigator,
-                    location: window.location
+            conf.window = {};
+            for (var i in window) {
+                conf.window[i] = window[i];
+            }
+            var returns = moduleConf.exports ? "{" + moduleConf.exports.map(function(v) {
+                return v.dest + ":(" + [ "window." + v.src, "this." + v.src, v.src ].join("||") + ")";
+            }).join(",") + "}" : "{}";
+            var moduleArgs = [];
+            var argsName = [];
+            for (var i in conf) {
+                if (conf.hasOwnProperty(i)) {
+                    argsName.push(i);
+                    moduleArgs.push(conf[i]);
+                }
+            }
+            if (moduleConf.format && moduleConf.format.length) {
+                wrapperConf = _loaderWrappers(moduleConf);
+                argsName.push(wrapperConf.name);
+                moduleArgs.push(wrapperConf.fn);
+            }
+            if (_debug) {
+                var script = document.createElement("script"), head = document.getElementsByTagName("head")[0];
+                script.type = "text/javascript";
+                var extDepIndex = _extDepsCount++;
+                script.innerHTML = "(function runner (" + argsName.join(", ") + ") {\n" + moduleConf.contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
+                moduleConf.src && script.setAttribute("data-src", moduleConf.src);
+                moduleConf.name && script.setAttribute("name", moduleConf.name);
+                me.s6d[extDepIndex] = function(exports) {
+                    if (exports) {
+                        delete me.s6d[extDepIndex];
+                        _handleExports(exports, moduleConf, callback);
+                        return;
+                    }
+                    return moduleArgs;
                 };
-                var returns = moduleConf.exports ? "{" + moduleConf.exports.map(function(v) {
-                    return v.dest + ":(" + [ "window." + v.src, "this." + v.src, v.src ].join("||") + ")";
-                }).join(",") + "}" : "{}";
-                var moduleArgs = [];
-                var argsName = [];
-                for (var i in conf) {
-                    if (conf.hasOwnProperty(i)) {
-                        argsName.push(i);
-                        moduleArgs.push(conf[i]);
-                    }
-                }
-                if (moduleConf.format && moduleConf.format.length) {
-                    wrapperConf = _loaderWrappers(moduleConf);
-                    argsName.push(wrapperConf.name);
-                    moduleArgs.push(wrapperConf.fn);
-                }
-                if (_debug) {
-                    var script = document.createElement("script"), head = document.getElementsByTagName("head")[0];
-                    script.type = "text/javascript";
-                    var extDepIndex = _extDepsCount++;
-                    script.innerHTML = "(function runner (" + argsName.join(", ") + ") {\n" + moduleConf.contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
-                    moduleConf.src && script.setAttribute("data-src", moduleConf.src);
-                    moduleConf.name && script.setAttribute("name", moduleConf.name);
-                    me.s6d[extDepIndex] = function(exports) {
-                        if (exports) {
-                            delete me.s6d[extDepIndex];
-                            _handleExports(exports, moduleConf, callback);
-                            return;
-                        }
-                        return moduleArgs;
-                    };
-                    head.appendChild(script);
-                } else {
-                    var fn;
-                    if (contents.apply && contents.call) {
-                        fn = contents;
-                    } else {
-                        fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
-                    }
-                    module = fn.apply({}, moduleArgs);
-                    _handleExports(module, moduleConf, callback);
-                }
+                head.appendChild(script);
             } else {
-                var vm = require("vm");
-                var context = conf;
-                if (moduleConf.format && moduleConf.format.length) {
-                    wrapperConf = _loaderWrappers(moduleConf);
-                    context[wrapperConf.name] = wrapperConf.fn;
+                var fn;
+                if (contents.apply && contents.call) {
+                    fn = contents;
+                } else {
+                    fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
                 }
-                context.returns = {};
-                context.console = console;
-                context.exports = {};
-                context.module = {
-                    exports: {}
-                };
-                context.require = function(arg) {
-                    if (context[arg]) {
-                        return context[arg];
-                    }
-                    return require(arg);
-                };
-                var returnStatement = moduleConf.exports ? moduleConf.exports.map(function(v) {
-                    return "returns." + v.dest + " = " + v.src;
-                }).join(";\n") : "";
-                vm.runInNewContext(contents + ";\n" + returnStatement, context, moduleConf._internals.src + ".vm");
-                module = context.returns;
-                for (var i in context.exports) {
-                    if (context.exports.hasOwnProperty(i)) {
-                        console.log('Exporting "' + i + '" from the exports variable.');
-                        module[i] = context.exports[i];
-                    }
-                }
-                for (var i in context.module.exports) {
-                    if (context.module.exports.hasOwnProperty(i)) {
-                        console.log('Exporting "' + i + '" from the module.exports variable.');
-                        module[i] = context.module.exports[i];
-                    }
-                }
+                module = fn.apply({}, moduleArgs);
                 _handleExports(module, moduleConf, callback);
+            }
+        }
+        function loadServerSideModule(moduleConf, contents, callback) {
+            var module;
+            var wrapperConf;
+            var vm = require("vm");
+            var context = moduleConf.imports || {};
+            if (moduleConf.format && moduleConf.format.length) {
+                wrapperConf = _loaderWrappers(moduleConf);
+                context[wrapperConf.name] = wrapperConf.fn;
+            }
+            context.returns = {};
+            context.console = console;
+            context.exports = {};
+            context.module = {
+                exports: {}
+            };
+            context.require = function(arg) {
+                if (context[arg]) {
+                    return context[arg];
+                }
+                return require(arg);
+            };
+            var returnStatement = moduleConf.exports ? moduleConf.exports.map(function(v) {
+                return "returns." + v.dest + " = " + v.src;
+            }).join(";\n") : "";
+            vm.runInNewContext(contents + ";\n" + returnStatement, context, moduleConf._internals.src + ".vm");
+            module = context.returns;
+            for (var i in context.exports) {
+                if (context.exports.hasOwnProperty(i)) {
+                    console.log('Exporting "' + i + '" from the exports variable.');
+                    module[i] = context.exports[i];
+                }
+            }
+            for (var i in context.module.exports) {
+                if (context.module.exports.hasOwnProperty(i)) {
+                    console.log('Exporting "' + i + '" from the module.exports variable.');
+                    module[i] = context.module.exports[i];
+                }
+            }
+            _handleExports(module, moduleConf, callback);
+        }
+        function loadModule(moduleConf, contents, callback) {
+            !moduleConf && (moduleConf = {});
+            if (!_isServer) {
+                loadClientSideModule(moduleConf, contents, callback);
+            } else {
+                loadServerSideModule(moduleConf, contents, callback);
             }
         }
         function applyConfiguration(conf, callback, errorFn) {
@@ -1248,17 +1254,6 @@
                 moduleLoader(conf.decl);
             } else if (conf.type === "export") {
                 exportLoader(conf.decl);
-            }
-            return;
-            for (var i in conf) {
-                if (!conf.hasOwnProperty(i)) {
-                    continue;
-                }
-                if (conf[i].type === "module") {
-                    modulesLoader(i, conf[i].decl);
-                } else if (conf[i].type === "import") {
-                    importsLoader(i, conf[i].decl);
-                }
             }
         }
         function _moduleSrc(conf, callback, errorFn) {
@@ -1430,6 +1425,7 @@
             initModules(modules);
         });
         if (typeof MINIFY == "undefined") {
+            var _errCb;
             me.s6d = function(modulePath, cb) {
                 if (is(modulePath, "object")) {
                     initConfig([ modulePath ]);

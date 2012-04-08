@@ -7,16 +7,14 @@
  * @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
  * @see http://addyosmani.com/writing-modular-js/
  */
-(function (me, parser) {
+(function (me, parser, undefined) {
     if (typeof parser.parse !== 'function') {
-        throw'No parser provided.';
+        throw 'No parser provided.';
     }
     function is (obj, type) { //Thanks Underscore ;)
         return Object.prototype.toString.call(obj).toLowerCase() == '[object ' + type.toLowerCase() + ']';
     }
-    var undefined = arguments[arguments.length];
     var modules = {},
-        _errCb,
         _errModules = null,
         _isServer = typeof window == 'undefined',
         _extDepsCount = 0,
@@ -131,7 +129,7 @@
      * @return {Object|String} Returns the module's evaluated execution context or an error string
      */
     function parse (declaration, conf) {
-        function pluginDeclaration (decl, conf) {
+        function pluginDeclaration (decl) {
             var plugins = decl.split(';'),
                 pluginRe = /^\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\!([a-zA-Z_$][0-9a-zA-Z_$]*)\s*$/;
             for(var i = 0; i < plugins.length; i++) {
@@ -155,7 +153,7 @@
             return true;
         }
         var moduleObj = conf || {},
-            isPlugin = pluginDeclaration(declaration, moduleObj);
+            isPlugin = pluginDeclaration(declaration);
         
         if (is(isPlugin, 'string')) {
             return isPlugin;
@@ -215,6 +213,102 @@
         }
     }
     
+    function loadClientSideModule (moduleConf, contents, callback) {
+        var conf = moduleConf.imports || {};
+        var module;
+        var wrapperConf;
+        conf.window = {};
+        for (var i in window) {
+            conf.window[i] = window[i];
+        }
+        var returns = moduleConf.exports ?
+            '{' + moduleConf.exports.map(function (v) { return v.dest + ':(' + ['window.' + v.src, 'this.' + v.src, v.src].join('||') + ')'; }).join(',') + '}'
+            : '{}';
+        var moduleArgs = [];
+        var argsName = [];
+        for (var i in conf) { //@TODO Check how the args are selected. Seems weird this way... :-/
+            if (conf.hasOwnProperty(i)) {
+                argsName.push(i);
+                moduleArgs.push(conf[i]);
+            }
+        }
+        //@TODO Here's the wrapper part for client-side plugins
+        if (moduleConf.format && moduleConf.format.length) {
+            wrapperConf = _loaderWrappers(moduleConf);
+            argsName.push(wrapperConf.name);
+            moduleArgs.push(wrapperConf.fn);
+        }
+        if (_debug) {
+            var script = document.createElement('script'),
+                head = document.getElementsByTagName('head')[0];
+            script.type = 'text/javascript';
+            var extDepIndex = _extDepsCount++;
+            script.innerHTML = '(function runner (' + argsName.join(', ') + ') {\n' + moduleConf.contents + '\n;s6d[' + extDepIndex + '](' + returns + ');\n}).apply({}, s6d[' + extDepIndex + ']())';
+            moduleConf.src && script.setAttribute('data-src', moduleConf.src);
+            moduleConf.name && script.setAttribute('name', moduleConf.name);
+            me.s6d[extDepIndex] = function (exports) { //@TODO What is this supposed to be useful to ? o_O
+                if (exports) {
+                    delete me.s6d[extDepIndex];
+                    _handleExports(exports, moduleConf, callback);
+                    return;
+                }
+                return moduleArgs;
+            };
+            head.appendChild(script);
+        } else {
+            var fn;
+            if (contents.apply && contents.call) {
+                fn = contents;
+            } else {
+                fn = Function.apply({}, argsName.concat([contents +  ';\nreturn ' + returns]));
+            }
+            module = fn.apply({}, moduleArgs);
+            _handleExports(module, moduleConf, callback);
+        }
+    }
+
+    function loadServerSideModule (moduleConf, contents, callback) {
+        var module;
+        var wrapperConf;
+        var vm = require('vm');
+        var context = moduleConf.imports || {};
+        if (moduleConf.format && moduleConf.format.length) {
+            wrapperConf = _loaderWrappers(moduleConf);
+            context[wrapperConf.name] = wrapperConf.fn;
+        }
+        context.returns = {};
+        context.console = console;
+        context.exports = {};
+        context.module = {exports: {}};
+        context.require = function (arg) {
+            if (context[arg]) {
+                return context[arg];
+            }
+            return require(arg);
+        };
+        var returnStatement = moduleConf.exports ? moduleConf.exports.map(function (v) {return 'returns.' + v.dest + ' = ' + v.src}).join(';\n') : '';
+        vm.runInNewContext(contents + ';\n' + returnStatement, context, moduleConf._internals.src + '.vm');
+        module = context.returns;
+        
+        /**
+         * Automatically exports properties from exports and module.exports
+         * I am really not sure this is a good idea, although it eases adoption...
+         **/
+        for (var i in context.exports) {
+            if (context.exports.hasOwnProperty(i)) {
+                console.log('Exporting "' + i + '" from the exports variable.');
+                module[i] = context.exports[i];
+            }
+        }
+        for (var i in context.module.exports) {
+            if (context.module.exports.hasOwnProperty(i)) {
+                console.log('Exporting "' + i + '" from the module.exports variable.');
+                module[i] = context.module.exports[i];
+            }
+        }
+        _handleExports(module, moduleConf, callback);
+    }
+
     /**
      * Loads a module in its own wrapper function
      * The module is ocnsideref as fully loaded, dependencies included.
@@ -227,97 +321,10 @@
      */
     function loadModule (moduleConf, contents, callback) {
         !moduleConf && (moduleConf = {});
-        var conf = moduleConf.imports || {};
-        var module;
-        var wrapperConf;
         if (!_isServer) {
-            //@TODO It should be window + document + navigator + location instead of all being joined under 'window'. Or shouldn't it ?
-            conf.window = {
-               'document': window.document,
-               'navigator': window.navigator,
-               'location': window.location
-            };
-            var returns = moduleConf.exports ?
-                '{' + moduleConf.exports.map(function (v) { return v.dest + ':(' + ['window.' + v.src, 'this.' + v.src, v.src].join('||') + ')'; }).join(',') + '}'
-                : '{}';
-            var moduleArgs = [];
-            var argsName = [];
-            for (var i in conf) { //@TODO Check how the args are selected. Seems weird this way... :-/
-                if (conf.hasOwnProperty(i)) {
-                    argsName.push(i);
-                    moduleArgs.push(conf[i]);
-                }
-            }
-            if (moduleConf.format && moduleConf.format.length) {
-                wrapperConf = _loaderWrappers(moduleConf);
-                argsName.push(wrapperConf.name);
-                moduleArgs.push(wrapperConf.fn);
-            }
-            if (_debug) {
-                var script = document.createElement('script'),
-                    head = document.getElementsByTagName('head')[0];
-                script.type = 'text/javascript';
-                var extDepIndex = _extDepsCount++;
-                script.innerHTML = '(function runner (' + argsName.join(', ') + ') {\n' + moduleConf.contents + '\n;s6d[' + extDepIndex + '](' + returns + ');\n}).apply({}, s6d[' + extDepIndex + ']())';
-                moduleConf.src && script.setAttribute('data-src', moduleConf.src);
-                moduleConf.name && script.setAttribute('name', moduleConf.name);
-                me.s6d[extDepIndex] = function (exports) { //@TODO What is this supposed to be useful to ? o_O
-                    if (exports) {
-                        delete me.s6d[extDepIndex];
-                        _handleExports(exports, moduleConf, callback);
-                        return;
-                    }
-                    return moduleArgs;
-                };
-                head.appendChild(script);
-            } else {
-                var fn;
-                if (contents.apply && contents.call) {
-                    fn = contents;
-                } else {
-                    fn = Function.apply({}, argsName.concat([contents +  ';\nreturn ' + returns]));
-                }
-                module = fn.apply({}, moduleArgs);
-                _handleExports(module, moduleConf, callback);
-            }
+            loadClientSideModule(moduleConf, contents, callback);
         } else {
-            var vm = require('vm');
-            var context = conf;
-            if (moduleConf.format && moduleConf.format.length) {
-                wrapperConf = _loaderWrappers(moduleConf);
-                context[wrapperConf.name] = wrapperConf.fn;
-            }
-            context.returns = {};
-            context.console = console;
-            context.exports = {};
-            context.module = {exports: {}};
-            context.require = function (arg) {
-                if (context[arg]) {
-                    return context[arg];
-                }
-                return require(arg);
-            };
-            var returnStatement = moduleConf.exports ? moduleConf.exports.map(function (v) {return 'returns.' + v.dest + ' = ' + v.src}).join(';\n') : '';
-            vm.runInNewContext(contents + ';\n' + returnStatement, context, moduleConf._internals.src + '.vm');
-            module = context.returns;
-            
-            /**
-             * Automatically exports properties from exports and module.exports
-             * I am really not sure this is a good idea, although it eases adoption...
-             **/
-            for (var i in context.exports) {
-                if (context.exports.hasOwnProperty(i)) {
-                    console.log('Exporting "' + i + '" from the exports variable.');
-                    module[i] = context.exports[i];
-                }
-            }
-            for (var i in context.module.exports) {
-                if (context.module.exports.hasOwnProperty(i)) {
-                    console.log('Exporting "' + i + '" from the module.exports variable.');
-                    module[i] = context.module.exports[i];
-                }
-            }
-            _handleExports(module, moduleConf, callback);
+            loadServerSideModule(moduleConf, contents, callback);
         }
     }
     
@@ -440,19 +447,6 @@
             moduleLoader(conf.decl);
         } else if (conf.type === 'export') {
             exportLoader(conf.decl);
-        }
-
-        //@TODO Will probably be useful later, when handling multiple module definitions per file
-        return;
-        for (var i in conf) {
-            if (!conf.hasOwnProperty(i)) {
-                continue;
-            }
-            if (conf[i].type === 'module') {
-                modulesLoader(i, conf[i].decl);
-            } else if(conf[i].type === 'import') {
-                importsLoader(i, conf[i].decl);
-            }
         }
     }
     
@@ -632,6 +626,7 @@
     });
     
     if (typeof MINIFY == 'undefined') { // MINIFY is set by uglifyJS, the following code is absent from the minified build
+        var _errCb;
         me.s6d = function (modulePath, cb) {
             if (is(modulePath, 'object')) {
                 initConfig([modulePath]);
