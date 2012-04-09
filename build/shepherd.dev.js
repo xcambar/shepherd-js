@@ -1086,7 +1086,7 @@
                 var script = document.createElement("script"), head = document.getElementsByTagName("head")[0];
                 script.type = "text/javascript";
                 var extDepIndex = _extDepsCount++;
-                script.innerHTML = "(function runner (" + argsName.join(", ") + ") {\n" + moduleConf.contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
+                script.innerHTML = "(function runner (" + argsName.join(", ") + ") {\n" + contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
                 moduleConf.src && script.setAttribute("data-src", moduleConf.src);
                 moduleConf.name && script.setAttribute("name", moduleConf.name);
                 me.s6d[extDepIndex] = function(exports) {
