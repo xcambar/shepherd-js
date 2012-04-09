@@ -203,8 +203,10 @@ describe('Recursive module loading', function () {
         var spy = this.loadModule('/test/fixtures/recursive/useCase2/index.js');
         runs(function () {
             expect(spy).toHaveBeenCalled();
+            console.log('index', s6d.get('/test/fixtures/recursive/useCase2/index.js'));
             expect(s6d.get('/test/fixtures/recursive/useCase2/index.js').common).toEqual({something: 'worth it'});
-            expect(s6d.get('/test/fixtures/recursive/useCase2/index.js').whatever).toBe('some value');
+            expect(s6d.get('/test/fixtures/recursive/useCase2/index.js').child.whatever).toEqual('some value');
+            expect(s6d.get('/test/fixtures/recursive/useCase2/index.js').child.common).toEqual(s6d.get('/test/fixtures/recursive/useCase2/common.js'));
             expect(s6d.get('/test/fixtures/recursive/useCase2/child.js').common).toEqual({something: 'worth it'});
             expect(s6d.get('/test/fixtures/recursive/useCase2/child.js').whatever).toBe('some value');
             expect(s6d.get('/test/fixtures/recursive/useCase2/common.js').something).toBe('worth it');
