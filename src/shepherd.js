@@ -296,13 +296,11 @@
          **/
         for (var i in context.exports) {
             if (context.exports.hasOwnProperty(i)) {
-                console.log('Exporting "' + i + '" from the exports variable.');
                 module[i] = context.exports[i];
             }
         }
         for (var i in context.module.exports) {
             if (context.module.exports.hasOwnProperty(i)) {
-                console.log('Exporting "' + i + '" from the module.exports variable.');
                 module[i] = context.module.exports[i];
             }
         }
@@ -407,7 +405,7 @@
                     }
                 }
             } else { //This is a module reference
-                moduleConf.imports = moduleConf.imports || [];
+                moduleConf.imports = moduleConf.imports || {};
                 var ref = declaration.path || declaration.src;
                 if (modules[ref]) { //The module has already been loaded
                     moduleConf.imports[declaration.id] = modules[declaration.src];
