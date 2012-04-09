@@ -198,6 +198,18 @@ describe('Recursive module loading', function () {
             expect(s6d.get('d0')).toHaveNumberOfMembers(0);
         });
     });
+
+    it ('should load correctly shared dependencies between parent and child', function () {
+        var spy = this.loadModule('/test/fixtures/recursive/useCase2/index.js');
+        runs(function () {
+            expect(spy).toHaveBeenCalled();
+            expect(s6d.get('/test/fixtures/recursive/useCase2/index.js').common).toEqual({something: 'worth it'});
+            expect(s6d.get('/test/fixtures/recursive/useCase2/index.js').whatever).toBe('some value');
+            expect(s6d.get('/test/fixtures/recursive/useCase2/child.js').common).toEqual({something: 'worth it'});
+            expect(s6d.get('/test/fixtures/recursive/useCase2/child.js').whatever).toBe('some value');
+            expect(s6d.get('/test/fixtures/recursive/useCase2/common.js').something).toBe('worth it');
+        });
+    });
     
     xit ('allows cyclic dependencies', function () {
         throw 'Not implemented';
