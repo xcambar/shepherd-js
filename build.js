@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // @TODO +++ Fix the use of the parser in shepherd and fix the matching of module description and what's expected from Shepherd.
 // @TODO +   Add an index.js for automatic discovery in NodeJS
 
