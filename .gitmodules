@@ -1,3 +1,6 @@
 [submodule "lib/harmony-parser"]
 	path = lib/harmony-parser
 	url = https://xcambar@github.com/xcambar/harmony-parser.git
+[submodule "lib/when"]
+	path = lib/when
+	url = https://xcambar@github.com/cujojs/when.git

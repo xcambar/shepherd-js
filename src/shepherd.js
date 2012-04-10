@@ -7,7 +7,7 @@
  * @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
  * @see http://addyosmani.com/writing-modular-js/
  */
-(function (me, parser, undefined) {
+(function (me, parser, when, undefined) {
     if (typeof parser.parse !== 'function') {
         throw 'No parser provided.';
     }
@@ -179,22 +179,22 @@
     /**
      *  XHR request
      **/
-    function xhr (o) {
-        var http = ('XMLHttpRequest' in me) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-        http.open('GET', o.url, true);
+    function xhr (url) {
+        var deferred = when.defer(),
+            http = ('XMLHttpRequest' in me) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+        http.open('GET', url, true);
         http.setRequestHeader('Accept', 'application/javascript, text/javascript');
         http.onreadystatechange = function onReadyStateChange () {
             if (this.readyState == 4) {
                 if (/^20\d$/.test(this.status)) {
-                    o.success && o.success(http);
-                    o.complete && o.complete(http);
+                    deferred.resolve(http);
                 } else {
-                    o.error && o.error(http);
-                    o.complete && o.complete(http);
+                    deferred.reject(this.status);
                 }
             }
         };
         http.send();
+        return deferred.promise;
     }
     
     /**
@@ -334,24 +334,9 @@
      */
     function applyConfiguration (conf, callback, errorFn) {
         var moduleConf = {};
+        var confPromises = [];
+
         moduleConf._internals = conf._internals;
-        var depsPool = (function () {
-            var _c = 0;
-            if (conf.type === 'module' && conf.decl.expressions) {
-                for (var i = 0, _l = conf.decl.expressions.length; i < _l; i++) {
-                    _c++;
-                }
-            } else if (conf.type === 'export') {
-                _c++;
-            } else if (conf.type === 'import') {
-                _c++;
-            }
-            return function depsPool() {
-                if(!--_c) {
-                    callback(moduleConf);
-                }
-            };
-        })();
 
         function importLoader (declaration) {
             moduleConf.imports = moduleConf.imports || {};
@@ -361,19 +346,17 @@
                     var _importName = declaration.vars[i];
                     moduleConf.imports[_importName] = _dep[_importName];
                 }
-                depsPool();
             } else {
-                _module(
+                confPromises.push(_module(
                     declaration.from.path,
                     function (module) {
                         for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
                             var _importName = declaration.vars[i];
                             moduleConf.imports[_importName] = module[_importName];
                         }
-                        depsPool();
                     },
                     errorFn
-                );
+                ));
             }
 
         }
@@ -383,7 +366,6 @@
                 moduleConf.exports = moduleConf.exports || [];
                 moduleConf.exports.push({src: declaration[i], dest: declaration[i]});
             }
-            depsPool();
         }
 
         function moduleLoader (declaration) {
@@ -409,16 +391,14 @@
                 var ref = declaration.path || declaration.src;
                 if (modules[ref]) { //The module has already been loaded
                     moduleConf.imports[declaration.id] = modules[declaration.src];
-                    depsPool();
                 } else if (declaration.path) {
-                    _module(
+                    confPromises.push(_module(
                         declaration.path,
                         function (module) {
                             moduleConf.imports[declaration.id] = module;
-                            depsPool();
                         },
                         errorFn
-                    );
+                    ));
                 } else {
                     if (_isServer) {
                         var _dep;
@@ -428,7 +408,6 @@
                             throw new Error('The required module %1 doesn\'t exist'.replace('%1', declaration.src));
                         }
                         moduleConf.imports[declaration.id] = _dep;
-                        depsPool();
                     } else {
                         throw new Error('The required module %1 doesn\'t exist'.replace('%1', declaration.src));
                     }
@@ -445,7 +424,18 @@
             moduleLoader(conf.decl);
         } else if (conf.type === 'export') {
             exportLoader(conf.decl);
+        } else if (conf.type === 'import') {
+            importLoader(conf.decl);
         }
+
+        return when.all(confPromises).then(
+            function () {
+                callback(moduleConf);
+            },
+            function () {
+                errorFn('error');
+            }
+        );
     }
     
     function _moduleSrc (conf, callback, errorFn) {
@@ -501,12 +491,13 @@
     
     /**
      * Retrieves the file corresponding to the module and declares it
+     * @return A promise 
      */
     function _module (moduleSrc, callback, errorFn) {
         if (modules.hasOwnProperty(moduleSrc)) {
             return callback(modules[moduleSrc]);
         }
-        var _error = function (msg) {
+        function _error (msg) {
             _errModules = _errModules || [];
             _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
             if (is(errorFn, 'function')) {
@@ -514,23 +505,34 @@
             } else {
                 throw new Error( '(' + moduleSrc + ') ' + msg);
             }
-        };
+        }
         _error.origFn = errorFn;
+        
+        var modulePromise = when.defer();
+        modulePromise.then(callback, _error);
+        
         var moduleConf = is(moduleSrc, 'string') ?  {src: moduleSrc} : moduleSrc;
         !moduleConf.format && _isServer && (moduleConf.format = 'commonJS');
         var uri = is(moduleSrc, 'string') ? moduleSrc : moduleSrc.name;
         if (uri) {
-            !_isServer && xhr({ url: uri,
-                error: function xhrError () {
-                    _error('Unable to fetch the module "' + moduleSrc + '"');
-                },
-                success: function xhrSuccess (res) {
-                    var responseText = res.responseText;
-                    moduleConf.contents = responseText;
-                    _moduleSrc(moduleConf, callback, _error);
-                }
-            });
-            if (_isServer) {
+            if (!_isServer) {
+                when(xhr(uri))
+                .then(
+                    function xhrSuccess (res) {
+                        var responseText = res.responseText;
+                        moduleConf.contents = responseText;
+                        _moduleSrc(moduleConf, function (conf) {
+                            modulePromise.resolve(conf);
+                        }, function (msg) {
+                            modulePromise.reject(msg);
+                        });
+                    },
+                    function xhrError (code) {
+                        _error('Unable to fetch the module "' + moduleSrc + '" (status code: ' + code + ')');
+                    }
+                );
+                return modulePromise.promise;
+            } else {
                 var modPath, url = require('url'), parsedURL = url.parse(uri);
                 if(parsedURL.host) {
                     var get = require(parsedURL.protocol.indexOf('https') !== -1 ? 'https' : 'http').get;
@@ -567,7 +569,13 @@
                 }
             }
         } else {
-            is(moduleSrc, 'object') && _moduleSrc(moduleSrc, callback, _error);
+            if (is(moduleSrc, 'object')) {
+                _moduleSrc(moduleSrc, function (conf) {
+                    modulePromise.resolve(conf);
+                }, function (msg) {
+                    modulePromise.reject(msg);
+                });
+            }
         }
     }
     
@@ -653,4 +661,4 @@
             exports = module.exports = me.s6d;
         }
     }
-})(this, harmonyParser);
+})(this, harmonyParser, when);
