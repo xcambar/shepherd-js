@@ -182,6 +182,8 @@ describe('Recursive module loading', function () {
     it ('should be able to load files recursively', function () {
         var spy = this.loadModule('fixtures/recursive/d0.js');
         runs(function () {
+            expect(spy).toHaveBeenCalled();
+            expect(spy.callCount).toEqual(1);
             expect(s6d.get('fixtures/recursive/d0.js')).toBeTruthy();
             expect(s6d.get('./fixtures/recursive/d2.js').a).toBe('Module export');
             expect(s6d.get('d1')).toHaveNumberOfMembers(0);
