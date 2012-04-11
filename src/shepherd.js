@@ -213,7 +213,7 @@
         }
     }
     
-    function loadClientSideModule (moduleConf, contents, callback) {
+    function loadClientSideModule (moduleConf, contents) {
         var conf = moduleConf.imports || {};
         var module;
         var wrapperConf;
@@ -226,7 +226,7 @@
             : '{}';
         var moduleArgs = [];
         var argsName = [];
-        for (var i in conf) { //@TODO Check how the args are selected. Seems weird this way... :-/
+        for (var i in conf) {
             if (conf.hasOwnProperty(i)) {
                 argsName.push(i);
                 moduleArgs.push(conf[i]);
@@ -249,8 +249,12 @@
             me.s6d[extDepIndex] = function (exports) {
                 if (exports) {
                     delete me.s6d[extDepIndex];
-                    _handleExports(exports, moduleConf, callback);
-                    return;
+                    var defer = when.defer();
+                    _handleExports(module, moduleConf, function (module) {
+                        defer.resolve(module);
+                        return module;
+                    });
+                    return defer.promise;
                 }
                 return moduleArgs;
             };
@@ -263,7 +267,11 @@
                 fn = Function.apply({}, argsName.concat([contents +  ';\nreturn ' + returns]));
             }
             module = fn.apply({}, moduleArgs);
-            _handleExports(module, moduleConf, callback);
+            var defer = when.defer();
+            _handleExports(module, moduleConf, function (module) {
+                defer.resolve(module);
+            });
+            return defer.promise;
         }
     }
 
@@ -304,7 +312,11 @@
                 module[i] = context.module.exports[i];
             }
         }
-        _handleExports(module, moduleConf, callback);
+        var defer = when.defer();
+        _handleExports(module, moduleConf, function () {
+            defer.resolve();
+        });
+        return defer;
     }
 
     /**
@@ -317,10 +329,21 @@
      * @param {String|Function} contents The function or its contents to be run
      * @param {Function} callback A function to be executed afterwards, in case of success
      */
-    function loadModule (moduleConf, contents, callback) {
+    function loadModule (moduleConf, contents) {
         !moduleConf && (moduleConf = {});
         if (!_isServer) {
-            loadClientSideModule(moduleConf, contents, callback);
+            var defer = when.defer();
+            when(loadClientSideModule(moduleConf, contents)).then(
+                function (module) {
+                    console.log('loadModule done', moduleConf._internals.src, module);
+                    defer.resolve(module);
+                    return module;
+                },
+                function () {
+                    defer.reject();
+                }
+            );
+            return defer;
         } else {
             loadServerSideModule(moduleConf, contents, callback);
         }
@@ -332,7 +355,7 @@
      * @param {Function} callback A function to be called after the loading is complete
      * @param {Function} errorFn error callback
      */
-    function applyConfiguration (conf, callback, errorFn) {
+    function applyConfiguration (conf) {
         var moduleConf = {};
         var confPromises = [];
 
@@ -396,8 +419,8 @@
                         declaration.path,
                         function (module) {
                             moduleConf.imports[declaration.id] = module;
-                        },
-                        errorFn
+                            return moduleConf;
+                        }
                     ));
                 } else {
                     if (_isServer) {
@@ -415,10 +438,6 @@
             }
         }
 
-        if (conf.length === 0) {
-            return callback(conf);
-        }
-
         if (conf.type === 'module') {
             moduleConf.name = conf.decl.id;
             moduleLoader(conf.decl);
@@ -428,25 +447,28 @@
             importLoader(conf.decl);
         }
 
-        return when.all(confPromises).then(
+        var defer = when.all(confPromises).then(
             function () {
-                callback(moduleConf);
-            },
-            function () {
-                errorFn('error');
+                return moduleConf;
+            }, function () {
+                throw new Error('Error while loading ' + moduleConf._internals.src);
             }
         );
+        return defer;
     }
     
-    function _moduleSrc (conf, callback, errorFn) {
-        var moduleConf = conf || {},
-            callback = callback || function () {},
-            errorFn = errorFn || function () {},
+    function _moduleSrc (conf) {
+        var defer = when.defer();
+            moduleConf = conf || {},
             rawText = conf.contents ? conf.contents : '',
             declaration = '';
         var comments = rawText.match(/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg); //@TODO Fix: Doesn't handle single line commments (see libs/jquery-1.7.2.min.js)
         if (!comments) {
-            return loadModule({_internals: {src: conf.src}}, rawText, callback);
+            when(loadModule({_internals: {src: conf.src}}, rawText).then(function(module) {
+                defer.resolve(module);
+                return module;
+            }));
+            return defer.promise;
         }
         // @TODO Enhance: Only a single declaration is allowed per file, as the first comment
         var split = comments[0].split("\n");
@@ -456,18 +478,45 @@
         if (declaration.length) {
             moduleConf = parse(declaration, moduleConf);
             if (is(moduleConf, 'string')) {
-                errorFn(moduleConf);
+                defer.reject(moduleConf);
             } else {
                 //@TODO Allow multiple declarations
                 var usedConf = moduleConf[0];
-                usedConf._internals = {src: conf.src};
-                applyConfiguration(usedConf, function (parsedConf) {
-                    loadModule(parsedConf, rawText, callback);
-                }, errorFn.origFn);
+                usedConf._internals = {src: conf.src, contents: rawText};
+                when(applyConfiguration(usedConf)).then(
+                    function (parsedConf) {
+                        return parsedConf;
+                    },
+                    function (e) {
+                        defer.reject(e);
+                    }
+                ).then(function (parsedConf) {
+
+                    when(loadModule(parsedConf, parsedConf._internals.contents)).then(
+                        function (module) {
+                            defer.resolve(module);
+                            return module;
+                        }, function (e) {
+                            defer.reject(e);
+                        }
+                    );
+                });
+                // function (parsedConf) {
+                //     loadModule(parsedConf, rawText, callback);
+                // }, errorFn.origFn);
             }
         } else {
-            loadModule({_internals: {src: conf.src}}, rawText, callback);
+            when(loadModule({_internals: {src: conf.src}}, rawText)).then(
+                function (module) {
+                    defer.resolve(module);
+                    return module;
+                },
+                function () {
+                    defer.reject();
+                }
+            );
         }
+        return defer.promise;
     }
     
     //Path detection follows 3 steps
@@ -491,7 +540,7 @@
     
     /**
      * Retrieves the file corresponding to the module and declares it
-     * @return A promise 
+     * @return A promise
      */
     function _module (moduleSrc, callback, errorFn) {
         if (modules.hasOwnProperty(moduleSrc)) {
@@ -521,11 +570,14 @@
                     function xhrSuccess (res) {
                         var responseText = res.responseText;
                         moduleConf.contents = responseText;
-                        _moduleSrc(moduleConf, function (conf) {
-                            modulePromise.resolve(conf);
-                        }, function (msg) {
-                            modulePromise.reject(msg);
-                        });
+                        when(_moduleSrc(moduleConf)).then(
+                            function (conf) {
+                                modulePromise.resolve(conf);
+                                return conf;
+                            }, function (msg) {
+                                modulePromise.reject(msg);
+                            }
+                        );
                     },
                     function xhrError (code) {
                         _error('Unable to fetch the module "' + moduleSrc + '" (status code: ' + code + ')');
@@ -572,10 +624,12 @@
             if (is(moduleSrc, 'object')) {
                 _moduleSrc(moduleSrc, function (conf) {
                     modulePromise.resolve(conf);
+                    return conf;
                 }, function (msg) {
                     modulePromise.reject(msg);
                 });
             }
+            return modulePromise;
         }
     }
     
@@ -623,7 +677,7 @@
                 srcAttr = script.getAttribute('type');
             if (srcAttr == "text/shepherd-js") {
                 modules.push(script);
-            } else if (srcAttr == "text/shepherd-js/config"){
+            } else if (srcAttr == "text/shepherd-js/config") {
                 confs.push(script.innerHTML.trim());
             }
         }
