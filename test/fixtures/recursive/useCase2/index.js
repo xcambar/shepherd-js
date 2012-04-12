@@ -7,3 +7,5 @@ module parent {
 **/
 
 // Use Case 2: Parent and child share a common dependency
+
+console.log('running INDEX.JS', common);

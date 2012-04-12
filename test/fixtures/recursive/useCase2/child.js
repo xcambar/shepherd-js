@@ -4,5 +4,5 @@ module child {
 	export common, whatever;
 }
 **/
-
+console.log('running CHILD.JS', common);
 var whatever = 'some value';
