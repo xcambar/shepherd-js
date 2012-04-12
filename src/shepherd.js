@@ -267,11 +267,8 @@
                 fn = Function.apply({}, argsName.concat([contents +  ';\nreturn ' + returns]));
             }
             module = fn.apply({}, moduleArgs);
-            var defer = when.defer();
-            _handleExports(module, moduleConf, function (module) {
-                defer.resolve(module);
-            });
-            return defer.promise;
+            _handleExports(module, moduleConf);
+            return module;
         }
     }
 
@@ -332,18 +329,7 @@
     function loadModule (moduleConf, contents) {
         !moduleConf && (moduleConf = {});
         if (!_isServer) {
-            var defer = when.defer();
-            when(loadClientSideModule(moduleConf, contents)).then(
-                function (module) {
-                    console.log('loadModule done', moduleConf._internals.src, module);
-                    defer.resolve(module);
-                    return module;
-                },
-                function () {
-                    defer.reject();
-                }
-            );
-            return defer;
+            return loadClientSideModule(moduleConf, contents);
         } else {
             loadServerSideModule(moduleConf, contents, callback);
         }
@@ -464,11 +450,8 @@
             declaration = '';
         var comments = rawText.match(/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg); //@TODO Fix: Doesn't handle single line commments (see libs/jquery-1.7.2.min.js)
         if (!comments) {
-            when(loadModule({_internals: {src: conf.src}}, rawText).then(function(module) {
-                defer.resolve(module);
-                return module;
-            }));
-            return defer.promise;
+            var module = loadModule({_internals: {src: conf.src}}, rawText)
+            return defer.resolve(module);
         }
         // @TODO Enhance: Only a single declaration is allowed per file, as the first comment
         var split = comments[0].split("\n");
@@ -484,37 +467,22 @@
                 var usedConf = moduleConf[0];
                 usedConf._internals = {src: conf.src, contents: rawText};
                 when(applyConfiguration(usedConf)).then(
-                    function (parsedConf) {
-                        return parsedConf;
+                    function (moduleConf) {
+                        return moduleConf;
                     },
                     function (e) {
                         defer.reject(e);
                     }
-                ).then(function (parsedConf) {
-
-                    when(loadModule(parsedConf, parsedConf._internals.contents)).then(
-                        function (module) {
-                            defer.resolve(module);
-                            return module;
-                        }, function (e) {
-                            defer.reject(e);
-                        }
-                    );
-                });
-                // function (parsedConf) {
-                //     loadModule(parsedConf, rawText, callback);
-                // }, errorFn.origFn);
-            }
-        } else {
-            when(loadModule({_internals: {src: conf.src}}, rawText)).then(
-                function (module) {
+                ).then(function (moduleConf) {
+                    var module = loadModule(moduleConf, moduleConf._internals.contents);
                     defer.resolve(module);
                     return module;
-                },
-                function () {
-                    defer.reject();
-                }
-            );
+                });
+            }
+        } else {
+            var module = loadModule({_internals: {src: conf.src}}, rawText);
+            defer.resolve(module);
+            return module;
         }
         return defer.promise;
     }
@@ -698,7 +666,11 @@
             _moduleSrc({contents: moduleSrc}, cb, _errCb);
         };
         me.s6d.get = function (moduleName) {
-            return modules[moduleName];
+            if (moduleName) {
+                return modules[moduleName];
+            } else {
+                return modules;
+            }
         };
         me.s6d.error = function (cb) {
             if (arguments.length === 0) {
