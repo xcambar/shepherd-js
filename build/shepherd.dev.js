@@ -1048,14 +1048,9 @@
             http.send();
             return deferred.promise;
         }
-        function _handleExports(module, moduleConf, callback) {
+        function _handleExports(module, moduleConf) {
             moduleConf._internals.src && (modules[moduleConf._internals.src] = module);
-            if (moduleConf.hasOwnProperty("name")) {
-                moduleConf.name && (modules[moduleConf.name] = module);
-            }
-            if (is(callback, "function")) {
-                callback(module || {});
-            }
+            moduleConf.name && (modules[moduleConf.name] = module);
         }
         function loadClientSideModule(moduleConf, contents) {
             var conf = moduleConf.imports || {};
@@ -1109,11 +1104,8 @@
                     fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
                 }
                 module = fn.apply({}, moduleArgs);
-                var defer = when.defer();
-                _handleExports(module, moduleConf, function(module) {
-                    defer.resolve(module);
-                });
-                return defer.promise;
+                _handleExports(module, moduleConf);
+                return module;
             }
         }
         function loadServerSideModule(moduleConf, contents, callback) {
@@ -1161,15 +1153,7 @@
         function loadModule(moduleConf, contents) {
             !moduleConf && (moduleConf = {});
             if (!_isServer) {
-                var defer = when.defer();
-                when(loadClientSideModule(moduleConf, contents)).then(function(module) {
-                    console.log("loadModule done", moduleConf._internals.src, module);
-                    defer.resolve(module);
-                    return module;
-                }, function() {
-                    defer.reject();
-                });
-                return defer;
+                return loadClientSideModule(moduleConf, contents);
             } else {
                 loadServerSideModule(moduleConf, contents, callback);
             }
@@ -1182,17 +1166,26 @@
                 moduleConf.imports = moduleConf.imports || {};
                 var _dep = modules[declaration.from.path];
                 if (_dep) {
-                    for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
-                        var _importName = declaration.vars[i];
-                        moduleConf.imports[_importName] = _dep[_importName];
+                    if (when.isPromise(_dep)) {
+                        _dep.then(function(module) {
+                            moduleConf.imports[_importName] = module;
+                        });
+                        confPromises.push(_dep);
+                    } else {
+                        for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                            var _importName = declaration.vars[i];
+                            moduleConf.imports[_importName] = _dep[_importName];
+                        }
                     }
                 } else {
-                    confPromises.push(_module(declaration.from.path, function(module) {
+                    var _p = _module(declaration.from.path, function(module) {
                         for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
                             var _importName = declaration.vars[i];
                             moduleConf.imports[_importName] = module[_importName];
                         }
-                    }, errorFn));
+                    }, errorFn);
+                    modules[declaration.from.path] = _p;
+                    confPromises.push(_p);
                 }
             }
             function exportLoader(declaration) {
@@ -1219,14 +1212,24 @@
                     }
                 } else {
                     moduleConf.imports = moduleConf.imports || {};
-                    var ref = declaration.path || declaration.src;
-                    if (modules[ref]) {
-                        moduleConf.imports[declaration.id] = modules[declaration.src];
+                    var ref = declaration.path || declaration.src || declaration.id;
+                    var _mod = modules[ref];
+                    if (_mod) {
+                        if (when.isPromise(_mod)) {
+                            _mod.then(function(module) {
+                                moduleConf.imports[declaration.id] = module;
+                                return module;
+                            });
+                            confPromises.push(_mod);
+                        } else {
+                            moduleConf.imports[declaration.id] = _mod;
+                        }
                     } else if (declaration.path) {
-                        confPromises.push(_module(declaration.path, function(module) {
+                        var _p = _module(declaration.path, function(module) {
                             moduleConf.imports[declaration.id] = module;
                             return moduleConf;
-                        }));
+                        });
+                        confPromises.push(_p);
                     } else {
                         if (_isServer) {
                             var _dep;
@@ -1262,15 +1265,12 @@
             moduleConf = conf || {}, rawText = conf.contents ? conf.contents : "", declaration = "";
             var comments = rawText.match(/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg);
             if (!comments) {
-                when(loadModule({
+                var module = loadModule({
                     _internals: {
                         src: conf.src
                     }
-                }, rawText).then(function(module) {
-                    defer.resolve(module);
-                    return module;
-                }));
-                return defer.promise;
+                }, rawText);
+                return defer.resolve(module);
             }
             var split = comments[0].split("\n");
             for (var j = 0, _l2 = split.length; j < _l2; j++) {
@@ -1286,30 +1286,24 @@
                         src: conf.src,
                         contents: rawText
                     };
-                    when(applyConfiguration(usedConf)).then(function(parsedConf) {
-                        return parsedConf;
+                    when(applyConfiguration(usedConf)).then(function(moduleConf) {
+                        return moduleConf;
                     }, function(e) {
                         defer.reject(e);
-                    }).then(function(parsedConf) {
-                        when(loadModule(parsedConf, parsedConf._internals.contents)).then(function(module) {
-                            defer.resolve(module);
-                            return module;
-                        }, function(e) {
-                            defer.reject(e);
-                        });
+                    }).then(function(moduleConf) {
+                        var module = loadModule(moduleConf, moduleConf._internals.contents);
+                        defer.resolve(module);
+                        return module;
                     });
                 }
             } else {
-                when(loadModule({
+                var module = loadModule({
                     _internals: {
                         src: conf.src
                     }
-                }, rawText)).then(function(module) {
-                    defer.resolve(module);
-                    return module;
-                }, function() {
-                    defer.reject();
-                });
+                }, rawText);
+                defer.resolve(module);
+                return module;
             }
             return defer.promise;
         }
@@ -1474,7 +1468,11 @@
                 }, cb, _errCb);
             };
             me.s6d.get = function(moduleName) {
-                return modules[moduleName];
+                if (moduleName) {
+                    return modules[moduleName];
+                } else {
+                    return modules;
+                }
             };
             me.s6d.error = function(cb) {
                 if (arguments.length === 0) {

@@ -203,14 +203,9 @@
      * @param {Object} moduleConf The result of the parsing of the module configuration
      * @param {Function} callback The callback function to be called after the successful export
      */
-    function _handleExports (module, moduleConf, callback) {
+    function _handleExports (module, moduleConf) {
         moduleConf._internals.src && (modules[moduleConf._internals.src] = module);
-        if (moduleConf.hasOwnProperty('name')) {
-            moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI
-        }
-        if (is(callback, 'function')) {
-            callback(module || {} );
-        }
+        moduleConf.name && (modules[moduleConf.name] = module); // Modules are accessible either via their name or their URI
     }
     
     function loadClientSideModule (moduleConf, contents) {
@@ -351,12 +346,20 @@
             moduleConf.imports = moduleConf.imports || {};
             var _dep = modules[declaration.from.path];
             if (_dep) {
-                for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
-                    var _importName = declaration.vars[i];
-                    moduleConf.imports[_importName] = _dep[_importName];
+
+                if (when.isPromise(_dep)) {
+                    _dep.then(function (module) {
+                            moduleConf.imports[_importName] = module;
+                        });
+                    confPromises.push(_dep);
+                } else {
+                    for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                        var _importName = declaration.vars[i];
+                        moduleConf.imports[_importName] = _dep[_importName];
+                    }
                 }
             } else {
-                confPromises.push(_module(
+                var _p = _module(
                     declaration.from.path,
                     function (module) {
                         for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
@@ -365,7 +368,9 @@
                         }
                     },
                     errorFn
-                ));
+                );
+                modules[declaration.from.path] = _p;
+                confPromises.push(_p);
             }
 
         }
@@ -397,17 +402,31 @@
                 }
             } else { //This is a module reference
                 moduleConf.imports = moduleConf.imports || {};
-                var ref = declaration.path || declaration.src;
-                if (modules[ref]) { //The module has already been loaded
-                    moduleConf.imports[declaration.id] = modules[declaration.src];
+                var ref = declaration.path || declaration.src || declaration.id;
+                var _mod = modules[ref];
+                
+
+                //@FIX WTF means this if/else ???????
+                if (_mod) { //The module has already been loaded
+                    if (when.isPromise(_mod)) {
+                        _mod.then(function (module) {
+                            moduleConf.imports[declaration.id] = module;
+                            return module;
+                        });
+                        confPromises.push(_mod);
+                    } else {
+                        moduleConf.imports[declaration.id] = _mod;
+                    }
                 } else if (declaration.path) {
-                    confPromises.push(_module(
+                    var _p = _module(
                         declaration.path,
                         function (module) {
                             moduleConf.imports[declaration.id] = module;
                             return moduleConf;
                         }
-                    ));
+                    );
+                    //modules[declaration.path] = _p;
+                    confPromises.push(_p);
                 } else {
                     if (_isServer) {
                         var _dep;
