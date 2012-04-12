@@ -7,13 +7,15 @@ var fs = require('fs'),
     pro = require("uglify-js").uglify;
 
 var parserLocation = './lib/harmony-parser/harmony_parser.js',
+    whenLocation = './lib/when/when.js',
     shepherdLocation = './src/shepherd.js';
 
 function run (min) {
     // Scopes the parser so it doesn't pollute globals
     // Declaring exports to undefined avoids CommonJS exports
-    var parserCode = '(function() {var exports;' + fs.readFileSync(parserLocation).toString() + ';return harmony_parser;})()';
+    var parserCode = '(function() {var exports;' + fs.readFileSync(parserLocation).toString() + ';return harmony_parser;})();';
     var shepherdCode = fs.readFileSync(shepherdLocation).toString();
+    var whenCode = fs.readFileSync(whenLocation).toString();
     var output;
 
     if (min) {
@@ -25,9 +27,14 @@ function run (min) {
         shepherdAst = pro.ast_mangle(shepherdAst, {defines: {MINIFY: ['name', true], harmonyParser: ['name', parserMinified]}});
         shepherdAst = pro.ast_squeeze(shepherdAst);
         output = pro.gen_code(shepherdAst);
+        var whenAst = jsp.parse(whenCode);
+        whenAst = pro.ast_mangle(whenAst);
+        whenAst = pro.ast_squeeze(whenAst);
+        var whenMinified = pro.gen_code(whenAst);
     } else {
         devCode = '(function () {' +
             'var harmonyParser = ' + parserCode + ';' +
+            'var module = {};' + whenCode + ';var when = module.exports;' +
             shepherdCode +
             '})()';
         var devAst = jsp.parse(devCode);
@@ -52,3 +59,4 @@ build();
 
 fs.watch(parserLocation, build);
 fs.watch(shepherdLocation, build);
+fs.watch(whenLocation, build);
