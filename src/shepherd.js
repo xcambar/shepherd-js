@@ -346,7 +346,6 @@
             moduleConf.imports = moduleConf.imports || {};
             var _dep = modules[declaration.from.path];
             if (_dep) {
-
                 if (when.isPromise(_dep)) {
                     _dep.then(function (module) {
                             moduleConf.imports[_importName] = module;
@@ -366,10 +365,8 @@
                             var _importName = declaration.vars[i];
                             moduleConf.imports[_importName] = module[_importName];
                         }
-                    },
-                    errorFn
+                    }
                 );
-                modules[declaration.from.path] = _p;
                 confPromises.push(_p);
             }
 
@@ -425,7 +422,6 @@
                             return moduleConf;
                         }
                     );
-                    //modules[declaration.path] = _p;
                     confPromises.push(_p);
                 } else {
                     if (_isServer) {
@@ -451,7 +447,6 @@
         } else if (conf.type === 'import') {
             importLoader(conf.decl);
         }
-
         var defer = when.all(confPromises).then(
             function () {
                 return moduleConf;

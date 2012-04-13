@@ -1439,8 +1439,7 @@
                             var _importName = declaration.vars[i];
                             moduleConf.imports[_importName] = module[_importName];
                         }
-                    }, errorFn);
-                    modules[declaration.from.path] = _p;
+                    });
                     confPromises.push(_p);
                 }
             }
