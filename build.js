@@ -15,26 +15,26 @@ function run (min) {
     // Declaring exports to undefined avoids CommonJS exports
     var parserCode = '(function() {var exports;' + fs.readFileSync(parserLocation).toString() + ';return harmony_parser;})();';
     var shepherdCode = fs.readFileSync(shepherdLocation).toString();
-    var whenCode = fs.readFileSync(whenLocation).toString();
+    var whenCode = '(function() {var module = {};' + fs.readFileSync(whenLocation).toString() + ';return module.exports;})();';
     var output;
 
     if (min) {
         var parserAst = jsp.parse(parserCode);
         parserAst = pro.ast_mangle(parserAst, {defines: {require: ['name', 'undefined'], exports: ['name', 'undefined']}});
         parserAst = pro.ast_squeeze(parserAst);
-        var parserMinified = pro.gen_code(parserAst, {beautify: !min});
-        var shepherdAst = jsp.parse(shepherdCode);
-        shepherdAst = pro.ast_mangle(shepherdAst, {defines: {MINIFY: ['name', true], harmonyParser: ['name', parserMinified]}});
-        shepherdAst = pro.ast_squeeze(shepherdAst);
-        output = pro.gen_code(shepherdAst);
+        var parserMinified = pro.gen_code(parserAst, {beautify: false});
         var whenAst = jsp.parse(whenCode);
-        whenAst = pro.ast_mangle(whenAst);
+        whenAst = pro.ast_mangle(whenAst, {beautify: false, defines: {require: ['module', 'undefined']}});
         whenAst = pro.ast_squeeze(whenAst);
         var whenMinified = pro.gen_code(whenAst);
+        var shepherdAst = jsp.parse(shepherdCode);
+        shepherdAst = pro.ast_mangle(shepherdAst, {beautify: false, defines: {MINIFY: ['name', true], harmonyParser: ['name', parserMinified], when: ['name', whenMinified]}});
+        shepherdAst = pro.ast_squeeze(shepherdAst);
+        output = pro.gen_code(shepherdAst);
     } else {
         devCode = '(function () {' +
-            'var harmonyParser = ' + parserCode + ';' +
-            'var module = {};' + whenCode + ';var when = module.exports;' +
+            'var harmonyParser = ' + parserCode + ';\n' +
+            'var when = ' + whenCode + ';\n' +
             shepherdCode +
             '})()';
         var devAst = jsp.parse(devCode);

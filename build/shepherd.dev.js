@@ -898,260 +898,262 @@
         }
         return harmony_parser;
     }();
-    var module = {};
-    (function(define) {
-        define(function() {
-            var freeze, reduceArray, undef;
-            function noop() {}
-            function allocateArray(n) {
-                return new Array(n);
-            }
-            freeze = Object.freeze || function(o) {
-                return o;
-            };
-            reduceArray = [].reduce || function(reduceFunc) {
-                var arr, args, reduced, len, i;
-                i = 0;
-                arr = Object(this);
-                len = arr.length >>> 0;
-                args = arguments;
-                if (args.length <= 1) {
-                    for (;;) {
-                        if (i in arr) {
-                            reduced = arr[i++];
-                            break;
+    var when = function() {
+        var module = {};
+        (function(define) {
+            define(function() {
+                var freeze, reduceArray, undef;
+                function noop() {}
+                function allocateArray(n) {
+                    return new Array(n);
+                }
+                freeze = Object.freeze || function(o) {
+                    return o;
+                };
+                reduceArray = [].reduce || function(reduceFunc) {
+                    var arr, args, reduced, len, i;
+                    i = 0;
+                    arr = Object(this);
+                    len = arr.length >>> 0;
+                    args = arguments;
+                    if (args.length <= 1) {
+                        for (;;) {
+                            if (i in arr) {
+                                reduced = arr[i++];
+                                break;
+                            }
+                            if (++i >= len) {
+                                throw new TypeError;
+                            }
                         }
-                        if (++i >= len) {
-                            throw new TypeError;
-                        }
-                    }
-                } else {
-                    reduced = args[1];
-                }
-                for (; i < len; ++i) {
-                    if (i in arr) reduced = reduceFunc(reduced, arr[i], i, arr);
-                }
-                return reduced;
-            };
-            function Promise() {}
-            function resolved(value) {
-                var p = new Promise;
-                p.then = function(callback) {
-                    checkCallbacks(arguments);
-                    var nextValue;
-                    try {
-                        if (callback) nextValue = callback(value);
-                        return promise(nextValue === undef ? value : nextValue);
-                    } catch (e) {
-                        return rejected(e);
-                    }
-                };
-                return freeze(p);
-            }
-            function rejected(reason) {
-                var p = new Promise;
-                p.then = function(callback, errback) {
-                    checkCallbacks(arguments);
-                    var nextValue;
-                    try {
-                        if (errback) {
-                            nextValue = errback(reason);
-                            return promise(nextValue === undef ? reason : nextValue);
-                        }
-                        return rejected(reason);
-                    } catch (e) {
-                        return rejected(e);
-                    }
-                };
-                return freeze(p);
-            }
-            function checkCallbacks(arrayOfCallbacks) {
-                var arg, i = arrayOfCallbacks.length;
-                while (i) {
-                    arg = arrayOfCallbacks[--i];
-                    if (arg != null && typeof arg != "function") throw new Error("callback is not a function");
-                }
-            }
-            function defer() {
-                var deferred, promise, listeners, progressHandlers, _then, _progress, complete;
-                listeners = [];
-                progressHandlers = [];
-                _then = function unresolvedThen(callback, errback, progback) {
-                    checkCallbacks(arguments);
-                    var deferred = defer();
-                    listeners.push(function(promise) {
-                        promise.then(callback, errback).then(deferred.resolve, deferred.reject, deferred.progress);
-                    });
-                    progback && progressHandlers.push(progback);
-                    return deferred.promise;
-                };
-                function then(callback, errback, progback) {
-                    return _then(callback, errback, progback);
-                }
-                function resolve(val) {
-                    complete(resolved(val));
-                }
-                function reject(err) {
-                    complete(rejected(err));
-                }
-                _progress = function(update) {
-                    var progress, i = 0;
-                    while (progress = progressHandlers[i++]) progress(update);
-                };
-                function progress(update) {
-                    _progress(update);
-                }
-                complete = function(completed) {
-                    var listener, i = 0;
-                    _then = completed.then;
-                    complete = _progress = function alreadyCompleted() {
-                        throw new Error("already completed");
-                    };
-                    progressHandlers = undef;
-                    while (listener = listeners[i++]) {
-                        listener(completed);
-                    }
-                    listeners = [];
-                };
-                deferred = {};
-                promise = new Promise;
-                promise.then = deferred.then = then;
-                deferred.promise = freeze(promise);
-                deferred.resolver = freeze({
-                    resolve: deferred.resolve = resolve,
-                    reject: deferred.reject = reject,
-                    progress: deferred.progress = progress
-                });
-                return deferred;
-            }
-            function isPromise(promiseOrValue) {
-                return promiseOrValue && typeof promiseOrValue.then === "function";
-            }
-            function when(promiseOrValue, callback, errback, progressHandler) {
-                var trustedPromise = promise(promiseOrValue);
-                return trustedPromise.then(callback, errback, progressHandler);
-            }
-            function promise(promiseOrValue) {
-                var promise, deferred;
-                if (promiseOrValue instanceof Promise) {
-                    promise = promiseOrValue;
-                } else {
-                    deferred = defer();
-                    if (isPromise(promiseOrValue)) {
-                        promiseOrValue.then(deferred.resolve, deferred.reject, deferred.progress);
-                        promise = deferred.promise;
                     } else {
-                        deferred.resolve(promiseOrValue);
-                        promise = deferred.promise;
+                        reduced = args[1];
                     }
-                }
-                return promise;
-            }
-            function some(promisesOrValues, howMany, callback, errback, progressHandler) {
-                var toResolve, results, ret, deferred, resolver, rejecter, handleProgress, len, i;
-                len = promisesOrValues.length >>> 0;
-                toResolve = Math.max(0, Math.min(howMany, len));
-                results = [];
-                deferred = defer();
-                ret = when(deferred, callback, errback, progressHandler);
-                function resolve(val) {
-                    resolver(val);
-                }
-                function reject(err) {
-                    rejecter(err);
-                }
-                function progress(update) {
-                    handleProgress(update);
-                }
-                function complete() {
-                    resolver = rejecter = handleProgress = noop;
-                }
-                if (!toResolve) {
-                    deferred.resolve(results);
-                } else {
-                    resolver = function(val) {
-                        results.push(val);
-                        if (!--toResolve) {
-                            complete();
-                            deferred.resolve(results);
+                    for (; i < len; ++i) {
+                        if (i in arr) reduced = reduceFunc(reduced, arr[i], i, arr);
+                    }
+                    return reduced;
+                };
+                function Promise() {}
+                function resolved(value) {
+                    var p = new Promise;
+                    p.then = function(callback) {
+                        checkCallbacks(arguments);
+                        var nextValue;
+                        try {
+                            if (callback) nextValue = callback(value);
+                            return promise(nextValue === undef ? value : nextValue);
+                        } catch (e) {
+                            return rejected(e);
                         }
                     };
-                    rejecter = function(err) {
-                        complete();
-                        deferred.reject(err);
-                    };
-                    handleProgress = deferred.progress;
-                    for (i = 0; i < len; ++i) {
-                        if (i in promisesOrValues) {
-                            when(promisesOrValues[i], resolve, reject, progress);
+                    return freeze(p);
+                }
+                function rejected(reason) {
+                    var p = new Promise;
+                    p.then = function(callback, errback) {
+                        checkCallbacks(arguments);
+                        var nextValue;
+                        try {
+                            if (errback) {
+                                nextValue = errback(reason);
+                                return promise(nextValue === undef ? reason : nextValue);
+                            }
+                            return rejected(reason);
+                        } catch (e) {
+                            return rejected(e);
                         }
+                    };
+                    return freeze(p);
+                }
+                function checkCallbacks(arrayOfCallbacks) {
+                    var arg, i = arrayOfCallbacks.length;
+                    while (i) {
+                        arg = arrayOfCallbacks[--i];
+                        if (arg != null && typeof arg != "function") throw new Error("callback is not a function");
                     }
                 }
-                return ret;
-            }
-            function all(promisesOrValues, callback, errback, progressHandler) {
-                var results, promise;
-                results = allocateArray(promisesOrValues.length);
-                promise = reduce(promisesOrValues, reduceIntoArray, results);
-                return when(promise, callback, errback, progressHandler);
-            }
-            function reduceIntoArray(current, val, i) {
-                current[i] = val;
-                return current;
-            }
-            function any(promisesOrValues, callback, errback, progressHandler) {
-                function unwrapSingleResult(val) {
-                    return callback(val[0]);
-                }
-                return some(promisesOrValues, 1, unwrapSingleResult, errback, progressHandler);
-            }
-            function map(promisesOrValues, mapFunc) {
-                var results, i;
-                i = promisesOrValues.length;
-                results = allocateArray(i);
-                for (; i >= 0; --i) {
-                    if (i in promisesOrValues) results[i] = when(promisesOrValues[i], mapFunc);
-                }
-                return reduce(results, reduceIntoArray, results);
-            }
-            function reduce(promisesOrValues, reduceFunc, initialValue) {
-                var total, args;
-                total = promisesOrValues.length;
-                args = [ function(current, val, i) {
-                    return when(current, function(c) {
-                        return when(val, function(value) {
-                            return reduceFunc(c, value, i, total);
+                function defer() {
+                    var deferred, promise, listeners, progressHandlers, _then, _progress, complete;
+                    listeners = [];
+                    progressHandlers = [];
+                    _then = function unresolvedThen(callback, errback, progback) {
+                        checkCallbacks(arguments);
+                        var deferred = defer();
+                        listeners.push(function(promise) {
+                            promise.then(callback, errback).then(deferred.resolve, deferred.reject, deferred.progress);
                         });
+                        progback && progressHandlers.push(progback);
+                        return deferred.promise;
+                    };
+                    function then(callback, errback, progback) {
+                        return _then(callback, errback, progback);
+                    }
+                    function resolve(val) {
+                        complete(resolved(val));
+                    }
+                    function reject(err) {
+                        complete(rejected(err));
+                    }
+                    _progress = function(update) {
+                        var progress, i = 0;
+                        while (progress = progressHandlers[i++]) progress(update);
+                    };
+                    function progress(update) {
+                        _progress(update);
+                    }
+                    complete = function(completed) {
+                        var listener, i = 0;
+                        _then = completed.then;
+                        complete = _progress = function alreadyCompleted() {
+                            throw new Error("already completed");
+                        };
+                        progressHandlers = undef;
+                        while (listener = listeners[i++]) {
+                            listener(completed);
+                        }
+                        listeners = [];
+                    };
+                    deferred = {};
+                    promise = new Promise;
+                    promise.then = deferred.then = then;
+                    deferred.promise = freeze(promise);
+                    deferred.resolver = freeze({
+                        resolve: deferred.resolve = resolve,
+                        reject: deferred.reject = reject,
+                        progress: deferred.progress = progress
                     });
-                } ];
-                if (arguments.length >= 3) args.push(initialValue);
-                return promise(reduceArray.apply(promisesOrValues, args));
-            }
-            function chain(promiseOrValue, resolver, resolveValue) {
-                var useResolveValue = arguments.length > 2;
-                return when(promiseOrValue, function(val) {
-                    if (useResolveValue) val = resolveValue;
-                    resolver.resolve(val);
-                    return val;
-                }, function(e) {
-                    resolver.reject(e);
-                    return rejected(e);
-                }, resolver.progress);
-            }
-            when.defer = defer;
-            when.isPromise = isPromise;
-            when.some = some;
-            when.all = all;
-            when.any = any;
-            when.reduce = reduce;
-            when.map = map;
-            when.chain = chain;
-            return when;
+                    return deferred;
+                }
+                function isPromise(promiseOrValue) {
+                    return promiseOrValue && typeof promiseOrValue.then === "function";
+                }
+                function when(promiseOrValue, callback, errback, progressHandler) {
+                    var trustedPromise = promise(promiseOrValue);
+                    return trustedPromise.then(callback, errback, progressHandler);
+                }
+                function promise(promiseOrValue) {
+                    var promise, deferred;
+                    if (promiseOrValue instanceof Promise) {
+                        promise = promiseOrValue;
+                    } else {
+                        deferred = defer();
+                        if (isPromise(promiseOrValue)) {
+                            promiseOrValue.then(deferred.resolve, deferred.reject, deferred.progress);
+                            promise = deferred.promise;
+                        } else {
+                            deferred.resolve(promiseOrValue);
+                            promise = deferred.promise;
+                        }
+                    }
+                    return promise;
+                }
+                function some(promisesOrValues, howMany, callback, errback, progressHandler) {
+                    var toResolve, results, ret, deferred, resolver, rejecter, handleProgress, len, i;
+                    len = promisesOrValues.length >>> 0;
+                    toResolve = Math.max(0, Math.min(howMany, len));
+                    results = [];
+                    deferred = defer();
+                    ret = when(deferred, callback, errback, progressHandler);
+                    function resolve(val) {
+                        resolver(val);
+                    }
+                    function reject(err) {
+                        rejecter(err);
+                    }
+                    function progress(update) {
+                        handleProgress(update);
+                    }
+                    function complete() {
+                        resolver = rejecter = handleProgress = noop;
+                    }
+                    if (!toResolve) {
+                        deferred.resolve(results);
+                    } else {
+                        resolver = function(val) {
+                            results.push(val);
+                            if (!--toResolve) {
+                                complete();
+                                deferred.resolve(results);
+                            }
+                        };
+                        rejecter = function(err) {
+                            complete();
+                            deferred.reject(err);
+                        };
+                        handleProgress = deferred.progress;
+                        for (i = 0; i < len; ++i) {
+                            if (i in promisesOrValues) {
+                                when(promisesOrValues[i], resolve, reject, progress);
+                            }
+                        }
+                    }
+                    return ret;
+                }
+                function all(promisesOrValues, callback, errback, progressHandler) {
+                    var results, promise;
+                    results = allocateArray(promisesOrValues.length);
+                    promise = reduce(promisesOrValues, reduceIntoArray, results);
+                    return when(promise, callback, errback, progressHandler);
+                }
+                function reduceIntoArray(current, val, i) {
+                    current[i] = val;
+                    return current;
+                }
+                function any(promisesOrValues, callback, errback, progressHandler) {
+                    function unwrapSingleResult(val) {
+                        return callback(val[0]);
+                    }
+                    return some(promisesOrValues, 1, unwrapSingleResult, errback, progressHandler);
+                }
+                function map(promisesOrValues, mapFunc) {
+                    var results, i;
+                    i = promisesOrValues.length;
+                    results = allocateArray(i);
+                    for (; i >= 0; --i) {
+                        if (i in promisesOrValues) results[i] = when(promisesOrValues[i], mapFunc);
+                    }
+                    return reduce(results, reduceIntoArray, results);
+                }
+                function reduce(promisesOrValues, reduceFunc, initialValue) {
+                    var total, args;
+                    total = promisesOrValues.length;
+                    args = [ function(current, val, i) {
+                        return when(current, function(c) {
+                            return when(val, function(value) {
+                                return reduceFunc(c, value, i, total);
+                            });
+                        });
+                    } ];
+                    if (arguments.length >= 3) args.push(initialValue);
+                    return promise(reduceArray.apply(promisesOrValues, args));
+                }
+                function chain(promiseOrValue, resolver, resolveValue) {
+                    var useResolveValue = arguments.length > 2;
+                    return when(promiseOrValue, function(val) {
+                        if (useResolveValue) val = resolveValue;
+                        resolver.resolve(val);
+                        return val;
+                    }, function(e) {
+                        resolver.reject(e);
+                        return rejected(e);
+                    }, resolver.progress);
+                }
+                when.defer = defer;
+                when.isPromise = isPromise;
+                when.some = some;
+                when.all = all;
+                when.any = any;
+                when.reduce = reduce;
+                when.map = map;
+                when.chain = chain;
+                return when;
+            });
+        })(typeof define == "function" ? define : function(factory) {
+            typeof module != "undefined" ? module.exports = factory() : this.when = factory();
         });
-    })(typeof define == "function" ? define : function(factory) {
-        typeof module != "undefined" ? module.exports = factory() : this.when = factory();
-    });
-    var when = module.exports;
+        return module.exports;
+    }();
     (function(me, parser, when, undefined) {
         if (typeof parser.parse !== "function") {
             throw "No parser provided.";
