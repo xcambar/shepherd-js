@@ -1484,6 +1484,7 @@
                             moduleConf.imports[declaration.id] = module;
                             return moduleConf;
                         });
+                        modules[declaration.path] = _p;
                         confPromises.push(_p);
                     } else {
                         if (_isServer) {

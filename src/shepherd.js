@@ -402,7 +402,6 @@
                 var ref = declaration.path || declaration.src || declaration.id;
                 var _mod = modules[ref];
                 
-
                 //@FIX WTF means this if/else ???????
                 if (_mod) { //The module has already been loaded
                     if (when.isPromise(_mod)) {
@@ -422,6 +421,7 @@
                             return moduleConf;
                         }
                     );
+                    modules[declaration.path] = _p;
                     confPromises.push(_p);
                 } else {
                     if (_isServer) {
