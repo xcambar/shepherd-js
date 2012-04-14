@@ -1304,9 +1304,41 @@
             http.send();
             return deferred.promise;
         }
+        function serverModule(parsedURL) {
+            var defer = when.defer();
+            var get = require(parsedURL.protocol.indexOf("https") !== -1 ? "https" : "http").get;
+            var newURL = {
+                host: parsedURL.host,
+                path: parsedURL.pathname
+            };
+            var data = "";
+            parsedURL.port && (newURL.port = parsedURL.port);
+            get(newURL, function(res) {
+                res.on("data", function(chunk) {
+                    data += chunk;
+                });
+                res.on("end", function() {
+                    defer.resolve(data);
+                });
+                res.on("error", function(msg) {
+                    defer.reject(msg);
+                });
+            });
+            return defer;
+        }
         function _handleExports(module, moduleConf) {
-            moduleConf._internals.src && (modules[moduleConf._internals.src] = module);
-            moduleConf.name && (modules[moduleConf.name] = module);
+            if (moduleConf._internals.src) {
+                if (modules[moduleConf._internals.src]) {
+                    return "Duplicating module " + moduleConf._internals.src;
+                }
+                modules[moduleConf._internals.src] = module;
+            }
+            if (moduleConf.name) {
+                if (modules[moduleConf.name]) {
+                    return "Duplicating module " + moduleConf.name;
+                }
+                modules[moduleConf.name] = module;
+            }
         }
         function loadClientSideModule(moduleConf, contents) {
             var conf = moduleConf.imports || {};
@@ -1342,14 +1374,12 @@
                 me.s6d[extDepIndex] = function(exports) {
                     if (exports) {
                         delete me.s6d[extDepIndex];
-                        var defer = when.defer();
-                        _handleExports(module, moduleConf, function(module) {
-                            defer.resolve(module);
-                            return module;
-                        });
-                        return defer.promise;
+                        var _err = _handleExports(module, moduleConf);
+                        if (_err) {
+                            return _err;
+                        }
                     }
-                    return moduleArgs;
+                    return me.s6d[extDepIndex];
                 };
                 head.appendChild(script);
             } else {
@@ -1360,11 +1390,14 @@
                     fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
                 }
                 module = fn.apply({}, moduleArgs);
-                _handleExports(module, moduleConf);
+                var _err = _handleExports(module, moduleConf);
+                if (_err) {
+                    return _err;
+                }
                 return module;
             }
         }
-        function loadServerSideModule(moduleConf, contents, callback) {
+        function loadServerSideModule(moduleConf, contents) {
             var module;
             var wrapperConf;
             var vm = require("vm");
@@ -1400,18 +1433,18 @@
                     module[i] = context.module.exports[i];
                 }
             }
-            var defer = when.defer();
-            _handleExports(module, moduleConf, function() {
-                defer.resolve();
-            });
-            return defer;
+            var _err = _handleExports(module, moduleConf);
+            if (_err) {
+                return _err;
+            }
+            return module;
         }
         function loadModule(moduleConf, contents) {
             !moduleConf && (moduleConf = {});
             if (!_isServer) {
                 return loadClientSideModule(moduleConf, contents);
             } else {
-                loadServerSideModule(moduleConf, contents, callback);
+                return loadServerSideModule(moduleConf, contents);
             }
         }
         function applyConfiguration(conf) {
@@ -1526,6 +1559,9 @@
                         src: conf.src
                     }
                 }, rawText);
+                if (typeof module === "string") {
+                    return defer.reject(module);
+                }
                 return defer.resolve(module);
             }
             var split = comments[0].split("\n");
@@ -1615,28 +1651,21 @@
                 } else {
                     var modPath, url = require("url"), parsedURL = url.parse(uri);
                     if (parsedURL.host) {
-                        var get = require(parsedURL.protocol.indexOf("https") !== -1 ? "https" : "http").get;
-                        var newURL = {
-                            host: parsedURL.host,
-                            path: parsedURL.pathname
-                        };
-                        parsedURL.port && (newURL.port = parsedURL.port);
-                        get(newURL, function(res) {
-                            var data = "";
-                            res.on("data", function(chunk) {
-                                data += chunk;
+                        when(serverModule(parsedURL)).then(function(moduleSrc) {
+                            moduleConf.contents = moduleSrc;
+                            when(_moduleSrc(moduleConf)).then(function(conf) {
+                                modulePromise.resolve(conf);
+                                return conf;
+                            }, function(msg) {
+                                modulePromise.reject(msg);
                             });
-                            res.on("end", function() {
-                                moduleConf.contents = data;
-                                _moduleSrc(moduleConf, callback, _error);
-                            });
-                            res.on("error", _error);
+                        }, function xhrError(msg) {
+                            _error('Unable to fetch the module "' + uri + '" because: ' + msg);
                         });
                     } else {
                         modPath = _serverPathDetection(uri);
                         if (!modPath) {
-                            _error("Unable to locate file " + uri);
-                            return;
+                            return modulePromise.reject("Unable to locate file " + uri);
                         } else if (is(modPath, "object")) {
                             moduleConf.deps = moduleConf.deps || {};
                             moduleConf.deps[modPath.uri] = modPath.node_module;
@@ -1644,16 +1673,20 @@
                             try {
                                 moduleConf.contents = require("fs").readFileSync(modPath, "utf-8");
                             } catch (e) {
-                                _error(e.message);
-                                return;
+                                return modulePromise.reject(e.message);
                             }
                         }
-                        _moduleSrc(moduleConf, callback, _error);
+                        when(_moduleSrc(moduleConf)).then(function(conf) {
+                            modulePromise.resolve(conf);
+                            return conf;
+                        }, function(msg) {
+                            modulePromise.reject(msg);
+                        });
                     }
                 }
             } else {
                 if (is(moduleSrc, "object")) {
-                    _moduleSrc(moduleSrc, function(conf) {
+                    when(_moduleSrc(moduleSrc)).then(function(conf) {
                         modulePromise.resolve(conf);
                         return conf;
                     }, function(msg) {

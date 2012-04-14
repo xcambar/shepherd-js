@@ -1,5 +1,5 @@
 /**
-module bFixture {
+module aFixture {
   module b at 'fixtures/NodeJS/recursive/b.js';
   export b;
   export a1;
