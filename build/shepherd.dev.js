@@ -1280,9 +1280,6 @@
             }
             try {
                 var module = parser.parse(declaration);
-                if (typeof MINIFY == "undefined") {
-                    console.log(module);
-                }
                 return module;
             } catch (e) {
                 return "Invalid declaration \n" + e.message + "\nDeclaration: " + declaration;
@@ -1326,18 +1323,20 @@
             });
             return defer;
         }
-        function _handleExports(module, moduleConf) {
-            if (moduleConf._internals.src) {
-                if (modules[moduleConf._internals.src]) {
-                    return "Duplicating module " + moduleConf._internals.src;
+        function _registerModule(module, src, name) {
+            if (src) {
+                var existingMod = modules[src];
+                if (existingMod && !when.isPromise(existingMod)) {
+                    return "Duplicating module " + src;
                 }
-                modules[moduleConf._internals.src] = module;
+                modules[src] = module;
             }
-            if (moduleConf.name) {
-                if (modules[moduleConf.name]) {
-                    return "Duplicating module " + moduleConf.name;
+            if (name) {
+                var existingMod = modules[name];
+                if (existingMod && !when.isPromise(existingMod)) {
+                    return "Duplicating module " + name;
                 }
-                modules[moduleConf.name] = module;
+                modules[name] = module;
             }
         }
         function loadClientSideModule(moduleConf, contents) {
@@ -1374,7 +1373,7 @@
                 me.s6d[extDepIndex] = function(exports) {
                     if (exports) {
                         delete me.s6d[extDepIndex];
-                        var _err = _handleExports(module, moduleConf);
+                        var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
                         if (_err) {
                             return _err;
                         }
@@ -1390,7 +1389,7 @@
                     fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
                 }
                 module = fn.apply({}, moduleArgs);
-                var _err = _handleExports(module, moduleConf);
+                var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
                 if (_err) {
                     return _err;
                 }
@@ -1433,7 +1432,7 @@
                     module[i] = context.module.exports[i];
                 }
             }
-            var _err = _handleExports(module, moduleConf);
+            var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
             if (_err) {
                 return _err;
             }
@@ -1473,6 +1472,7 @@
                             moduleConf.imports[_importName] = module[_importName];
                         }
                     });
+                    modules[declaration.from.path] = _p;
                     confPromises.push(_p);
                 }
             }
@@ -1517,8 +1517,12 @@
                             moduleConf.imports[declaration.id] = module;
                             return moduleConf;
                         });
-                        modules[declaration.path] = _p;
-                        confPromises.push(_p);
+                        if (!modules[declaration.path]) {
+                            modules[declaration.path] = _p;
+                        }
+                        if (when.isPromise(modules[declaration.path])) {
+                            confPromises.push(_p);
+                        }
                     } else {
                         if (_isServer) {
                             var _dep;
@@ -1579,13 +1583,11 @@
                         contents: rawText
                     };
                     when(applyConfiguration(usedConf)).then(function(moduleConf) {
-                        return moduleConf;
-                    }, function(e) {
-                        defer.reject(e);
-                    }).then(function(moduleConf) {
                         var module = loadModule(moduleConf, moduleConf._internals.contents);
                         defer.resolve(module);
                         return module;
+                    }, function(e) {
+                        defer.reject(e);
                     });
                 }
             } else {
@@ -1614,7 +1616,10 @@
         }
         function _module(moduleSrc, callback, errorFn) {
             if (modules.hasOwnProperty(moduleSrc)) {
-                return callback(modules[moduleSrc]);
+                if (!when.isPromise(modules[moduleSrc])) {
+                    callback(modules[moduleSrc]);
+                }
+                return modules[moduleSrc];
             }
             function _error(msg) {
                 _errModules = _errModules || [];
@@ -1662,10 +1667,12 @@
                         }, function xhrError(msg) {
                             _error('Unable to fetch the module "' + uri + '" because: ' + msg);
                         });
+                        return modulePromise.promise;
                     } else {
                         modPath = _serverPathDetection(uri);
                         if (!modPath) {
-                            return modulePromise.reject("Unable to locate file " + uri);
+                            modulePromise.reject("Unable to locate file " + uri);
+                            return modulePromise;
                         } else if (is(modPath, "object")) {
                             moduleConf.deps = moduleConf.deps || {};
                             moduleConf.deps[modPath.uri] = modPath.node_module;
@@ -1673,7 +1680,8 @@
                             try {
                                 moduleConf.contents = require("fs").readFileSync(modPath, "utf-8");
                             } catch (e) {
-                                return modulePromise.reject(e.message);
+                                modulePromise.reject(e.message);
+                                return modulePromise;
                             }
                         }
                         when(_moduleSrc(moduleConf)).then(function(conf) {
@@ -1682,6 +1690,7 @@
                         }, function(msg) {
                             modulePromise.reject(msg);
                         });
+                        return modulePromise.promise || modulePromise;
                     }
                 }
             } else {

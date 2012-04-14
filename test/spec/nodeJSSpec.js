@@ -70,7 +70,6 @@ describe('Importing a module by its reference', function () {
         this.loadModule('fixtures/NodeJS/load_fs.js');
         runs(function () {
             expect(s6d.get('fixtures/NodeJS/load_fs.js').stat).toBe(require('fs').stat);
-            console.log(s6d.get())
         });
     });
 });

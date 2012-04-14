@@ -19,7 +19,6 @@
         _isServer = typeof window == 'undefined',
         _extDepsCount = 0,
         _debug;
-    
     //
     // Native plugins
     //
@@ -162,9 +161,6 @@
         }
         try {
             var module = parser.parse(declaration);
-            if (typeof MINIFY == 'undefined') {
-                console.log(module);
-            }
             return module;
         } catch (e) {
             return 'Invalid declaration \n' + e.message + '\nDeclaration: ' + declaration;
@@ -224,7 +220,6 @@
      * @param {Function} callback The callback function to be called after the successful export
      */
     function _registerModule (module, src, name) {
-
         if (src) {
             var existingMod = modules[src];
             if (existingMod && !when.isPromise(existingMod)) {
@@ -401,6 +396,7 @@
                         }
                     }
                 );
+                modules[declaration.from.path] = _p;
                 confPromises.push(_p);
             }
 
@@ -436,7 +432,6 @@
                 var ref = declaration.path || declaration.src || declaration.id;
                 var _mod = modules[ref];
                 
-                //@FIX WTF means this if/else ???????
                 if (_mod) { //The module has already been loaded
                     if (when.isPromise(_mod)) {
                         _mod.then(function (module) {
@@ -455,8 +450,13 @@
                             return moduleConf;
                         }
                     );
-                    modules[declaration.path] = _p;
-                    confPromises.push(_p);
+                    //@TODO These 2 expressions are probably (clearly?) the signal for a refactoring need
+                    if (!modules[declaration.path]) {
+                        modules[declaration.path] = _p;
+                    }
+                    if (when.isPromise(modules[declaration.path])) {
+                        confPromises.push(_p);
+                    }
                 } else {
                     if (_isServer) {
                         var _dep;
@@ -519,16 +519,14 @@
                 usedConf._internals = {src: conf.src, contents: rawText};
                 when(applyConfiguration(usedConf)).then(
                     function (moduleConf) {
-                        return moduleConf;
+                        var module = loadModule(moduleConf, moduleConf._internals.contents);
+                        defer.resolve(module);
+                        return module;
                     },
                     function (e) {
                         defer.reject(e);
                     }
-                ).then(function (moduleConf) {
-                    var module = loadModule(moduleConf, moduleConf._internals.contents);
-                    defer.resolve(module);
-                    return module;
-                });
+                );
             }
         } else {
             var module = loadModule({_internals: {src: conf.src}}, rawText);
@@ -563,7 +561,10 @@
      */
     function _module (moduleSrc, callback, errorFn) {
         if (modules.hasOwnProperty(moduleSrc)) {
-            return callback(modules[moduleSrc]);
+            if (!when.isPromise(modules[moduleSrc])) {
+                callback(modules[moduleSrc]);
+            }
+            return modules[moduleSrc];
         }
         function _error (msg) {
             _errModules = _errModules || [];
@@ -623,10 +624,12 @@
                             _error('Unable to fetch the module "' + uri + '" because: ' + msg);
                         }
                     );
+                    return modulePromise.promise;
                 } else {
                     modPath = _serverPathDetection(uri);
                     if (!modPath) {
-                        return modulePromise.reject('Unable to locate file ' + uri);
+                        modulePromise.reject('Unable to locate file ' + uri);
+                        return modulePromise;
                     } else if (is(modPath, 'object')) { //@TODO Check
                         moduleConf.deps = moduleConf.deps || {};
                         moduleConf.deps[modPath.uri] = modPath.node_module;
@@ -634,7 +637,8 @@
                         try {
                             moduleConf.contents = require('fs').readFileSync(modPath, 'utf-8');
                         } catch (e) {
-                            return modulePromise.reject(e.message);
+                            modulePromise.reject(e.message);
+                            return modulePromise;
                         }
                     }
                     when(_moduleSrc(moduleConf)).then(
@@ -646,6 +650,7 @@
                             modulePromise.reject(msg);
                         }
                     );
+                    return modulePromise.promise || modulePromise;
                 }
             }
         } else {
