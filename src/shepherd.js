@@ -223,18 +223,21 @@
      * @param {Object} moduleConf The result of the parsing of the module configuration
      * @param {Function} callback The callback function to be called after the successful export
      */
-    function _handleExports (module, moduleConf) {
-        if (moduleConf._internals.src) {
-            if (modules[moduleConf._internals.src]) {
-                return 'Duplicating module ' + moduleConf._internals.src;
+    function _registerModule (module, src, name) {
+
+        if (src) {
+            var existingMod = modules[src];
+            if (existingMod && !when.isPromise(existingMod)) {
+                return 'Duplicating module ' + src;
             }
-            modules[moduleConf._internals.src] = module;
+            modules[src] = module;
         }
-        if (moduleConf.name) {
-            if (modules[moduleConf.name]) {
-                return 'Duplicating module ' + moduleConf.name;
+        if (name) {
+            var existingMod = modules[name];
+            if (existingMod && !when.isPromise(existingMod)) {
+                return 'Duplicating module ' + name;
             }
-            modules[moduleConf.name] = module;
+            modules[name] = module;
         }
     }
     
@@ -274,7 +277,7 @@
             me.s6d[extDepIndex] = function (exports) {
                 if (exports) {
                     delete me.s6d[extDepIndex];
-                    var _err = _handleExports(module, moduleConf);
+                    var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
                     if (_err) {
                         return _err;
                     }
@@ -290,7 +293,7 @@
                 fn = Function.apply({}, argsName.concat([contents +  ';\nreturn ' + returns]));
             }
             module = fn.apply({}, moduleArgs);
-            var _err = _handleExports(module, moduleConf)
+            var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name)
             if (_err) {
                 return _err;
             }
@@ -335,7 +338,7 @@
                 module[i] = context.module.exports[i];
             }
         }
-        var _err = _handleExports(module, moduleConf);
+        var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
         if (_err) {
             return _err;
         }
