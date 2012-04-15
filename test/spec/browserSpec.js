@@ -7,7 +7,7 @@
         });
     });
 
-    it ('should be able to import modules from an absolute URL (WORKS WHEN htpp://localhost:8000/test IS THE JASMINE BASE URL!)', function () {
+    it ('should be able to import modules from an absolute URL (works ONLY when the baseURL of Jasmine spec runner is /test)', function () {
         var spy = this.loadModule('fixtures/importFromAbsoluteURL.js');
         runs(function () {
             expect(s6d.get('fixtures/importFromAbsoluteURL.js').imp1()).toEqual('external loaded');
