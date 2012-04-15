@@ -1456,7 +1456,10 @@
                 if (_dep) {
                     if (when.isPromise(_dep)) {
                         _dep.then(function(module) {
-                            moduleConf.imports[_importName] = module;
+                            for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                                var _importName = declaration.vars[i];
+                                moduleConf.imports[_importName] = module[_importName];
+                            }
                         });
                         confPromises.push(_dep);
                     } else {
@@ -1472,8 +1475,12 @@
                             moduleConf.imports[_importName] = module[_importName];
                         }
                     });
-                    modules[declaration.from.path] = _p;
-                    confPromises.push(_p);
+                    if (!modules[declaration.from.path]) {
+                        modules[declaration.from.path] = _p;
+                    }
+                    if (when.isPromise(modules[declaration.from.path])) {
+                        confPromises.push(_p);
+                    }
                 }
             }
             function exportLoader(declaration) {
@@ -1549,13 +1556,12 @@
             var defer = when.all(confPromises).then(function() {
                 return moduleConf;
             }, function() {
-                throw new Error("Error while loading " + moduleConf._internals.src);
+                return new Error("Error while loading " + moduleConf._internals.src);
             });
             return defer;
         }
         function _moduleSrc(conf) {
-            var defer = when.defer();
-            moduleConf = conf || {}, rawText = conf.contents ? conf.contents : "", declaration = "";
+            var defer = when.defer(), moduleConf = conf || {}, rawText = conf.contents ? conf.contents : "", declaration = "";
             var comments = rawText.match(/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg);
             if (!comments) {
                 var module = loadModule({
@@ -1588,6 +1594,7 @@
                         return module;
                     }, function(e) {
                         defer.reject(e);
+                        return e;
                     });
                 }
             } else {
@@ -1599,7 +1606,7 @@
                 defer.resolve(module);
                 return module;
             }
-            return defer.promise;
+            return defer.promise || defer;
         }
         function _serverPathDetection(uri) {
             var path;
@@ -1627,7 +1634,8 @@
                 if (is(errorFn, "function")) {
                     errorFn();
                 } else {
-                    throw new Error("(" + moduleSrc + ") " + msg);
+                    console && console.error("(" + moduleSrc + ") " + msg);
+                    return new Error("(" + moduleSrc + ") " + msg);
                 }
             }
             _error.origFn = errorFn;

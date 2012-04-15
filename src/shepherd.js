@@ -377,8 +377,11 @@
             if (_dep) {
                 if (when.isPromise(_dep)) {
                     _dep.then(function (module) {
-                            moduleConf.imports[_importName] = module;
-                        });
+                        for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                            var _importName = declaration.vars[i];
+                            moduleConf.imports[_importName] = module[_importName];
+                        }
+                    });
                     confPromises.push(_dep);
                 } else {
                     for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
@@ -396,8 +399,15 @@
                         }
                     }
                 );
-                modules[declaration.from.path] = _p;
-                confPromises.push(_p);
+                //@TODO These 2 expressions are probably (clearly?) the signal for a refactoring need
+                if (!modules[declaration.from.path]) {
+                    modules[declaration.from.path] = _p;
+                }
+                if (when.isPromise(modules[declaration.from.path])) {
+                    confPromises.push(_p);
+                }
+                // modules[declaration.from.path] = _p;
+                // confPromises.push(_p);
             }
 
         }
@@ -485,14 +495,14 @@
             function () {
                 return moduleConf;
             }, function () {
-                throw new Error('Error while loading ' + moduleConf._internals.src);
+                return new Error('Error while loading ' + moduleConf._internals.src);
             }
         );
         return defer;
     }
     
     function _moduleSrc (conf) {
-        var defer = when.defer();
+        var defer = when.defer(),
             moduleConf = conf || {},
             rawText = conf.contents ? conf.contents : '',
             declaration = '';
@@ -525,6 +535,7 @@
                     },
                     function (e) {
                         defer.reject(e);
+                        return e;
                     }
                 );
             }
@@ -533,7 +544,7 @@
             defer.resolve(module);
             return module;
         }
-        return defer.promise;
+        return defer.promise || defer;
     }
     
     //Path detection follows 3 steps
@@ -572,7 +583,8 @@
             if (is(errorFn, 'function')) {
                 errorFn();
             } else {
-                throw new Error( '(' + moduleSrc + ') ' + msg);
+                console && console.error('(' + moduleSrc + ') ' + msg);
+                return new Error( '(' + moduleSrc + ') ' + msg);
             }
         }
         _error.origFn = errorFn;
