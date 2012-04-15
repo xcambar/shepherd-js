@@ -26,14 +26,14 @@ beforeEach(function () {
         }
     });
     
-    this.loadModule = function (moduleName) {
+    this.loadModule = function (moduleName, timeout) {
         var spy = jasmine.createSpy();
         runs(function () {
             s6d(moduleName, spy);
         });
         waitsFor(function () {
             return !!s6d.get(moduleName);
-        }, 'The module has been loaded', 200);
+        }, 'the module ' + moduleName + ' to be loaded', timeout || 200);
         
         return spy;
     };

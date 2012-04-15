@@ -1,7 +1,7 @@
 /**
 module parent {
-    module common at '/test/fixtures/recursive/useCase2/common.js';
-    module child at '/test/fixtures/recursive/useCase2/child.js';
+    module common at 'fixtures/recursive/useCase2/common.js';
+    module child at 'fixtures/recursive/useCase2/child.js';
     export common, child;
 }
 **/

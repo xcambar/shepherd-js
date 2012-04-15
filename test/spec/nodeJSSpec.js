@@ -56,7 +56,7 @@ describe('Declare modules by their paths', function () {
 
 describe('Importing module declared by a canonical URL', function () {
     it ('should be able to import modules from a canonical URL', function () {
-        var spy = this.loadModule('fixtures/importFromCanonicalURL.js');
+        var spy = this.loadModule('fixtures/importFromCanonicalURL.js', 2000);
         runs(function () {
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1).toBeTruthy();
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1.var1).toBe('EXPORTED NAMED MODULE!!');
