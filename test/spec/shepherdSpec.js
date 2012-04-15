@@ -214,12 +214,4 @@ describe('Recursive module loading', function () {
             expect(s6d.get('fixtures/recursive/useCase2/common.js').something).toBe('worth it');
         });
     });
-    
-    xit ('allows cyclic dependencies', function () {
-        var spy = this.loadModule('fixtures/cyclic/a.js');
-        runs(function () {
-            expect(s6d.get('./fixtures/cycle/a.js')).toBeTruthy();
-            expect(s6d.get('./fixtures/cycle/b.js')).toBeTruthy();
-        });
-    });
 });
