@@ -24,9 +24,10 @@
             Shepherd allows to securize the code from external domain by turning them into modules. <br />
             To do so for jQuery, the following lines added to the header of your page are enough: <br /><br />
             <pre>&lt;script type="text/shepherd-js"&gt;
-  "modularize!jQuery;";
-  "noGlobal!jQuery;";
-  "noGlobal!$;";
+{
+  modularize: 'jQuery',
+  noGlobal: ['jQuery', '$']
+}
 &lt;/script&gt;</pre><br /><br />
         </div>
         <p>Expected output: A gear falling to the bottom of the page</p>
