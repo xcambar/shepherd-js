@@ -1,5 +1,8 @@
-"module {                                       ";
-"  module fs from util;                         ";
-"  import _ from '../libs/underscore.min.js';   ";
-"}                                              ";
+/*
+module nodeJSExample {
+  module fs is util;
+  import _ from '../libs/underscore.min.js';
+}
+*/
+
 console.log(_);

@@ -1,3 +1,1 @@
-var s6d = require('../../shepherd.js');
-
-s6d('bootstrap.js');
+require('../../build/shepherd.dev.js').call(this, 'bootstrap.js');

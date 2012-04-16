@@ -1205,79 +1205,9 @@
                     },
                     name: "require"
                 };
-            } else if (name === "amd") {
-                var wrapperName = "define";
-                return {
-                    name: wrapperName,
-                    fn: function wrapperFn(name, deps, factory) {
-                        var _n, _d, _f;
-                        switch (arguments.length) {
-                          case 1:
-                            _n = conf.name;
-                            _f = name;
-                            break;
-                          case 2:
-                            _d = name;
-                            _f = deps;
-                            break;
-                          default:
-                            _n = name;
-                            _d = deps;
-                            _f = factory;
-                        }
-                        if (_d) {
-                            var newDeps = {};
-                            for (var i = 0, _l = _d.length; i < _l; i++) {
-                                newDeps[_d[i]] = {
-                                    format: "amd",
-                                    ref: _d[i]
-                                };
-                            }
-                            _d = newDeps;
-                        }
-                        var modConf = {};
-                        _d && (modConf.import = _d);
-                        _n && (modConf.name = _n);
-                        _f && (modConf.fn = _f);
-                        modConf.src = conf.src;
-                        applyConfiguration(modConf, function applyCallback(parsedConf) {
-                            throw new Error("AMD not handled yet");
-                            loadModule(parsedConf);
-                        });
-                    }
-                };
             }
         }
         function parse(declaration, conf) {
-            function pluginDeclaration(decl) {
-                var plugins = decl.split(";"), pluginRe = /^\s*([a-zA-Z_$][0-9a-zA-Z_$]*)\!([a-zA-Z_$][0-9a-zA-Z_$]*)\s*$/;
-                for (var i = 0; i < plugins.length; i++) {
-                    if (!plugins[i]) {
-                        continue;
-                    }
-                    var plugin = plugins[i], match = plugin.match(pluginRe);
-                    if (match) {
-                        var pluginName = match[1];
-                        argument = match[2];
-                        if (!_plugins[pluginName]) {
-                            return 'Unknown plugin "' + pluginName + '"';
-                        }
-                        var pluginResult = _plugins[pluginName](argument);
-                        if (is(pluginResult, "string") || !pluginResult) {
-                            return pluginResult;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            var moduleObj = conf || {}, isPlugin = pluginDeclaration(declaration);
-            if (is(isPlugin, "string")) {
-                return isPlugin;
-            } else if (isPlugin) {
-                return moduleObj;
-            }
             try {
                 var module = parser.parse(declaration);
                 return module;
@@ -1373,7 +1303,7 @@
                 me.s6d[extDepIndex] = function(exports) {
                     if (exports) {
                         delete me.s6d[extDepIndex];
-                        var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
+                        var _err = _registerModule(exports, moduleConf._internals.src, moduleConf.name);
                         if (_err) {
                             return _err;
                         }
@@ -1418,7 +1348,7 @@
                 return require(arg);
             };
             var returnStatement = moduleConf.exports ? moduleConf.exports.map(function(v) {
-                return "returns." + v.dest + " = " + v.src;
+                return "returns." + v.dest + " = " + [ "exports." + v.src, "module.exports." + v.src, v.src ].join("||");
             }).join(";\n") : "";
             vm.runInNewContext(contents + ";\n" + returnStatement, context, moduleConf._internals.src + ".vm");
             module = context.returns;
