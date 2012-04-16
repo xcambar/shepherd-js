@@ -215,9 +215,10 @@ var expB = ['This', 'is', 'an', 'exported', 'array'];</pre>
     <dd>Let's say you included jQuery from a CDN, such as <pre>&lt;script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"&gt;&lt;/script&gt;</pre>
       If you want to remove jQuery from the global space and make it available as a module in Shepherd, just add the following in your header:
       <pre>&lt;script type="text/shepherd-js"&gt;
-  "modularize!$;";
-  "noGlobal!jQuery;";
-  "noGlobal!$;";
+  {
+    modularize: '$',
+    noGlobal: ['jQuery', '$']
+  }
 &lt;/script&gt;
 </pre>
 Using jQuery in a module (myModule.js):
@@ -230,8 +231,15 @@ $.ajax(/*...*/);
 <div class="alert-message">Check out the live examples or the source code of this page too!</div>
     </dd>
     <dt>What about SSJS ?</dt>
-    <dd><div class="alert-message">The commonJS wrapper is written and available in the package, but requires some testing and possibly some changes before a release.<br/>
-      Check out the <a href="https://github.com/xcambar/shepherd-js/tree/master/examples/NodeJS">examples folder</a> for details.</div></dd>
+    <dd>Bootstrap your app like the following:
+      <pre>require('../../build/shepherd.dev.js').call(this, 'app.js');</pre>
+    (where app.js is the main entry point of your app)
+    <br/>
+    <div class="alert-message">
+      You can now Shepherd in your app.<br/>
+      <b>Note</b>: You can keep using the commonJS syntax for your external modules.
+    </div>
+    </dd>
     <dt>Already using RequireJS?</dt>
     <dd><div class="alert-message">The AMD wrapper is a work in progress and will be made available as soon as possible.</div></dd>
     <dt style="color: red;">Live examples</dt>
