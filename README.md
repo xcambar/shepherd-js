@@ -14,11 +14,7 @@ If so, then it's time to hire a __Shepherd__ for your JS files and applications.
 
 ## What is it ?
 
-__Shepherd__ is three-fold:
-
-* a module loader
-* a dependency manager
-* a _modularizer_ (couldn't find any better word...) for your JS files and apps.
+__Shepherd__ is a polyfill for the new module syntax coming in ECMAScript:Harmony
 
 ## Quick features list
 
@@ -26,8 +22,6 @@ __Shepherd__:
 
 * is cross-side, which means it works well in the browser and in the server
 * has a ECMAScript Harmony compatible syntax
-* is non-destructive to your files. Your JS will execute even without Shepherd, but they'll do so much better with it! (module declarations are within comments)
-* requires near-zero time to update your existing code 
 * Works even with files/libraries you can not modify (eg, jQuery from a CDN)
 
 ## Want more ?
