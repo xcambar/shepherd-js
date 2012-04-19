@@ -58,6 +58,7 @@ describe('Importing module declared by a canonical URL', function () {
     it ('should be able to import modules from a canonical URL', function () {
         var spy = this.loadModule('fixtures/importFromCanonicalURL.js', 2000);
         runs(function () {
+            console.log(s6d.get('fixtures/importFromCanonicalURL.js'));
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1).toBeTruthy();
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1.var1).toBe('EXPORTED NAMED MODULE!!');
             expect(s6d.get('fixtures/importFromCanonicalURL.js').export1).toHaveMembers(['var1', 'fn1']);

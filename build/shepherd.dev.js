@@ -1492,7 +1492,7 @@
         }
         function _moduleSrc(conf) {
             var defer = when.defer(), moduleConf = conf || {}, rawText = conf.contents ? conf.contents : "", declaration = "";
-            var comments = rawText.match(/(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg);
+            var comments = rawText.match(/\s*\/\/\s*s6d([\s\S]*?)\/\/\s*-s6d/m);
             if (!comments) {
                 var module = loadModule({
                     _internals: {
@@ -1504,9 +1504,9 @@
                 }
                 return defer.resolve(module);
             }
-            var split = comments[0].split("\n");
+            var split = comments[1].split("\n");
             for (var j = 0, _l2 = split.length; j < _l2; j++) {
-                declaration += split[j].trim().replace(/(^\/\*+)|(\*+\/?)/, "");
+                declaration += split[j].trim();
             }
             if (declaration.length) {
                 moduleConf = parse(declaration, moduleConf);
@@ -1519,7 +1519,7 @@
                         contents: rawText
                     };
                     when(applyConfiguration(usedConf)).then(function(moduleConf) {
-                        var module = loadModule(moduleConf, moduleConf._internals.contents);
+                        var module = loadModule(moduleConf, moduleConf._internals.contents.replace(comments[0], ""));
                         defer.resolve(module);
                         return module;
                     }, function(e) {
@@ -1680,9 +1680,9 @@
             var modules = [];
             for (var i = 0; i < document.scripts.length; i++) {
                 var script = document.scripts[i], srcAttr = script.getAttribute("type");
-                if (srcAttr == "text/shepherd-js") {
+                if (srcAttr == "harmony") {
                     modules.push(script);
-                } else if (srcAttr == "text/shepherd-js/config") {
+                } else if (srcAttr == "text/shepherd-config") {
                     confs.push(script.innerHTML.trim());
                 }
             }

@@ -33,8 +33,8 @@ beforeEach(function () {
         });
         waitsFor(function () {
             return !!s6d.get(moduleName);
-        }, 'the module ' + moduleName + ' to be loaded', timeout || 5000);
+        }, 'the module ' + moduleName + ' to be loaded', Math.max(timeout || 0, 5000));
         
         return spy;
     };
-})
+});

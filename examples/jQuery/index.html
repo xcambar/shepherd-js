@@ -3,22 +3,22 @@
     <head>
         <title>Shepherding jQuery</title>
         
-        <script type="text/shepherd-js" data-src="main.js"></script>
+        <script type="harmony" data-src="main.js"></script>
         <script type="text/javascript" src="../../build/shepherd.dev.js"></script>
         
         <style type="text/css">
             body {padding: 0;margin:0;position:fixed;top:0;bottom:0;left:0;right:0}
             .info {border-bottom: 3px solid orange;background: #FFD39B;text-align: center;font-size: 1.05em;padding-top: 5px;}
-            .info pre {font-size: 1.2em;border: 1px solid #999;background: #DDD;display: inline;padding: 3px 20px;}
+            .info pre {font-size: 1.2em;border: 1px solid #999;background: #DDD;display: inline-block; text-align: left; padding: 3px 20px;}
         </style>
     </head>
     <body>
         <div class='info'>
             <b>Note</b>: This demo uses a modified version of jQuery.<br />
             The modification consists on a one-line addition of the following text (quotes included): <br /><br />
-            <pre>/*
+            <pre>//s6d
 export jQuery;
-*/
+//-s6d
 </pre><br /><br />
         </div>
         <p>Expected output: A gear falling to the bottom of the page</p>

@@ -1,10 +1,9 @@
-/**
-@ DEPRECATED
+// s6d
 module {
   export fn2;
   export var2
 }
-**/
+// -s6d
 "use strict";
 
 /**

@@ -1,0 +1,19 @@
+//s6d
+module module1 {
+    export var1;
+    export var2;
+}
+//-s6d
+
+var var1 = 'first';
+var var2 = 'second';
+
+//s6d
+module module2 {
+    export var3;
+    export var4;
+}
+//-s6d
+
+var var1 = 'third';
+var var2 = 'fourth';

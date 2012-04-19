@@ -4,14 +4,14 @@
         <title>Shepherding Underscore fetched from an external domain</title>
         <script type="text/javascript" src="../../build/shepherd.dev.js"></script>
         <script type="text/javascript" src="https://raw.github.com/documentcloud/underscore/master/underscore-min.js"></script>
-        <script type="text/shepherd-js/config">
+        <script type="text/shepherd-config">
           {
             modularize: '_',
             noGlobal: '_'
           }
         </script>
         
-        <script type="text/shepherd-js" data-src="main.js"></script>
+        <script type="harmony" data-src="main.js"></script>
         
         <style type="text/css">
             body {padding: 0;margin:0;}
@@ -24,7 +24,7 @@
             <b>Note</b>: This demo uses Underscore fetched from an external domain (gitHub, in that case).<br />
             Shepherd allows external libraries to be securized as modules.<br />
             For Underscore, the required code in your header is enough:<br /><br />
-            <pre>&lt;script type="text/shepherd-js"&gt;
+            <pre>&lt;script type="harmony"&gt;
 {
   modularize: '_',
   noGlobal: '_'

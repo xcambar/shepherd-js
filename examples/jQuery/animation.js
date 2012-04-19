@@ -1,8 +1,8 @@
-/**
+//s6d
     module motion {
       export rebound;
     }
-**/
+//-s6d
 var direction = {
     x: 100 * Math.random(),
     y: 100 * Math.random(),

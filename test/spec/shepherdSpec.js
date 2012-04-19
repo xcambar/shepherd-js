@@ -215,3 +215,7 @@ describe('Recursive module loading', function () {
         });
     });
 });
+
+xdescribe('multiple module declarations in a single file', function () {
+
+});
