@@ -17,7 +17,7 @@
         context.exports = {};
         context.module = {exports: {}};
         context.require = function (arg) {
-            if (context[arg]) {
+            if (context.hasOwnProperty(arg)) {
                 return context[arg];
             }
             return require(arg);
@@ -44,9 +44,9 @@
     },
     "loadModuleReferenceBySource" : function (src) {
         try {
-            return require(declaration.src);
+            return require(src);
         } catch (e) {
-            throw new Error('The required module %1 doesn\'t exist'.replace('%1', declaration.src));
+            throw new Error('The required module %1 doesn\'t exist'.replace('%1', src));
         }
     },
     "retrieveFileContents" : function (uri, moduleConf, _moduleSrc, modulePromise) {
@@ -84,7 +84,7 @@
                 path =  require.resolve(uri);
             } catch (e) { /** Nothing here **/ }
             try {
-                path =  !path ? require('fs').statSync(__dirname + '/' + uri).isFile() && (__dirname + '/' + uri) : path;
+                path =  !path ? require('fs').statSync(__dirname + '/../' + uri).isFile() && (__dirname + '/../' + uri) : path;
             } catch (e) { /** Nothing here **/ }
             try {
                 path =  !path ? require('fs').statSync(process.cwd() + '/' + uri).isFile() && process.cwd() + '/' + uri : path;
@@ -117,7 +117,7 @@
             if (!modPath) {
                 modulePromise.reject('Unable to locate file ' + uri);
                 return modulePromise;
-            } else if (is(modPath, 'object')) { //@TODO Check
+            } else if (this.is(modPath, 'object')) { //@TODO Check
                 moduleConf.deps = moduleConf.deps || {};
                 moduleConf.deps[modPath.uri] = modPath.node_module;
             } else {
