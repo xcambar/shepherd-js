@@ -25,6 +25,11 @@ var flavourConfig = {
         min: false,
         flavourFile: './src/flavours/server.js',
         outputSuffix: 'server'
+    },
+    'shears' : {
+        min: false,
+        flavourFile: './src/flavours/optimizer.js',
+        outputSuffix: 'optimizer'
     }
 };
 

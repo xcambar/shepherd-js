@@ -1283,12 +1283,23 @@
             return Object.prototype.toString.call(obj).toLowerCase() == "[object " + type.toLowerCase() + "]";
         }
         function flavour(name, args) {
-            if (name in flavourConfig) {
-                return flavourConfig[name].apply({
+            if (name in flavour) {
+                return flavour[name].apply({
                     is: is
                 }, args);
             }
             return null;
+        }
+        flavour.register = function(name, fn) {
+            if (!(name in this)) {
+                flavour[name] = fn;
+            }
+        };
+        for (var i in flavourConfig) {
+            if (!flavourConfig.hasOwnProperty(i)) {
+                continue;
+            }
+            flavour.register(i, flavourConfig[i]);
         }
         var modules = {}, _errModules = null, _isServer = typeof window == "undefined", _runInTag;
         var _plugins = {
@@ -1350,11 +1361,12 @@
                 modules[name] = module;
             }
         }
+        flavour.register("registerModule", _registerModule);
         function loadModule(moduleConf, contents) {
             !moduleConf && (moduleConf = {});
             moduleConf.imports = moduleConf.imports || {};
             var module = flavour("loadModule", [ moduleConf, contents, _runInTag ]);
-            var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
+            var _err = flavour("registerModule", [ module, moduleConf._internals.src, moduleConf.name ]);
             return _err || module;
         }
         function applyConfiguration(conf) {
@@ -1619,6 +1631,7 @@
                 modules = {};
                 _errModules = null;
             };
+            me.s6d.flavour = flavour;
         }
     })(this, harmonyParser, when, flavour);
 })();
