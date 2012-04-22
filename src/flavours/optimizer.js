@@ -141,5 +141,5 @@
         "onLoad" : function (initConfig, initModules, s6d) {
             exports = module.exports = s6d;
         }
-    }
+    };
 })();

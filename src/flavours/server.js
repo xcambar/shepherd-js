@@ -84,7 +84,7 @@
                 path =  require.resolve(uri);
             } catch (e) { /** Nothing here **/ }
             try {
-                path =  !path ? require('fs').statSync(__dirname + '/../' + uri).isFile() && (__dirname + '/../' + uri) : path;
+                path =  !path ? require('fs').statSync(__dirname + '/' + uri).isFile() && (__dirname + '/../' + uri) : path;
             } catch (e) { /** Nothing here **/ }
             try {
                 path =  !path ? require('fs').statSync(process.cwd() + '/' + uri).isFile() && process.cwd() + '/' + uri : path;
