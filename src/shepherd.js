@@ -7,16 +7,16 @@
  * @see http://wiki.ecmascript.org/doku.php?id=harmony:modules for parsing and use case reference
  * @see http://addyosmani.com/writing-modular-js/
  */
-(function (me, parser, when, flavour, undefined) {
+(function (me, parser, when, flavourConfig, undefined) {
     if (typeof parser.parse !== 'function') {
         throw 'No parser provided.';
     }
     function is (obj, type) { //Thanks Underscore ;)
         return Object.prototype.toString.call(obj).toLowerCase() == '[object ' + type.toLowerCase() + ']';
     }
-    function runInContext (name, args) {
-        if (name in flavour) {
-            return flavour[name].apply(me, args);
+    function flavour (name, args) {
+        if (name in flavourConfig) {
+            return flavourConfig[name].apply({is: is}, args);
         }
         return null;
     }
@@ -118,7 +118,7 @@
     function loadModule (moduleConf, contents) {
         !moduleConf && (moduleConf = {});
         moduleConf.imports = moduleConf.imports || {};
-        var module = runInContext('loadModule', [moduleConf, contents, _runInTag]);
+        var module = flavour('loadModule', [moduleConf, contents, _runInTag]);
         var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
         return _err || module;
     }
@@ -228,7 +228,7 @@
                         confPromises.push(_p);
                     }
                 } else {
-                    var _dep = runInContext('loadModuleReferenceBySource', [declaration.src]);
+                    var _dep = flavour('loadModuleReferenceBySource', [declaration.src]);
                     moduleConf.imports[declaration.id] = _dep;
                 }
             }
@@ -328,7 +328,7 @@
         var moduleConf = is(moduleSrc, 'string') ?  {src: moduleSrc} : moduleSrc;
         var uri = is(moduleSrc, 'string') ? moduleSrc : moduleSrc.name;
         if (uri) {
-            var _contextReturn = runInContext('retrieveFileContents', [uri, moduleConf, _moduleSrc, modulePromise]);
+            var _contextReturn = flavour('retrieveFileContents', [uri, moduleConf, _moduleSrc, modulePromise]);
             return _contextReturn.promise || _contextReturn;
         } else {
             if (is(moduleSrc, 'object')) {
@@ -352,7 +352,9 @@
         for (var i = 0; i < confs.length; i++) {
             var confStr = confs[i];
             var conf;
-            if (is(JSON, 'object')) {
+            if (is(confStr, 'object')) {
+                conf = confStr;
+            } else if (is(JSON, 'object')) {
                 conf = JSON.parse(confStr);
             } else {
                 var confFn = new Function ('return ' + confStr);
@@ -362,9 +364,9 @@
                 if (!conf.hasOwnProperty(prop)) { continue; }
                 if (prop in _plugins) {
                     _plugins[prop](conf[prop]);
-                } else if (prop == 'runInTag') {
+                } else if (prop === 'runInTag') {
                     _runInTag = conf[prop];
-                } else if (prop == 'exposeAPI') {
+                } else if (prop === 'exposeAPI') {
                     exposeAPI();
                 }
             }
@@ -382,7 +384,7 @@
         }
     }
     
-    runInContext('onLoad', [initConfig, initModules, s6d]);
+    flavour('onLoad', [initConfig, initModules, s6d]);
     var _errCb;
     function s6d (modulePath, cb) {
         if (is(modulePath, 'object')) {

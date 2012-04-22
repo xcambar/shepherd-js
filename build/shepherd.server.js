@@ -1,1 +1,1624 @@
-(function(){var a=function(){var a,b=function(){var a={trace:function(){},yy:{},symbols_:{error:2,Program:3,ProgramNext:4,ProgramElement:5,ModuleDeclaration:6,ImportDeclaration:7,ExportDeclaration:8,EOF:9,ModuleSpecifier:10,Path:11,String:12,module:13,Id:14,at:15,SEMICOLON:16,IS:17,ImportSource:18,OPEN_BRACE:19,ModuleBody:20,CLOSE_BRACE:21,from:22,"import":23,ImportSpecifierSet:24,WILDCARD:25,ImportSpecifier:26,ImportSpecifierNext:27,COMMA:28,COLON:29,"export":30,ExportSpecifierSet:31,ExportSpecifierSetNext:32,ExportSpecifier:33,ExportSpecifierNext:34,ModuleElement:35,PERIOD:36,$accept:0,$end:1},terminals_:{2:"error",9:"EOF",12:"String",13:"module",14:"Id",15:"at",16:"SEMICOLON",17:"IS",19:"OPEN_BRACE",21:"CLOSE_BRACE",22:"from",23:"import",25:"WILDCARD",28:"COMMA",29:"COLON",30:"export",36:"PERIOD"},productions_:[0,[3,1],[4,1],[4,2],[5,1],[5,1],[5,1],[5,1],[10,1],[10,1],[6,5],[6,5],[6,5],[18,1],[18,3],[7,5],[24,1],[24,1],[24,4],[27,3],[27,0],[26,1],[26,3],[8,4],[32,3],[32,0],[31,4],[31,1],[31,1],[31,3],[33,1],[33,3],[34,3],[34,0],[20,2],[20,2],[20,2],[20,0],[35,1],[35,1],[11,1],[11,3]],performAction:function(b,c,d,e,f,g,h){var i=g.length-1;switch(f){case 1:return g[i];case 2:this.$=g[i];break;case 3:this.$=g[i].length?g[i-1].concat(g[i]):g[i-1];break;case 4:this.$=[{type:"module",decl:g[i]}];break;case 5:this.$=[{type:"import",decl:g[i]}];break;case 6:this.$=[{type:"export",decl:g[i]}];break;case 7:this.$=[];break;case 8:this.$={type:"module",path:g[i]};break;case 9:this.$={type:"uri",path:g[i].trim().replace(/^(['"])(.*)\1$/,function(a,b,c,d){return c})};break;case 10:this.$={id:g[i-3],path:g[i-1].trim().replace(/^(['"])(.*)\1$/,function(a,b,c,d){return c})};break;case 11:this.$={id:g[i-3],src:g[i-1]};break;case 12:this.$={id:g[i-3],expressions:g[i-1]};break;case 13:this.$=g[i];break;case 14:var j={id:g[i-2]};j[g[i].type]=g[i].path,this.$=j;break;case 15:this.$={from:g[i-1],vars:g[i-3]};break;case 16:this.$=[g[i]];break;case 17:this.$=[g[i]];break;case 18:this.$=[g[i-2]].concat(g[i-1]);break;case 19:this.$=typeof g[i]!="undefined"?[g[i-1]].concat(g[i]):g[i-1];break;case 21:this.$=g[i];break;case 22:this.$={remote:g[i-2],local:g[i]};break;case 23:this.$=typeof g[i-1]!="undefined"?g[i-2].concat(g[i-1]):g[i-2];break;case 24:this.$=typeof g[i]!="undefined"?g[i-1].concat(g[i]):g[i-1];break;case 26:this.$=typeof g[i-1]!="undefined"?[g[i-2]].concat(g[i-1]):[g[i-2]];break;case 27:this.$=[g[i]];break;case 28:this.$=[g[i]];break;case 29:this.$=[{from:g[i]}];break;case 30:this.$=g[i];break;case 31:this.$={local:g[i-2],remote:g[i]};break;case 32:this.$=typeof g[i]!="undefined"?[g[i-1]].concat(g[i]):[g[i-1]];break;case 34:this.$=[{type:"module",decl:g[i-1]}].concat(g[i]);break;case 35:this.$=[{type:"import",decl:g[i-1]}].concat(g[i]);break;case 36:this.$=[{type:"export",decl:g[i-1]}].concat(g[i]);break;case 37:this.$=[];break;case 38:this.$=g[i];break;case 39:this.$=g[i];break;case 40:this.$=g[i];break;case 41:this.$=g[i-2]+"."+g[i]}},table:[{3:1,4:2,5:3,6:4,7:5,8:6,9:[1,7],13:[1,8],23:[1,9],30:[1,10]},{1:[3]},{1:[2,1]},{1:[2,2],4:11,5:3,6:4,7:5,8:6,9:[1,7],13:[1,8],23:[1,9],30:[1,10]},{1:[2,4],9:[2,4],13:[2,4],23:[2,4],30:[2,4]},{1:[2,5],9:[2,5],13:[2,5],23:[2,5],30:[2,5]},{1:[2,6],9:[2,6],13:[2,6],23:[2,6],30:[2,6]},{1:[2,7],9:[2,7],13:[2,7],23:[2,7],30:[2,7]},{14:[1,12]},{14:[1,14],19:[1,16],24:13,25:[1,15]},{14:[1,19],19:[1,18],25:[1,20],31:17},{1:[2,3]},{15:[1,21],17:[1,22],19:[1,23]},{22:[1,24]},{22:[2,16]},{22:[2,17]},{14:[1,26],26:25},{16:[2,25],28:[1,28],32:27},{14:[1,30],33:29},{16:[2,27],28:[2,27]},{16:[2,28],22:[1,31],28:[2,28]},{12:[1,32]},{14:[1,34],18:33},{6:36,7:37,8:38,13:[1,8],20:35,21:[2,37],23:[1,9],30:[1,10]},{10:39,11:40,12:[1,41],14:[1,42]},{21:[2,20],27:43,28:[1,44]},{21:[2,21],28:[2,21],29:[1,45]},{16:[1,46]},{14:[1,19],19:[1,18],25:[1,20],31:47},{21:[2,33],28:[1,49],34:48},{21:[2,30],28:[2,30],29:[1,50]},{11:51,14:[1,42]},{16:[1,52]},{16:[1,53]},{16:[2,13],22:[1,54]},{21:[1,55]},{6:36,7:37,8:38,13:[1,8],20:56,21:[2,37],23:[1,9],30:[1,10]},{6:36,7:37,8:38,13:[1,8],20:57,21:[2,37],23:[1,9],30:[1,10]},{6:36,7:37,8:38,13:[1,8],20:58,21:[2,37],23:[1,9],30:[1,10]},{16:[1,59]},{16:[2,8]},{16:[2,9]},{16:[2,40],21:[2,40],28:[2,40],36:[1,60]},{21:[1,61]},{14:[1,26],26:62},{11:63,14:[1,42]},{1:[2,23],9:[2,23],13:[2,23],21:[2,23],23:[2,23],30:[2,23]},{16:[2,25],28:[1,28],32:64},{21:[1,65]},{14:[1,30],33:66},{11:67,14:[1,42]},{16:[2,29],28:[2,29]},{1:[2,10],9:[2,10],13:[2,10],21:[2,10],23:[2,10],30:[2,10]},{1:[2,11],9:[2,11],13:[2,11],21:[2,11],23:[2,11],30:[2,11]},{10:68,11:40,12:[1,41],14:[1,42]},{1:[2,12],9:[2,12],13:[2,12],21:[2,12],23:[2,12],30:[2,12]},{21:[2,34]},{21:[2,35]},{21:[2,36]},{1:[2,15],9:[2,15],13:[2,15],21:[2,15],23:[2,15],30:[2,15]},{11:69,14:[1,42]},{22:[2,18]},{21:[2,20],27:70,28:[1,44]},{21:[2,22],28:[2,22]},{16:[2,24]},{16:[2,26],28:[2,26]},{21:[2,33],28:[1,49],34:71},{21:[2,31],28:[2,31]},{16:[2,14]},{16:[2,41],21:[2,41],28:[2,41]},{21:[2,19]},{21:[2,32]}],defaultActions:{2:[2,1],11:[2,3],14:[2,16],15:[2,17],40:[2,8],41:[2,9],56:[2,34],57:[2,35],58:[2,36],61:[2,18],64:[2,24],68:[2,14],70:[2,19],71:[2,32]},parseError:function(b,c){throw new Error(b)},parse:function(b){function o(a){d.length=d.length-2*a,e.length=e.length-a,f.length=f.length-a}function p(){var a;return a=c.lexer.lex()||1,typeof a!="number"&&(a=c.symbols_[a]||a),a}var c=this,d=[0],e=[null],f=[],g=this.table,h="",i=0,j=0,k=0,l=2,m=1;this.lexer.setInput(b),this.lexer.yy=this.yy,this.yy.lexer=this.lexer,typeof this.lexer.yylloc=="undefined"&&(this.lexer.yylloc={});var n=this.lexer.yylloc;f.push(n),typeof this.yy.parseError=="function"&&(this.parseError=this.yy.parseError);var q,r,s,t,u,v,w={},x,y,z,A;for(;;){s=d[d.length-1],this.defaultActions[s]?t=this.defaultActions[s]:(q==null&&(q=p()),t=g[s]&&g[s][q]);if(typeof t=="undefined"||!t.length||!t[0]){if(!k){A=[];for(x in g[s])this.terminals_[x]&&x>2&&A.push("'"+this.terminals_[x]+"'");var B="";this.lexer.showPosition?B="Parse error on line "+(i+1)+":\n"+this.lexer.showPosition()+"\nExpecting "+A.join(", ")+", got '"+this.terminals_[q]+"'":B="Parse error on line "+(i+1)+": Unexpected "+(q==1?"end of input":"'"+(this.terminals_[q]||q)+"'"),this.parseError(B,{text:this.lexer.match,token:this.terminals_[q]||q,line:this.lexer.yylineno,loc:n,expected:A})}if(k==3){if(q==m)throw new Error(B||"Parsing halted.");j=this.lexer.yyleng,h=this.lexer.yytext,i=this.lexer.yylineno,n=this.lexer.yylloc,q=p()}for(;;){if(l.toString()in g[s])break;if(s==0)throw new Error(B||"Parsing halted.");o(1),s=d[d.length-1]}r=q,q=l,s=d[d.length-1],t=g[s]&&g[s][l],k=3}if(t[0]instanceof Array&&t.length>1)throw new Error("Parse Error: multiple actions possible at state: "+s+", token: "+q);switch(t[0]){case 1:d.push(q),e.push(this.lexer.yytext),f.push(this.lexer.yylloc),d.push(t[1]),q=null,r?(q=r,r=null):(j=this.lexer.yyleng,h=this.lexer.yytext,i=this.lexer.yylineno,n=this.lexer.yylloc,k>0&&k--);break;case 2:y=this.productions_[t[1]][1],w.$=e[e.length-y],w._$={first_line:f[f.length-(y||1)].first_line,last_line:f[f.length-1].last_line,first_column:f[f.length-(y||1)].first_column,last_column:f[f.length-1].last_column},v=this.performAction.call(w,h,j,i,this.yy,t[1],e,f);if(typeof v!="undefined")return v;y&&(d=d.slice(0,-1*y*2),e=e.slice(0,-1*y),f=f.slice(0,-1*y)),d.push(this.productions_[t[1]][0]),e.push(w.$),f.push(w._$),z=g[d[d.length-2]][d[d.length-1]],d.push(z);break;case 3:return!0}}return!0}},b=function(){var a={EOF:1,parseError:function(b,c){if(!this.yy.parseError)throw new Error(b);this.yy.parseError(b,c)},setInput:function(a){return this._input=a,this._more=this._less=this.done=!1,this.yylineno=this.yyleng=0,this.yytext=this.matched=this.match="",this.conditionStack=["INITIAL"],this.yylloc={first_line:1,first_column:0,last_line:1,last_column:0},this},input:function(){var a=this._input[0];this.yytext+=a,this.yyleng++,this.match+=a,this.matched+=a;var b=a.match(/\n/);return b&&this.yylineno++,this._input=this._input.slice(1),a},unput:function(a){return this._input=a+this._input,this},more:function(){return this._more=!0,this},pastInput:function(){var a=this.matched.substr(0,this.matched.length-this.match.length);return(a.length>20?"...":"")+a.substr(-20).replace(/\n/g,"")},upcomingInput:function(){var a=this.match;return a.length<20&&(a+=this._input.substr(0,20-a.length)),(a.substr(0,20)+(a.length>20?"...":"")).replace(/\n/g,"")},showPosition:function(){var a=this.pastInput(),b=(new Array(a.length+1)).join("-");return a+this.upcomingInput()+"\n"+b+"^"},next:function(){if(this.done)return this.EOF;this._input||(this.done=!0);var a,b,c,d,e,f;this._more||(this.yytext="",this.match="");var g=this._currentRules();for(var h=0;h<g.length;h++){c=this._input.match(this.rules[g[h]]);if(c&&(!b||c[0].length>b[0].length)){b=c,d=h;if(!this.options.flex)break}}if(b){f=b[0].match(/\n.*/g),f&&(this.yylineno+=f.length),this.yylloc={first_line:this.yylloc.last_line,last_line:this.yylineno+1,first_column:this.yylloc.last_column,last_column:f?f[f.length-1].length-1:this.yylloc.last_column+b[0].length},this.yytext+=b[0],this.match+=b[0],this.yyleng=this.yytext.length,this._more=!1,this._input=this._input.slice(b[0].length),this.matched+=b[0],a=this.performAction.call(this,this.yy,this,g[d],this.conditionStack[this.conditionStack.length-1]);if(a)return a;return}if(this._input==="")return this.EOF;this.parseError("Lexical error on line "+(this.yylineno+1)+". Unrecognized text.\n"+this.showPosition(),{text:"",token:null,line:this.yylineno})},lex:function(){var b=this.next();return typeof b!="undefined"?b:this.lex()},begin:function(b){this.conditionStack.push(b)},popState:function(){return this.conditionStack.pop()},_currentRules:function(){return this.conditions[this.conditionStack[this.conditionStack.length-1]].rules},topState:function(){return this.conditionStack[this.conditionStack.length-2]},pushState:function(b){this.begin(b)}};return a.options={},a.performAction=function(b,c,d,e){var f=e;switch(d){case 0:break;case 1:break;case 2:break;case 3:return"SEMICOLON";case 4:return"COLON";case 5:return"OPEN_BRACE";case 6:return"CLOSE_BRACE";case 7:return"module";case 8:return"import";case 9:return"export";case 10:return 15;case 11:return 17;case 12:return 22;case 13:return"WILDCARD";case 14:return 28;case 15:return 36;case 16:return"Id";case 17:return"String";case 18:return"String";case 19:return 9}},a.rules=[/^\n+/,/^\s+/,/^\t+/,/^;/,/^:/,/^\{/,/^\}/,/^module\b/,/^import\b/,/^export\b/,/^at\b/,/^is\b/,/^from\b/,/^\*/,/^,/,/^\./,/^[a-zA-Z_$][0-9a-zA-Z_$]*/,/^'[^\']+'/,/^"[^\"]+"/,/^$/],a.conditions={INITIAL:{rules:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],inclusive:!0}},a}();return a.lexer=b,a}();return typeof require!="undefined"&&typeof a!="undefined"&&(a.parser=b,a.parse=function(){return b.parse.apply(b,arguments)},a.main=function(c){if(!c[1])throw new Error("Usage: "+c[0]+" FILE");if(typeof process!="undefined")var d=require("fs").readFileSync(require("path").join(process.cwd(),c[1]),"utf8");else var e=require("file").path(require("file").cwd()),d=e.join(c[1]).read({charset:"utf-8"});return a.parser.parse(d)},typeof module!="undefined"&&require.main===module&&a.main(typeof process!="undefined"?process.argv.slice(1):require("system").args)),b}(),b=function(){var a={};return function(a){a(function(){function d(){}function e(a){return new Array(a)}function f(){}function g(b){var d=new f;return d.then=function(a){i(arguments);var d;try{return a&&(d=a(b)),m(d===c?b:d)}catch(e){return h(e)}},a(d)}function h(b){var d=new f;return d.then=function(a,d){i(arguments);var e;try{return d?(e=d(b),m(e===c?b:e)):h(b)}catch(f){return h(f)}},a(d)}function i(a){var b,c=a.length;while(c){b=a[--c];if(b!=null&&typeof b!="function")throw new Error("callback is not a function")}}function j(){function o(a,b,c){return l(a,b,c)}function p(a){n(g(a))}function q(a){n(h(a))}function r(a){m(a)}var b,d,e,k,l,m,n;return e=[],k=[],l=function(b,c,d){i(arguments);var f=j();return e.push(function(a){a.then(b,c).then(f.resolve,f.reject,f.progress)}),d&&k.push(d),f.promise},m=function(a){var b,c=0;while(b=k[c++])b(a)},n=function(a){var b,d=0;l=a.then,n=m=function(){throw new Error("already completed")},k=c;while(b=e[d++])b(a);e=[]},b={},d=new f,d.then=b.then=o,b.promise=a(d),b.resolver=a({resolve:b.resolve=p,reject:b.reject=q,progress:b.progress=r}),b}function k(a){return a&&typeof a.then=="function"}function l(a,b,c,d){var e=m(a);return e.then(b,c,d)}function m(a){var b,c;return a instanceof f?b=a:(c=j(),k(a)?(a.then(c.resolve,c.reject,c.progress),b=c.promise):(c.resolve(a),b=c.promise)),b}function n(a,b,c,e,f){function r(a){m(a)}function s(a){n(a)}function t(a){o(a)}function u(){m=n=o=d}var g,h,i,k,m,n,o,p,q;p=a.length>>>0,g=Math.max(0,Math.min(b,p)),h=[],k=j(),i=l(k,c,e,f);if(!g)k.resolve(h);else{m=function(a){h.push(a),--g||(u(),k.resolve(h))},n=function(a){u(),k.reject(a)},o=k.progress;for(q=0;q<p;++q)q in a&&l(a[q],r,s,t)}return i}function o(a,b,c,d){var f,g;return f=e(a.length),g=s(a,p,f),l(g,b,c,d)}function p(a,b,c){return a[c]=b,a}function q(a,b,c,d){function e(a){return b(a[0])}return n(a,1,e,c,d)}function r(a,b){var c,d;d=a.length,c=e(d);for(;d>=0;--d)d in a&&(c[d]=l(a[d],b));return s(c,p,c)}function s(a,c,d){var e,f;return e=a.length,f=[function(a,b,d){return l(a,function(a){return l(b,function(b){return c(a,b,d,e)})})}],arguments.length>=3&&f.push(d),m(b.apply(a,f))}function t(a,b,c){var d=arguments.length>2;return l(a,function(a){return d&&(a=c),b.resolve(a),a},function(a){return b.reject(a),h(a)},b.progress)}var a,b,c;return a=Object.freeze||function(a){return a},b=[].reduce||function(a){var b,c,d,e,f;f=0,b=Object(this),e=b.length>>>0,c=arguments;if(c.length<=1)for(;;){if(f in b){d=b[f++];break}if(++f>=e)throw new TypeError}else d=c[1];for(;f<e;++f)f in b&&(d=a(d,b[f],f,b));return d},l.defer=j,l.isPromise=k,l.some=n,l.all=o,l.any=q,l.reduce=s,l.map=r,l.chain=t,l})}(typeof define=="function"?define:function(b){typeof a!="undefined"?a.exports=b():this.when=b()}),a.exports}(),c={loadModule:function(a,b){var c=a.imports,d,e,f=require("vm");c.returns={},c.console=console,c.exports={},c.module={exports:{}},c.require=function(a){return c[a]?c[a]:require(a)};var g=a.exports?a.exports.map(function(a){return"returns."+a.dest+" = "+["exports."+a.src,"module.exports."+a.src,a.src].join("||")}).join(";\n"):"";f.runInNewContext(b+";\n"+g,c,a._internals.src+".vm"),d=c.returns;for(var h in c.exports)c.exports.hasOwnProperty(h)&&(d[h]=c.exports[h]);for(var h in c.module.exports)c.module.exports.hasOwnProperty(h)&&(d[h]=c.module.exports[h]);return d},loadModuleReferenceBySource:function(a){try{return require(declaration.src)}catch(b){throw new Error("The required module %1 doesn't exist".replace("%1",declaration.src))}},retrieveFileContents:function(a,c,d,e){function f(a){var c=b.defer(),d=require(a.protocol.indexOf("https")!==-1?"https":"http").get,e={host:a.host,path:a.pathname},f="";return a.port&&(e.port=a.port),d(e,function(a){a.on("data",function(a){f+=a}),a.on("end",function(){c.resolve(f)}),a.on("error",function(a){c.reject(a)})}),c}function g(a){var b;try{b=require.resolve(a)}catch(c){}try{b=b?b:require("fs").statSync(__dirname+"/"+a).isFile()&&__dirname+"/"+a}catch(c){}try{b=b?b:require("fs").statSync(process.cwd()+"/"+a).isFile()&&process.cwd()+"/"+a}catch(c){}return b}var h,i=require("url"),j=i.parse(a);if(j.host)return b(f(j)).then(function(a){c.contents=a,b(d(c)).then(function(a){return e.resolve(a),a},function(a){e.reject(a)})},function(c){_error('Unable to fetch the module "'+a+'" because: '+c)}),e;h=g(a);if(!h)return e.reject("Unable to locate file "+a),e;if(is(h,"object"))c.deps=c.deps||{},c.deps[h.uri]=h.node_module;else try{c.contents=require("fs").readFileSync(h,"utf-8")}catch(k){return e.reject(k.message),e}return b(d(c)).then(function(a){return e.resolve(a),a},function(a){e.reject(a)}),e},onLoad:function(a,b,c){exports=module.exports=c}};(function(a,b,c,d,e){function f(a,b){return Object.prototype.toString.call(a).toLowerCase()=="[object "+b.toLowerCase()+"]"}function g(b,c){return b in d?d[b].apply(a,c):null}function m(a,c){try{var d=b.parse(a);return d}catch(e){return"Invalid declaration \n"+e.message+"\nDeclaration: "+a}}function n(a,b,d){var e;if(b){e=h[b];if(e&&!c.isPromise(e))return"Duplicating module "+b;h[b]=a}if(d){e=h[d];if(e&&!c.isPromise(e))return"Duplicating module "+d;h[d]=a}}function o(a,b){!a&&(a={}),a.imports=a.imports||{};var c=g("loadModule",[a,b,k]),d=n(c,a._internals.src,a.name);return d||c}function p(a){function e(a){b.imports=b.imports||{};var e=h[a.from.path];if(e)if(c.isPromise(e))e.then(function(c){for(var d=0,e=a.vars.length;d<e;d++){var f=a.vars[d];b.imports[f]=c[f]}}),d.push(e);else for(var f=0,g=a.vars.length;f<g;f++){var i=a.vars[f];b.imports[i]=e[i]}else{var j=r(a.from.path,function(c){for(var d=0,e=a.vars.length;d<e;d++){var f=a.vars[d];b.imports[f]=c[f]}});h[a.from.path]||(h[a.from.path]=j),c.isPromise(h[a.from.path])&&d.push(j)}}function f(a){for(var c=0,d=a.length;c<d;c++)b.exports=b.exports||[],b.exports.push({src:a[c],dest:a[c]})}function i(j){b.name=a.decl.id;if(j.expressions)for(var k=0,l=j.expressions.length;k<l;k++){var m=j.expressions[k];m.type==="export"?f(m.decl):m.type==="import"?e(m.decl):m.type==="module"&&i(m.decl)}else{b.imports=b.imports||{};var n=j.path||j.src||j.id,o=h[n];if(o)c.isPromise(o)?(o.then(function(a){return b.imports[j.id]=a,a}),d.push(o)):b.imports[j.id]=o;else if(j.path){var p=r(j.path,function(a){return b.imports[j.id]=a,b});h[j.path]||(h[j.path]=p),c.isPromise(h[j.path])&&d.push(p)}else{var q=g("loadModuleReferenceBySource",[j.src]);b.imports[j.id]=q}}}var b={},d=[];b._internals=a._internals,a.type==="module"?(b.name=a.decl.id,i(a.decl)):a.type==="export"?f(a.decl):a.type==="import"&&e(a.decl);var j=c.all(d).then(function(){return b},function(){return new Error("Error while loading "+b._internals.src)});return j}function q(a){var b=c.defer(),d=a||{},e=a.contents?a.contents:"",g="",h,i=e.match(/\s*\/\/\s*s6d([\s\S]*?)\/\/\s*-s6d/m);if(!i)return h=o({_internals:{src:a.src}},e),typeof h=="string"?b.reject(h):b.resolve(h);var j=i[1].split("\n");for(var k=0,l=j.length;k<l;k++)g+=j[k].trim();if(!g.length)return h=o({_internals:{src:a.src}},e),b.resolve(h),h;d=m(g,d);if(f(d,"string"))b.reject(d);else{var n=d[0];n._internals={src:a.src,contents:e},c(p(n)).then(function(a){return h=o(a,a._internals.contents.replace(i[0],"")),b.resolve(h),h},function(a){return b.reject(a),a})}return b.promise||b}function r(a,b,d){function e(b){i=i||[],i.indexOf(a)===-1&&i.push(a);if(!f(d,"function"))return console&&console.error("("+a+") "+b),new Error("("+a+") "+b);d()}if(h.hasOwnProperty(a))return c.isPromise(h[a])||b(h[a]),h[a];e.origFn=d;var j=c.defer();j.then(b,e);var k=f(a,"string")?{src:a}:a,l=f(a,"string")?a:a.name;if(l){var m=g("retrieveFileContents",[l,k,q,j]);return m.promise||m}return f(a,"object")&&c(q(a)).then(function(a){return j.resolve(a),a},function(a){j.reject(a)}),j}function s(a){for(var b=0;b<a.length;b++){var c=a[b],d;if(f(JSON,"object"))d=JSON.parse(c);else{var e=new Function("return "+c);d=e()}for(var g in d){if(!d.hasOwnProperty(g))continue;g in l?l[g](d[g]):g=="runInTag"?k=d[g]:g=="exposeAPI"&&w()}}}function t(a){for(var b=0;b<a.length;b++){var c=a[b],d=c.getAttribute("data-src");d&&!a.hasOwnProperty(d)&&r(d),!d&&c.innerHTML&&q({contents:c.innerHTML})}}function v(a,b){f(a,"object")?s([a]):r(a,b,u)}function w(){a.s6d=v,a.s6d.src=function(a,b){q({contents:a},b,u)},a.s6d.get=function(a){return a?h[a]:h},a.s6d.error=function(a){if(arguments.length===0)return i;u=a},a.s6d.reset=function(){u=e,h={},i=null}}if(typeof b.parse!="function")throw"No parser provided.";var h={},i=null,j=typeof window=="undefined",k,l={modularize:function(c){function d(b){return a.hasOwnProperty(b)?(h[b]=a[b],!0):'No global "'+b+'"'}if(f(c,"array"))for(var e=0;e<c.length;e++)d(c[e]);else d(c)},noGlobal:function(c){var d=function(b){return a.hasOwnProperty(b)?(delete a[b],!0):'No global "'+b+'"'};if(f(c,"array"))for(var e=0;e<c.length;e++)d(c[e]);else d(c)}};g("onLoad",[s,t,v]);var u})(this,a,b,c)})()
+(function() {
+    var harmonyParser = function() {
+        var exports;
+        var harmony_parser = function() {
+            var parser = {
+                trace: function trace() {},
+                yy: {},
+                symbols_: {
+                    error: 2,
+                    Program: 3,
+                    ProgramNext: 4,
+                    ProgramElement: 5,
+                    ModuleDeclaration: 6,
+                    ImportDeclaration: 7,
+                    ExportDeclaration: 8,
+                    EOF: 9,
+                    ModuleSpecifier: 10,
+                    Path: 11,
+                    String: 12,
+                    module: 13,
+                    Id: 14,
+                    at: 15,
+                    SEMICOLON: 16,
+                    IS: 17,
+                    ImportSource: 18,
+                    OPEN_BRACE: 19,
+                    ModuleBody: 20,
+                    CLOSE_BRACE: 21,
+                    from: 22,
+                    "import": 23,
+                    ImportSpecifierSet: 24,
+                    WILDCARD: 25,
+                    ImportSpecifier: 26,
+                    ImportSpecifierNext: 27,
+                    COMMA: 28,
+                    COLON: 29,
+                    "export": 30,
+                    ExportSpecifierSet: 31,
+                    ExportSpecifierSetNext: 32,
+                    ExportSpecifier: 33,
+                    ExportSpecifierNext: 34,
+                    ModuleElement: 35,
+                    PERIOD: 36,
+                    $accept: 0,
+                    $end: 1
+                },
+                terminals_: {
+                    2: "error",
+                    9: "EOF",
+                    12: "String",
+                    13: "module",
+                    14: "Id",
+                    15: "at",
+                    16: "SEMICOLON",
+                    17: "IS",
+                    19: "OPEN_BRACE",
+                    21: "CLOSE_BRACE",
+                    22: "from",
+                    23: "import",
+                    25: "WILDCARD",
+                    28: "COMMA",
+                    29: "COLON",
+                    30: "export",
+                    36: "PERIOD"
+                },
+                productions_: [ 0, [ 3, 1 ], [ 4, 1 ], [ 4, 2 ], [ 5, 1 ], [ 5, 1 ], [ 5, 1 ], [ 5, 1 ], [ 10, 1 ], [ 10, 1 ], [ 6, 5 ], [ 6, 5 ], [ 6, 5 ], [ 18, 1 ], [ 18, 3 ], [ 7, 5 ], [ 24, 1 ], [ 24, 1 ], [ 24, 4 ], [ 27, 3 ], [ 27, 0 ], [ 26, 1 ], [ 26, 3 ], [ 8, 4 ], [ 32, 3 ], [ 32, 0 ], [ 31, 4 ], [ 31, 1 ], [ 31, 1 ], [ 31, 3 ], [ 33, 1 ], [ 33, 3 ], [ 34, 3 ], [ 34, 0 ], [ 20, 2 ], [ 20, 2 ], [ 20, 2 ], [ 20, 0 ], [ 35, 1 ], [ 35, 1 ], [ 11, 1 ], [ 11, 3 ] ],
+                performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
+                    var $0 = $$.length - 1;
+                    switch (yystate) {
+                      case 1:
+                        return $$[$0];
+                        break;
+                      case 2:
+                        this.$ = $$[$0];
+                        break;
+                      case 3:
+                        this.$ = $$[$0].length ? $$[$0 - 1].concat($$[$0]) : $$[$0 - 1];
+                        break;
+                      case 4:
+                        this.$ = [ {
+                            type: "module",
+                            decl: $$[$0]
+                        } ];
+                        break;
+                      case 5:
+                        this.$ = [ {
+                            type: "import",
+                            decl: $$[$0]
+                        } ];
+                        break;
+                      case 6:
+                        this.$ = [ {
+                            type: "export",
+                            decl: $$[$0]
+                        } ];
+                        break;
+                      case 7:
+                        this.$ = [];
+                        break;
+                      case 8:
+                        this.$ = {
+                            type: "module",
+                            path: $$[$0]
+                        };
+                        break;
+                      case 9:
+                        this.$ = {
+                            type: "uri",
+                            path: $$[$0].trim().replace(/^(['"])(.*)\1$/, function(str, m1, m2, m3) {
+                                return m2;
+                            })
+                        };
+                        break;
+                      case 10:
+                        this.$ = {
+                            id: $$[$0 - 3],
+                            path: $$[$0 - 1].trim().replace(/^(['"])(.*)\1$/, function(str, m1, m2, m3) {
+                                return m2;
+                            })
+                        };
+                        break;
+                      case 11:
+                        this.$ = {
+                            id: $$[$0 - 3],
+                            src: $$[$0 - 1]
+                        };
+                        break;
+                      case 12:
+                        this.$ = {
+                            id: $$[$0 - 3],
+                            expressions: $$[$0 - 1]
+                        };
+                        break;
+                      case 13:
+                        this.$ = $$[$0];
+                        break;
+                      case 14:
+                        var out = {
+                            id: $$[$0 - 2]
+                        };
+                        out[$$[$0].type] = $$[$0].path;
+                        this.$ = out;
+                        break;
+                      case 15:
+                        this.$ = {
+                            from: $$[$0 - 1],
+                            vars: $$[$0 - 3]
+                        };
+                        break;
+                      case 16:
+                        this.$ = [ $$[$0] ];
+                        break;
+                      case 17:
+                        this.$ = [ $$[$0] ];
+                        break;
+                      case 18:
+                        this.$ = [ $$[$0 - 2] ].concat($$[$0 - 1]);
+                        break;
+                      case 19:
+                        this.$ = typeof $$[$0] != "undefined" ? [ $$[$0 - 1] ].concat($$[$0]) : $$[$0 - 1];
+                        break;
+                      case 21:
+                        this.$ = $$[$0];
+                        break;
+                      case 22:
+                        this.$ = {
+                            remote: $$[$0 - 2],
+                            local: $$[$0]
+                        };
+                        break;
+                      case 23:
+                        this.$ = typeof $$[$0 - 1] != "undefined" ? $$[$0 - 2].concat($$[$0 - 1]) : $$[$0 - 2];
+                        break;
+                      case 24:
+                        this.$ = typeof $$[$0] != "undefined" ? $$[$0 - 1].concat($$[$0]) : $$[$0 - 1];
+                        break;
+                      case 26:
+                        this.$ = typeof $$[$0 - 1] != "undefined" ? [ $$[$0 - 2] ].concat($$[$0 - 1]) : [ $$[$0 - 2] ];
+                        break;
+                      case 27:
+                        this.$ = [ $$[$0] ];
+                        break;
+                      case 28:
+                        this.$ = [ $$[$0] ];
+                        break;
+                      case 29:
+                        this.$ = [ {
+                            from: $$[$0]
+                        } ];
+                        break;
+                      case 30:
+                        this.$ = $$[$0];
+                        break;
+                      case 31:
+                        this.$ = {
+                            local: $$[$0 - 2],
+                            remote: $$[$0]
+                        };
+                        break;
+                      case 32:
+                        this.$ = typeof $$[$0] != "undefined" ? [ $$[$0 - 1] ].concat($$[$0]) : [ $$[$0 - 1] ];
+                        break;
+                      case 34:
+                        this.$ = [ {
+                            type: "module",
+                            decl: $$[$0 - 1]
+                        } ].concat($$[$0]);
+                        break;
+                      case 35:
+                        this.$ = [ {
+                            type: "import",
+                            decl: $$[$0 - 1]
+                        } ].concat($$[$0]);
+                        break;
+                      case 36:
+                        this.$ = [ {
+                            type: "export",
+                            decl: $$[$0 - 1]
+                        } ].concat($$[$0]);
+                        break;
+                      case 37:
+                        this.$ = [];
+                        break;
+                      case 38:
+                        this.$ = $$[$0];
+                        break;
+                      case 39:
+                        this.$ = $$[$0];
+                        break;
+                      case 40:
+                        this.$ = $$[$0];
+                        break;
+                      case 41:
+                        this.$ = $$[$0 - 2] + "." + $$[$0];
+                        break;
+                    }
+                },
+                table: [ {
+                    3: 1,
+                    4: 2,
+                    5: 3,
+                    6: 4,
+                    7: 5,
+                    8: 6,
+                    9: [ 1, 7 ],
+                    13: [ 1, 8 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
+                }, {
+                    1: [ 3 ]
+                }, {
+                    1: [ 2, 1 ]
+                }, {
+                    1: [ 2, 2 ],
+                    4: 11,
+                    5: 3,
+                    6: 4,
+                    7: 5,
+                    8: 6,
+                    9: [ 1, 7 ],
+                    13: [ 1, 8 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
+                }, {
+                    1: [ 2, 4 ],
+                    9: [ 2, 4 ],
+                    13: [ 2, 4 ],
+                    23: [ 2, 4 ],
+                    30: [ 2, 4 ]
+                }, {
+                    1: [ 2, 5 ],
+                    9: [ 2, 5 ],
+                    13: [ 2, 5 ],
+                    23: [ 2, 5 ],
+                    30: [ 2, 5 ]
+                }, {
+                    1: [ 2, 6 ],
+                    9: [ 2, 6 ],
+                    13: [ 2, 6 ],
+                    23: [ 2, 6 ],
+                    30: [ 2, 6 ]
+                }, {
+                    1: [ 2, 7 ],
+                    9: [ 2, 7 ],
+                    13: [ 2, 7 ],
+                    23: [ 2, 7 ],
+                    30: [ 2, 7 ]
+                }, {
+                    14: [ 1, 12 ]
+                }, {
+                    14: [ 1, 14 ],
+                    19: [ 1, 16 ],
+                    24: 13,
+                    25: [ 1, 15 ]
+                }, {
+                    14: [ 1, 19 ],
+                    19: [ 1, 18 ],
+                    25: [ 1, 20 ],
+                    31: 17
+                }, {
+                    1: [ 2, 3 ]
+                }, {
+                    15: [ 1, 21 ],
+                    17: [ 1, 22 ],
+                    19: [ 1, 23 ]
+                }, {
+                    22: [ 1, 24 ]
+                }, {
+                    22: [ 2, 16 ]
+                }, {
+                    22: [ 2, 17 ]
+                }, {
+                    14: [ 1, 26 ],
+                    26: 25
+                }, {
+                    16: [ 2, 25 ],
+                    28: [ 1, 28 ],
+                    32: 27
+                }, {
+                    14: [ 1, 30 ],
+                    33: 29
+                }, {
+                    16: [ 2, 27 ],
+                    28: [ 2, 27 ]
+                }, {
+                    16: [ 2, 28 ],
+                    22: [ 1, 31 ],
+                    28: [ 2, 28 ]
+                }, {
+                    12: [ 1, 32 ]
+                }, {
+                    14: [ 1, 34 ],
+                    18: 33
+                }, {
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 35,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
+                }, {
+                    10: 39,
+                    11: 40,
+                    12: [ 1, 41 ],
+                    14: [ 1, 42 ]
+                }, {
+                    21: [ 2, 20 ],
+                    27: 43,
+                    28: [ 1, 44 ]
+                }, {
+                    21: [ 2, 21 ],
+                    28: [ 2, 21 ],
+                    29: [ 1, 45 ]
+                }, {
+                    16: [ 1, 46 ]
+                }, {
+                    14: [ 1, 19 ],
+                    19: [ 1, 18 ],
+                    25: [ 1, 20 ],
+                    31: 47
+                }, {
+                    21: [ 2, 33 ],
+                    28: [ 1, 49 ],
+                    34: 48
+                }, {
+                    21: [ 2, 30 ],
+                    28: [ 2, 30 ],
+                    29: [ 1, 50 ]
+                }, {
+                    11: 51,
+                    14: [ 1, 42 ]
+                }, {
+                    16: [ 1, 52 ]
+                }, {
+                    16: [ 1, 53 ]
+                }, {
+                    16: [ 2, 13 ],
+                    22: [ 1, 54 ]
+                }, {
+                    21: [ 1, 55 ]
+                }, {
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 56,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
+                }, {
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 57,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
+                }, {
+                    6: 36,
+                    7: 37,
+                    8: 38,
+                    13: [ 1, 8 ],
+                    20: 58,
+                    21: [ 2, 37 ],
+                    23: [ 1, 9 ],
+                    30: [ 1, 10 ]
+                }, {
+                    16: [ 1, 59 ]
+                }, {
+                    16: [ 2, 8 ]
+                }, {
+                    16: [ 2, 9 ]
+                }, {
+                    16: [ 2, 40 ],
+                    21: [ 2, 40 ],
+                    28: [ 2, 40 ],
+                    36: [ 1, 60 ]
+                }, {
+                    21: [ 1, 61 ]
+                }, {
+                    14: [ 1, 26 ],
+                    26: 62
+                }, {
+                    11: 63,
+                    14: [ 1, 42 ]
+                }, {
+                    1: [ 2, 23 ],
+                    9: [ 2, 23 ],
+                    13: [ 2, 23 ],
+                    21: [ 2, 23 ],
+                    23: [ 2, 23 ],
+                    30: [ 2, 23 ]
+                }, {
+                    16: [ 2, 25 ],
+                    28: [ 1, 28 ],
+                    32: 64
+                }, {
+                    21: [ 1, 65 ]
+                }, {
+                    14: [ 1, 30 ],
+                    33: 66
+                }, {
+                    11: 67,
+                    14: [ 1, 42 ]
+                }, {
+                    16: [ 2, 29 ],
+                    28: [ 2, 29 ]
+                }, {
+                    1: [ 2, 10 ],
+                    9: [ 2, 10 ],
+                    13: [ 2, 10 ],
+                    21: [ 2, 10 ],
+                    23: [ 2, 10 ],
+                    30: [ 2, 10 ]
+                }, {
+                    1: [ 2, 11 ],
+                    9: [ 2, 11 ],
+                    13: [ 2, 11 ],
+                    21: [ 2, 11 ],
+                    23: [ 2, 11 ],
+                    30: [ 2, 11 ]
+                }, {
+                    10: 68,
+                    11: 40,
+                    12: [ 1, 41 ],
+                    14: [ 1, 42 ]
+                }, {
+                    1: [ 2, 12 ],
+                    9: [ 2, 12 ],
+                    13: [ 2, 12 ],
+                    21: [ 2, 12 ],
+                    23: [ 2, 12 ],
+                    30: [ 2, 12 ]
+                }, {
+                    21: [ 2, 34 ]
+                }, {
+                    21: [ 2, 35 ]
+                }, {
+                    21: [ 2, 36 ]
+                }, {
+                    1: [ 2, 15 ],
+                    9: [ 2, 15 ],
+                    13: [ 2, 15 ],
+                    21: [ 2, 15 ],
+                    23: [ 2, 15 ],
+                    30: [ 2, 15 ]
+                }, {
+                    11: 69,
+                    14: [ 1, 42 ]
+                }, {
+                    22: [ 2, 18 ]
+                }, {
+                    21: [ 2, 20 ],
+                    27: 70,
+                    28: [ 1, 44 ]
+                }, {
+                    21: [ 2, 22 ],
+                    28: [ 2, 22 ]
+                }, {
+                    16: [ 2, 24 ]
+                }, {
+                    16: [ 2, 26 ],
+                    28: [ 2, 26 ]
+                }, {
+                    21: [ 2, 33 ],
+                    28: [ 1, 49 ],
+                    34: 71
+                }, {
+                    21: [ 2, 31 ],
+                    28: [ 2, 31 ]
+                }, {
+                    16: [ 2, 14 ]
+                }, {
+                    16: [ 2, 41 ],
+                    21: [ 2, 41 ],
+                    28: [ 2, 41 ]
+                }, {
+                    21: [ 2, 19 ]
+                }, {
+                    21: [ 2, 32 ]
+                } ],
+                defaultActions: {
+                    2: [ 2, 1 ],
+                    11: [ 2, 3 ],
+                    14: [ 2, 16 ],
+                    15: [ 2, 17 ],
+                    40: [ 2, 8 ],
+                    41: [ 2, 9 ],
+                    56: [ 2, 34 ],
+                    57: [ 2, 35 ],
+                    58: [ 2, 36 ],
+                    61: [ 2, 18 ],
+                    64: [ 2, 24 ],
+                    68: [ 2, 14 ],
+                    70: [ 2, 19 ],
+                    71: [ 2, 32 ]
+                },
+                parseError: function parseError(str, hash) {
+                    throw new Error(str);
+                },
+                parse: function parse(input) {
+                    var self = this, stack = [ 0 ], vstack = [ null ], lstack = [], table = this.table, yytext = "", yylineno = 0, yyleng = 0, recovering = 0, TERROR = 2, EOF = 1;
+                    this.lexer.setInput(input);
+                    this.lexer.yy = this.yy;
+                    this.yy.lexer = this.lexer;
+                    if (typeof this.lexer.yylloc == "undefined") this.lexer.yylloc = {};
+                    var yyloc = this.lexer.yylloc;
+                    lstack.push(yyloc);
+                    if (typeof this.yy.parseError === "function") this.parseError = this.yy.parseError;
+                    function popStack(n) {
+                        stack.length = stack.length - 2 * n;
+                        vstack.length = vstack.length - n;
+                        lstack.length = lstack.length - n;
+                    }
+                    function lex() {
+                        var token;
+                        token = self.lexer.lex() || 1;
+                        if (typeof token !== "number") {
+                            token = self.symbols_[token] || token;
+                        }
+                        return token;
+                    }
+                    var symbol, preErrorSymbol, state, action, a, r, yyval = {}, p, len, newState, expected;
+                    while (true) {
+                        state = stack[stack.length - 1];
+                        if (this.defaultActions[state]) {
+                            action = this.defaultActions[state];
+                        } else {
+                            if (symbol == null) symbol = lex();
+                            action = table[state] && table[state][symbol];
+                        }
+                        _handle_error : if (typeof action === "undefined" || !action.length || !action[0]) {
+                            if (!recovering) {
+                                expected = [];
+                                for (p in table[state]) if (this.terminals_[p] && p > 2) {
+                                    expected.push("'" + this.terminals_[p] + "'");
+                                }
+                                var errStr = "";
+                                if (this.lexer.showPosition) {
+                                    errStr = "Parse error on line " + (yylineno + 1) + ":\n" + this.lexer.showPosition() + "\nExpecting " + expected.join(", ") + ", got '" + this.terminals_[symbol] + "'";
+                                } else {
+                                    errStr = "Parse error on line " + (yylineno + 1) + ": Unexpected " + (symbol == 1 ? "end of input" : "'" + (this.terminals_[symbol] || symbol) + "'");
+                                }
+                                this.parseError(errStr, {
+                                    text: this.lexer.match,
+                                    token: this.terminals_[symbol] || symbol,
+                                    line: this.lexer.yylineno,
+                                    loc: yyloc,
+                                    expected: expected
+                                });
+                            }
+                            if (recovering == 3) {
+                                if (symbol == EOF) {
+                                    throw new Error(errStr || "Parsing halted.");
+                                }
+                                yyleng = this.lexer.yyleng;
+                                yytext = this.lexer.yytext;
+                                yylineno = this.lexer.yylineno;
+                                yyloc = this.lexer.yylloc;
+                                symbol = lex();
+                            }
+                            while (1) {
+                                if (TERROR.toString() in table[state]) {
+                                    break;
+                                }
+                                if (state == 0) {
+                                    throw new Error(errStr || "Parsing halted.");
+                                }
+                                popStack(1);
+                                state = stack[stack.length - 1];
+                            }
+                            preErrorSymbol = symbol;
+                            symbol = TERROR;
+                            state = stack[stack.length - 1];
+                            action = table[state] && table[state][TERROR];
+                            recovering = 3;
+                        }
+                        if (action[0] instanceof Array && action.length > 1) {
+                            throw new Error("Parse Error: multiple actions possible at state: " + state + ", token: " + symbol);
+                        }
+                        switch (action[0]) {
+                          case 1:
+                            stack.push(symbol);
+                            vstack.push(this.lexer.yytext);
+                            lstack.push(this.lexer.yylloc);
+                            stack.push(action[1]);
+                            symbol = null;
+                            if (!preErrorSymbol) {
+                                yyleng = this.lexer.yyleng;
+                                yytext = this.lexer.yytext;
+                                yylineno = this.lexer.yylineno;
+                                yyloc = this.lexer.yylloc;
+                                if (recovering > 0) recovering--;
+                            } else {
+                                symbol = preErrorSymbol;
+                                preErrorSymbol = null;
+                            }
+                            break;
+                          case 2:
+                            len = this.productions_[action[1]][1];
+                            yyval.$ = vstack[vstack.length - len];
+                            yyval._$ = {
+                                first_line: lstack[lstack.length - (len || 1)].first_line,
+                                last_line: lstack[lstack.length - 1].last_line,
+                                first_column: lstack[lstack.length - (len || 1)].first_column,
+                                last_column: lstack[lstack.length - 1].last_column
+                            };
+                            r = this.performAction.call(yyval, yytext, yyleng, yylineno, this.yy, action[1], vstack, lstack);
+                            if (typeof r !== "undefined") {
+                                return r;
+                            }
+                            if (len) {
+                                stack = stack.slice(0, -1 * len * 2);
+                                vstack = vstack.slice(0, -1 * len);
+                                lstack = lstack.slice(0, -1 * len);
+                            }
+                            stack.push(this.productions_[action[1]][0]);
+                            vstack.push(yyval.$);
+                            lstack.push(yyval._$);
+                            newState = table[stack[stack.length - 2]][stack[stack.length - 1]];
+                            stack.push(newState);
+                            break;
+                          case 3:
+                            return true;
+                        }
+                    }
+                    return true;
+                }
+            };
+            var lexer = function() {
+                var lexer = {
+                    EOF: 1,
+                    parseError: function parseError(str, hash) {
+                        if (this.yy.parseError) {
+                            this.yy.parseError(str, hash);
+                        } else {
+                            throw new Error(str);
+                        }
+                    },
+                    setInput: function(input) {
+                        this._input = input;
+                        this._more = this._less = this.done = false;
+                        this.yylineno = this.yyleng = 0;
+                        this.yytext = this.matched = this.match = "";
+                        this.conditionStack = [ "INITIAL" ];
+                        this.yylloc = {
+                            first_line: 1,
+                            first_column: 0,
+                            last_line: 1,
+                            last_column: 0
+                        };
+                        return this;
+                    },
+                    input: function() {
+                        var ch = this._input[0];
+                        this.yytext += ch;
+                        this.yyleng++;
+                        this.match += ch;
+                        this.matched += ch;
+                        var lines = ch.match(/\n/);
+                        if (lines) this.yylineno++;
+                        this._input = this._input.slice(1);
+                        return ch;
+                    },
+                    unput: function(ch) {
+                        this._input = ch + this._input;
+                        return this;
+                    },
+                    more: function() {
+                        this._more = true;
+                        return this;
+                    },
+                    pastInput: function() {
+                        var past = this.matched.substr(0, this.matched.length - this.match.length);
+                        return (past.length > 20 ? "..." : "") + past.substr(-20).replace(/\n/g, "");
+                    },
+                    upcomingInput: function() {
+                        var next = this.match;
+                        if (next.length < 20) {
+                            next += this._input.substr(0, 20 - next.length);
+                        }
+                        return (next.substr(0, 20) + (next.length > 20 ? "..." : "")).replace(/\n/g, "");
+                    },
+                    showPosition: function() {
+                        var pre = this.pastInput();
+                        var c = (new Array(pre.length + 1)).join("-");
+                        return pre + this.upcomingInput() + "\n" + c + "^";
+                    },
+                    next: function() {
+                        if (this.done) {
+                            return this.EOF;
+                        }
+                        if (!this._input) this.done = true;
+                        var token, match, tempMatch, index, col, lines;
+                        if (!this._more) {
+                            this.yytext = "";
+                            this.match = "";
+                        }
+                        var rules = this._currentRules();
+                        for (var i = 0; i < rules.length; i++) {
+                            tempMatch = this._input.match(this.rules[rules[i]]);
+                            if (tempMatch && (!match || tempMatch[0].length > match[0].length)) {
+                                match = tempMatch;
+                                index = i;
+                                if (!this.options.flex) break;
+                            }
+                        }
+                        if (match) {
+                            lines = match[0].match(/\n.*/g);
+                            if (lines) this.yylineno += lines.length;
+                            this.yylloc = {
+                                first_line: this.yylloc.last_line,
+                                last_line: this.yylineno + 1,
+                                first_column: this.yylloc.last_column,
+                                last_column: lines ? lines[lines.length - 1].length - 1 : this.yylloc.last_column + match[0].length
+                            };
+                            this.yytext += match[0];
+                            this.match += match[0];
+                            this.yyleng = this.yytext.length;
+                            this._more = false;
+                            this._input = this._input.slice(match[0].length);
+                            this.matched += match[0];
+                            token = this.performAction.call(this, this.yy, this, rules[index], this.conditionStack[this.conditionStack.length - 1]);
+                            if (token) return token; else return;
+                        }
+                        if (this._input === "") {
+                            return this.EOF;
+                        } else {
+                            this.parseError("Lexical error on line " + (this.yylineno + 1) + ". Unrecognized text.\n" + this.showPosition(), {
+                                text: "",
+                                token: null,
+                                line: this.yylineno
+                            });
+                        }
+                    },
+                    lex: function lex() {
+                        var r = this.next();
+                        if (typeof r !== "undefined") {
+                            return r;
+                        } else {
+                            return this.lex();
+                        }
+                    },
+                    begin: function begin(condition) {
+                        this.conditionStack.push(condition);
+                    },
+                    popState: function popState() {
+                        return this.conditionStack.pop();
+                    },
+                    _currentRules: function _currentRules() {
+                        return this.conditions[this.conditionStack[this.conditionStack.length - 1]].rules;
+                    },
+                    topState: function() {
+                        return this.conditionStack[this.conditionStack.length - 2];
+                    },
+                    pushState: function begin(condition) {
+                        this.begin(condition);
+                    }
+                };
+                lexer.options = {};
+                lexer.performAction = function anonymous(yy, yy_, $avoiding_name_collisions, YY_START) {
+                    var YYSTATE = YY_START;
+                    switch ($avoiding_name_collisions) {
+                      case 0:
+                        break;
+                      case 1:
+                        break;
+                      case 2:
+                        break;
+                      case 3:
+                        return "SEMICOLON";
+                        break;
+                      case 4:
+                        return "COLON";
+                        break;
+                      case 5:
+                        return "OPEN_BRACE";
+                        break;
+                      case 6:
+                        return "CLOSE_BRACE";
+                        break;
+                      case 7:
+                        return "module";
+                        break;
+                      case 8:
+                        return "import";
+                        break;
+                      case 9:
+                        return "export";
+                        break;
+                      case 10:
+                        return 15;
+                        break;
+                      case 11:
+                        return 17;
+                        break;
+                      case 12:
+                        return 22;
+                        break;
+                      case 13:
+                        return "WILDCARD";
+                        break;
+                      case 14:
+                        return 28;
+                        break;
+                      case 15:
+                        return 36;
+                        break;
+                      case 16:
+                        return "Id";
+                        break;
+                      case 17:
+                        return "String";
+                        break;
+                      case 18:
+                        return "String";
+                        break;
+                      case 19:
+                        return 9;
+                        break;
+                    }
+                };
+                lexer.rules = [ /^\n+/, /^\s+/, /^\t+/, /^;/, /^:/, /^\{/, /^\}/, /^module\b/, /^import\b/, /^export\b/, /^at\b/, /^is\b/, /^from\b/, /^\*/, /^,/, /^\./, /^[a-zA-Z_$][0-9a-zA-Z_$]*/, /^'[^\']+'/, /^"[^\"]+"/, /^$/ ];
+                lexer.conditions = {
+                    INITIAL: {
+                        rules: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ],
+                        inclusive: true
+                    }
+                };
+                return lexer;
+            }();
+            parser.lexer = lexer;
+            return parser;
+        }();
+        if (typeof require !== "undefined" && typeof exports !== "undefined") {
+            exports.parser = harmony_parser;
+            exports.parse = function() {
+                return harmony_parser.parse.apply(harmony_parser, arguments);
+            };
+            exports.main = function commonjsMain(args) {
+                if (!args[1]) throw new Error("Usage: " + args[0] + " FILE");
+                if (typeof process !== "undefined") {
+                    var source = require("fs").readFileSync(require("path").join(process.cwd(), args[1]), "utf8");
+                } else {
+                    var cwd = require("file").path(require("file").cwd());
+                    var source = cwd.join(args[1]).read({
+                        charset: "utf-8"
+                    });
+                }
+                return exports.parser.parse(source);
+            };
+            if (typeof module !== "undefined" && require.main === module) {
+                exports.main(typeof process !== "undefined" ? process.argv.slice(1) : require("system").args);
+            }
+        }
+        return harmony_parser;
+    }();
+    var when = function() {
+        var module = {};
+        (function(define) {
+            define(function() {
+                var freeze, reduceArray, undef;
+                function noop() {}
+                function allocateArray(n) {
+                    return new Array(n);
+                }
+                freeze = Object.freeze || function(o) {
+                    return o;
+                };
+                reduceArray = [].reduce || function(reduceFunc) {
+                    var arr, args, reduced, len, i;
+                    i = 0;
+                    arr = Object(this);
+                    len = arr.length >>> 0;
+                    args = arguments;
+                    if (args.length <= 1) {
+                        for (;;) {
+                            if (i in arr) {
+                                reduced = arr[i++];
+                                break;
+                            }
+                            if (++i >= len) {
+                                throw new TypeError;
+                            }
+                        }
+                    } else {
+                        reduced = args[1];
+                    }
+                    for (; i < len; ++i) {
+                        if (i in arr) reduced = reduceFunc(reduced, arr[i], i, arr);
+                    }
+                    return reduced;
+                };
+                function Promise() {}
+                function resolved(value) {
+                    var p = new Promise;
+                    p.then = function(callback) {
+                        checkCallbacks(arguments);
+                        var nextValue;
+                        try {
+                            if (callback) nextValue = callback(value);
+                            return promise(nextValue === undef ? value : nextValue);
+                        } catch (e) {
+                            return rejected(e);
+                        }
+                    };
+                    return freeze(p);
+                }
+                function rejected(reason) {
+                    var p = new Promise;
+                    p.then = function(callback, errback) {
+                        checkCallbacks(arguments);
+                        var nextValue;
+                        try {
+                            if (errback) {
+                                nextValue = errback(reason);
+                                return promise(nextValue === undef ? reason : nextValue);
+                            }
+                            return rejected(reason);
+                        } catch (e) {
+                            return rejected(e);
+                        }
+                    };
+                    return freeze(p);
+                }
+                function checkCallbacks(arrayOfCallbacks) {
+                    var arg, i = arrayOfCallbacks.length;
+                    while (i) {
+                        arg = arrayOfCallbacks[--i];
+                        if (arg != null && typeof arg != "function") throw new Error("callback is not a function");
+                    }
+                }
+                function defer() {
+                    var deferred, promise, listeners, progressHandlers, _then, _progress, complete;
+                    listeners = [];
+                    progressHandlers = [];
+                    _then = function unresolvedThen(callback, errback, progback) {
+                        checkCallbacks(arguments);
+                        var deferred = defer();
+                        listeners.push(function(promise) {
+                            promise.then(callback, errback).then(deferred.resolve, deferred.reject, deferred.progress);
+                        });
+                        progback && progressHandlers.push(progback);
+                        return deferred.promise;
+                    };
+                    function then(callback, errback, progback) {
+                        return _then(callback, errback, progback);
+                    }
+                    function resolve(val) {
+                        complete(resolved(val));
+                    }
+                    function reject(err) {
+                        complete(rejected(err));
+                    }
+                    _progress = function(update) {
+                        var progress, i = 0;
+                        while (progress = progressHandlers[i++]) progress(update);
+                    };
+                    function progress(update) {
+                        _progress(update);
+                    }
+                    complete = function(completed) {
+                        var listener, i = 0;
+                        _then = completed.then;
+                        complete = _progress = function alreadyCompleted() {
+                            throw new Error("already completed");
+                        };
+                        progressHandlers = undef;
+                        while (listener = listeners[i++]) {
+                            listener(completed);
+                        }
+                        listeners = [];
+                    };
+                    deferred = {};
+                    promise = new Promise;
+                    promise.then = deferred.then = then;
+                    deferred.promise = freeze(promise);
+                    deferred.resolver = freeze({
+                        resolve: deferred.resolve = resolve,
+                        reject: deferred.reject = reject,
+                        progress: deferred.progress = progress
+                    });
+                    return deferred;
+                }
+                function isPromise(promiseOrValue) {
+                    return promiseOrValue && typeof promiseOrValue.then === "function";
+                }
+                function when(promiseOrValue, callback, errback, progressHandler) {
+                    var trustedPromise = promise(promiseOrValue);
+                    return trustedPromise.then(callback, errback, progressHandler);
+                }
+                function promise(promiseOrValue) {
+                    var promise, deferred;
+                    if (promiseOrValue instanceof Promise) {
+                        promise = promiseOrValue;
+                    } else {
+                        deferred = defer();
+                        if (isPromise(promiseOrValue)) {
+                            promiseOrValue.then(deferred.resolve, deferred.reject, deferred.progress);
+                            promise = deferred.promise;
+                        } else {
+                            deferred.resolve(promiseOrValue);
+                            promise = deferred.promise;
+                        }
+                    }
+                    return promise;
+                }
+                function some(promisesOrValues, howMany, callback, errback, progressHandler) {
+                    var toResolve, results, ret, deferred, resolver, rejecter, handleProgress, len, i;
+                    len = promisesOrValues.length >>> 0;
+                    toResolve = Math.max(0, Math.min(howMany, len));
+                    results = [];
+                    deferred = defer();
+                    ret = when(deferred, callback, errback, progressHandler);
+                    function resolve(val) {
+                        resolver(val);
+                    }
+                    function reject(err) {
+                        rejecter(err);
+                    }
+                    function progress(update) {
+                        handleProgress(update);
+                    }
+                    function complete() {
+                        resolver = rejecter = handleProgress = noop;
+                    }
+                    if (!toResolve) {
+                        deferred.resolve(results);
+                    } else {
+                        resolver = function(val) {
+                            results.push(val);
+                            if (!--toResolve) {
+                                complete();
+                                deferred.resolve(results);
+                            }
+                        };
+                        rejecter = function(err) {
+                            complete();
+                            deferred.reject(err);
+                        };
+                        handleProgress = deferred.progress;
+                        for (i = 0; i < len; ++i) {
+                            if (i in promisesOrValues) {
+                                when(promisesOrValues[i], resolve, reject, progress);
+                            }
+                        }
+                    }
+                    return ret;
+                }
+                function all(promisesOrValues, callback, errback, progressHandler) {
+                    var results, promise;
+                    results = allocateArray(promisesOrValues.length);
+                    promise = reduce(promisesOrValues, reduceIntoArray, results);
+                    return when(promise, callback, errback, progressHandler);
+                }
+                function reduceIntoArray(current, val, i) {
+                    current[i] = val;
+                    return current;
+                }
+                function any(promisesOrValues, callback, errback, progressHandler) {
+                    function unwrapSingleResult(val) {
+                        return callback(val[0]);
+                    }
+                    return some(promisesOrValues, 1, unwrapSingleResult, errback, progressHandler);
+                }
+                function map(promisesOrValues, mapFunc) {
+                    var results, i;
+                    i = promisesOrValues.length;
+                    results = allocateArray(i);
+                    for (; i >= 0; --i) {
+                        if (i in promisesOrValues) results[i] = when(promisesOrValues[i], mapFunc);
+                    }
+                    return reduce(results, reduceIntoArray, results);
+                }
+                function reduce(promisesOrValues, reduceFunc, initialValue) {
+                    var total, args;
+                    total = promisesOrValues.length;
+                    args = [ function(current, val, i) {
+                        return when(current, function(c) {
+                            return when(val, function(value) {
+                                return reduceFunc(c, value, i, total);
+                            });
+                        });
+                    } ];
+                    if (arguments.length >= 3) args.push(initialValue);
+                    return promise(reduceArray.apply(promisesOrValues, args));
+                }
+                function chain(promiseOrValue, resolver, resolveValue) {
+                    var useResolveValue = arguments.length > 2;
+                    return when(promiseOrValue, function(val) {
+                        if (useResolveValue) val = resolveValue;
+                        resolver.resolve(val);
+                        return val;
+                    }, function(e) {
+                        resolver.reject(e);
+                        return rejected(e);
+                    }, resolver.progress);
+                }
+                when.defer = defer;
+                when.isPromise = isPromise;
+                when.some = some;
+                when.all = all;
+                when.any = any;
+                when.reduce = reduce;
+                when.map = map;
+                when.chain = chain;
+                return when;
+            });
+        })(typeof define == "function" ? define : function(factory) {
+            typeof module != "undefined" ? module.exports = factory() : this.when = factory();
+        });
+        return module.exports;
+    }();
+    var flavour = {
+        loadModule: function(moduleConf, contents) {
+            var context = moduleConf.imports;
+            var module;
+            var wrapperConf;
+            var vm = require("vm");
+            context.returns = {};
+            context.console = console;
+            context.exports = {};
+            context.module = {
+                exports: {}
+            };
+            context.require = function(arg) {
+                if (context.hasOwnProperty(arg)) {
+                    return context[arg];
+                }
+                return require(arg);
+            };
+            var returnStatement = moduleConf.exports ? moduleConf.exports.map(function(v) {
+                return "returns." + v.dest + " = " + [ "exports." + v.src, "module.exports." + v.src, v.src ].join("||");
+            }).join(";\n") : "";
+            vm.runInNewContext(contents + ";\n" + returnStatement, context, moduleConf._internals.src + ".vm");
+            module = context.returns;
+            for (var i in context.exports) {
+                if (context.exports.hasOwnProperty(i)) {
+                    module[i] = context.exports[i];
+                }
+            }
+            for (var i in context.module.exports) {
+                if (context.module.exports.hasOwnProperty(i)) {
+                    module[i] = context.module.exports[i];
+                }
+            }
+            return module;
+        },
+        loadModuleReferenceBySource: function(src) {
+            try {
+                return require(src);
+            } catch (e) {
+                throw new Error("The required module %1 doesn't exist".replace("%1", src));
+            }
+        },
+        retrieveFileContents: function(uri, moduleConf, _moduleSrc, modulePromise) {
+            function serverModule(parsedURL) {
+                var defer = when.defer();
+                var get = require(parsedURL.protocol.indexOf("https") !== -1 ? "https" : "http").get;
+                var newURL = {
+                    host: parsedURL.host,
+                    path: parsedURL.pathname
+                };
+                var data = "";
+                parsedURL.port && (newURL.port = parsedURL.port);
+                get(newURL, function(res) {
+                    res.on("data", function(chunk) {
+                        data += chunk;
+                    });
+                    res.on("end", function() {
+                        defer.resolve(data);
+                    });
+                    res.on("error", function(msg) {
+                        defer.reject(msg);
+                    });
+                });
+                return defer;
+            }
+            function _serverPathDetection(uri) {
+                var path;
+                try {
+                    path = require.resolve(uri);
+                } catch (e) {}
+                try {
+                    path = !path ? require("fs").statSync(__dirname + "/../" + uri).isFile() && __dirname + "/../" + uri : path;
+                } catch (e) {}
+                try {
+                    path = !path ? require("fs").statSync(process.cwd() + "/" + uri).isFile() && process.cwd() + "/" + uri : path;
+                } catch (e) {}
+                return path;
+            }
+            var modPath, url = require("url"), parsedURL = url.parse(uri);
+            if (parsedURL.host) {
+                when(serverModule(parsedURL)).then(function(moduleSrc) {
+                    moduleConf.contents = moduleSrc;
+                    when(_moduleSrc(moduleConf)).then(function(conf) {
+                        modulePromise.resolve(conf);
+                        return conf;
+                    }, function(msg) {
+                        modulePromise.reject(msg);
+                    });
+                }, function xhrError(msg) {
+                    _error('Unable to fetch the module "' + uri + '" because: ' + msg);
+                });
+                return modulePromise;
+            } else {
+                modPath = _serverPathDetection(uri);
+                if (!modPath) {
+                    modulePromise.reject("Unable to locate file " + uri);
+                    return modulePromise;
+                } else if (this.is(modPath, "object")) {
+                    moduleConf.deps = moduleConf.deps || {};
+                    moduleConf.deps[modPath.uri] = modPath.node_module;
+                } else {
+                    try {
+                        moduleConf.contents = require("fs").readFileSync(modPath, "utf-8");
+                    } catch (e) {
+                        modulePromise.reject(e.message);
+                        return modulePromise;
+                    }
+                }
+                when(_moduleSrc(moduleConf)).then(function(conf) {
+                    modulePromise.resolve(conf);
+                    return conf;
+                }, function(msg) {
+                    modulePromise.reject(msg);
+                });
+                return modulePromise;
+            }
+        },
+        onLoad: function(initConfig, initModules, s6d) {
+            exports = module.exports = s6d;
+        }
+    };
+    (function(me, parser, when, flavourConfig, undefined) {
+        if (typeof parser.parse !== "function") {
+            throw "No parser provided.";
+        }
+        function is(obj, type) {
+            return Object.prototype.toString.call(obj).toLowerCase() == "[object " + type.toLowerCase() + "]";
+        }
+        function flavour(name, args) {
+            if (name in flavourConfig) {
+                return flavourConfig[name].apply({
+                    is: is
+                }, args);
+            }
+            return null;
+        }
+        var modules = {}, _errModules = null, _isServer = typeof window == "undefined", _runInTag;
+        var _plugins = {
+            modularize: function modularizePlugin(vars) {
+                function fn(globalVar) {
+                    if (!me.hasOwnProperty(globalVar)) {
+                        return 'No global "' + globalVar + '"';
+                    }
+                    modules[globalVar] = me[globalVar];
+                    return true;
+                }
+                if (is(vars, "array")) {
+                    for (var i = 0; i < vars.length; i++) {
+                        fn(vars[i]);
+                    }
+                } else {
+                    fn(vars);
+                }
+            },
+            noGlobal: function noGlobalPlugin(vars) {
+                var fn = function(globalVar) {
+                    if (!me.hasOwnProperty(globalVar)) {
+                        return 'No global "' + globalVar + '"';
+                    }
+                    delete me[globalVar];
+                    return true;
+                };
+                if (is(vars, "array")) {
+                    for (var i = 0; i < vars.length; i++) {
+                        fn(vars[i]);
+                    }
+                } else {
+                    fn(vars);
+                }
+            }
+        };
+        function parse(declaration, conf) {
+            try {
+                var module = parser.parse(declaration);
+                return module;
+            } catch (e) {
+                return "Invalid declaration \n" + e.message + "\nDeclaration: " + declaration;
+            }
+        }
+        function _registerModule(module, src, name) {
+            var existingMod;
+            if (src) {
+                existingMod = modules[src];
+                if (existingMod && !when.isPromise(existingMod)) {
+                    return "Duplicating module " + src;
+                }
+                modules[src] = module;
+            }
+            if (name) {
+                existingMod = modules[name];
+                if (existingMod && !when.isPromise(existingMod)) {
+                    return "Duplicating module " + name;
+                }
+                modules[name] = module;
+            }
+        }
+        function loadModule(moduleConf, contents) {
+            !moduleConf && (moduleConf = {});
+            moduleConf.imports = moduleConf.imports || {};
+            var module = flavour("loadModule", [ moduleConf, contents, _runInTag ]);
+            var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
+            return _err || module;
+        }
+        function applyConfiguration(conf) {
+            var moduleConf = {};
+            var confPromises = [];
+            moduleConf._internals = conf._internals;
+            function importLoader(declaration) {
+                moduleConf.imports = moduleConf.imports || {};
+                var _dep = modules[declaration.from.path];
+                if (_dep) {
+                    if (when.isPromise(_dep)) {
+                        _dep.then(function(module) {
+                            for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                                var _importName = declaration.vars[i];
+                                moduleConf.imports[_importName] = module[_importName];
+                            }
+                        });
+                        confPromises.push(_dep);
+                    } else {
+                        for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                            var _importName = declaration.vars[i];
+                            moduleConf.imports[_importName] = _dep[_importName];
+                        }
+                    }
+                } else {
+                    var _p = _module(declaration.from.path, function(module) {
+                        for (var i = 0, _l = declaration.vars.length; i < _l; i++) {
+                            var _importName = declaration.vars[i];
+                            moduleConf.imports[_importName] = module[_importName];
+                        }
+                    });
+                    if (!modules[declaration.from.path]) {
+                        modules[declaration.from.path] = _p;
+                    }
+                    if (when.isPromise(modules[declaration.from.path])) {
+                        confPromises.push(_p);
+                    }
+                }
+            }
+            function exportLoader(declaration) {
+                for (var i = 0, _l = declaration.length; i < _l; i++) {
+                    moduleConf.exports = moduleConf.exports || [];
+                    moduleConf.exports.push({
+                        src: declaration[i],
+                        dest: declaration[i]
+                    });
+                }
+            }
+            function moduleLoader(declaration) {
+                moduleConf.name = conf.decl.id;
+                if (declaration.expressions) {
+                    for (var i = 0, _l = declaration.expressions.length; i < _l; i++) {
+                        var expr = declaration.expressions[i];
+                        if (expr.type === "export") {
+                            exportLoader(expr.decl);
+                        } else if (expr.type === "import") {
+                            importLoader(expr.decl);
+                        } else if (expr.type === "module") {
+                            moduleLoader(expr.decl);
+                        }
+                    }
+                } else {
+                    moduleConf.imports = moduleConf.imports || {};
+                    var ref = declaration.path || declaration.src || declaration.id;
+                    var _mod = modules[ref];
+                    if (_mod) {
+                        if (when.isPromise(_mod)) {
+                            _mod.then(function(module) {
+                                moduleConf.imports[declaration.id] = module;
+                                return module;
+                            });
+                            confPromises.push(_mod);
+                        } else {
+                            moduleConf.imports[declaration.id] = _mod;
+                        }
+                    } else if (declaration.path) {
+                        var _p = _module(declaration.path, function(module) {
+                            moduleConf.imports[declaration.id] = module;
+                            return moduleConf;
+                        });
+                        if (!modules[declaration.path]) {
+                            modules[declaration.path] = _p;
+                        }
+                        if (when.isPromise(modules[declaration.path])) {
+                            confPromises.push(_p);
+                        }
+                    } else {
+                        var _dep = flavour("loadModuleReferenceBySource", [ declaration.src ]);
+                        moduleConf.imports[declaration.id] = _dep;
+                    }
+                }
+            }
+            if (conf.type === "module") {
+                moduleConf.name = conf.decl.id;
+                moduleLoader(conf.decl);
+            } else if (conf.type === "export") {
+                exportLoader(conf.decl);
+            } else if (conf.type === "import") {
+                importLoader(conf.decl);
+            }
+            var defer = when.all(confPromises).then(function() {
+                return moduleConf;
+            }, function() {
+                return new Error("Error while loading " + moduleConf._internals.src);
+            });
+            return defer;
+        }
+        function _moduleSrc(conf) {
+            var defer = when.defer(), moduleConf = conf || {}, rawText = conf.contents ? conf.contents : "", declaration = "", module;
+            var comments = rawText.match(/\s*\/\/\s*s6d([\s\S]*?)\/\/\s*-s6d/m);
+            if (!comments) {
+                module = loadModule({
+                    _internals: {
+                        src: conf.src
+                    }
+                }, rawText);
+                if (typeof module === "string") {
+                    return defer.reject(module);
+                }
+                return defer.resolve(module);
+            }
+            var split = comments[1].split("\n");
+            for (var j = 0, _l2 = split.length; j < _l2; j++) {
+                declaration += split[j].trim();
+            }
+            if (declaration.length) {
+                moduleConf = parse(declaration, moduleConf);
+                if (is(moduleConf, "string")) {
+                    defer.reject(moduleConf);
+                } else {
+                    var usedConf = moduleConf[0];
+                    usedConf._internals = {
+                        src: conf.src,
+                        contents: rawText
+                    };
+                    when(applyConfiguration(usedConf)).then(function(moduleConf) {
+                        module = loadModule(moduleConf, moduleConf._internals.contents.replace(comments[0], ""));
+                        defer.resolve(module);
+                        return module;
+                    }, function(e) {
+                        defer.reject(e);
+                        return e;
+                    });
+                }
+            } else {
+                module = loadModule({
+                    _internals: {
+                        src: conf.src
+                    }
+                }, rawText);
+                defer.resolve(module);
+                return module;
+            }
+            return defer.promise || defer;
+        }
+        function _module(moduleSrc, callback, errorFn) {
+            if (modules.hasOwnProperty(moduleSrc)) {
+                if (!when.isPromise(modules[moduleSrc])) {
+                    callback(modules[moduleSrc]);
+                }
+                return modules[moduleSrc];
+            }
+            function _error(msg) {
+                _errModules = _errModules || [];
+                _errModules.indexOf(moduleSrc) === -1 && _errModules.push(moduleSrc);
+                if (is(errorFn, "function")) {
+                    errorFn();
+                } else {
+                    console && console.error("(" + moduleSrc + ") " + msg);
+                    return new Error("(" + moduleSrc + ") " + msg);
+                }
+            }
+            _error.origFn = errorFn;
+            var modulePromise = when.defer();
+            modulePromise.then(callback, _error);
+            var moduleConf = is(moduleSrc, "string") ? {
+                src: moduleSrc
+            } : moduleSrc;
+            var uri = is(moduleSrc, "string") ? moduleSrc : moduleSrc.name;
+            if (uri) {
+                var _contextReturn = flavour("retrieveFileContents", [ uri, moduleConf, _moduleSrc, modulePromise ]);
+                return _contextReturn.promise || _contextReturn;
+            } else {
+                if (is(moduleSrc, "object")) {
+                    when(_moduleSrc(moduleSrc)).then(function(conf) {
+                        modulePromise.resolve(conf);
+                        return conf;
+                    }, function(msg) {
+                        modulePromise.reject(msg);
+                    });
+                }
+                return modulePromise;
+            }
+        }
+        function initConfig(confs) {
+            for (var i = 0; i < confs.length; i++) {
+                var confStr = confs[i];
+                var conf;
+                if (is(confStr, "object")) {
+                    conf = confStr;
+                } else if (is(JSON, "object")) {
+                    conf = JSON.parse(confStr);
+                } else {
+                    var confFn = new Function("return " + confStr);
+                    conf = confFn();
+                }
+                for (var prop in conf) {
+                    if (!conf.hasOwnProperty(prop)) {
+                        continue;
+                    }
+                    if (prop in _plugins) {
+                        _plugins[prop](conf[prop]);
+                    } else if (prop === "runInTag") {
+                        _runInTag = conf[prop];
+                    } else if (prop === "exposeAPI") {
+                        exposeAPI();
+                    }
+                }
+            }
+        }
+        function initModules(modules) {
+            for (var i = 0; i < modules.length; i++) {
+                var module = modules[i];
+                var moduleSrc = module.getAttribute("data-src");
+                moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
+                !moduleSrc && module.innerHTML && _moduleSrc({
+                    contents: module.innerHTML
+                });
+            }
+        }
+        flavour("onLoad", [ initConfig, initModules, s6d ]);
+        var _errCb;
+        function s6d(modulePath, cb) {
+            if (is(modulePath, "object")) {
+                initConfig([ modulePath ]);
+            } else {
+                _module(modulePath, cb, _errCb);
+            }
+        }
+        function exposeAPI() {
+            me.s6d = s6d;
+            me.s6d.src = function(moduleSrc, cb) {
+                _moduleSrc({
+                    contents: moduleSrc
+                }, cb, _errCb);
+            };
+            me.s6d.get = function(moduleName) {
+                if (moduleName) {
+                    return modules[moduleName];
+                } else {
+                    return modules;
+                }
+            };
+            me.s6d.error = function(cb) {
+                if (arguments.length === 0) {
+                    return _errModules;
+                }
+                _errCb = cb;
+            };
+            me.s6d.reset = function() {
+                _errCb = undefined;
+                modules = {};
+                _errModules = null;
+            };
+        }
+    })(this, harmonyParser, when, flavour);
+})();
