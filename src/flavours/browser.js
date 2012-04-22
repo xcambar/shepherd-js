@@ -114,7 +114,7 @@
             initConfig(confs);
             initModules(modules);
         }
-        this.addEventListener && this.addEventListener('load', onReady); 
-        !this.addEventListener && (this.onload = onReady);
+        window.addEventListener && window.addEventListener('load', onReady); 
+        !window.addEventListener && (window.onload = onReady);
     }
 }
