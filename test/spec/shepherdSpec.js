@@ -1,5 +1,6 @@
 if (typeof window == 'undefined') {
     var s6d = require('../../build/shepherd.server.js');
+    s6d({exposeAPI: true});
 }
 
 describe('Generic features of the Loader', function () {
