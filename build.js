@@ -22,7 +22,7 @@ var flavourConfig = {
         outputSuffix: 'min'
     },
     'server' : {
-        min: true,
+        min: false,
         flavourFile: './src/flavours/server.js',
         outputSuffix: 'server'
     }
@@ -56,7 +56,7 @@ function run (flavourKey) {
 
 function build () {
     for (var i in flavourConfig) {
-        if (!flavourConfig.hasOwnProperty(i)) { continue;}
+        if (!flavourConfig.hasOwnProperty(i)) { continue; }
         var msg;
         try {
             run(i);
@@ -64,7 +64,7 @@ function build () {
         } catch (e) {
             msg = 'Build of flavour ' + i + ' failed. (' + e.message + ')';
         }
-        console.log(msg);        
+        console.log(msg);
     }
 }
 
@@ -73,3 +73,7 @@ build();
 fs.watch(parserLocation, build);
 fs.watch(shepherdLocation, build);
 fs.watch(whenLocation, build);
+for (var i in flavourConfig) {
+    if (!flavourConfig.hasOwnProperty(i)) { continue; }
+    fs.watch(flavourConfig[i].flavourFile, build);
+}
