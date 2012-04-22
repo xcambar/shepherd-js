@@ -1154,14 +1154,123 @@
         });
         return module.exports;
     }();
-    (function(me, parser, when, undefined) {
+    var flavour = {
+        loadModule: function() {
+            var _extDepsCount = 0;
+            return function(moduleConf, contents, runInTag) {
+                var context = moduleConf.imports;
+                var module;
+                context.window = {};
+                for (var i in window) {
+                    context.window[i] = window[i];
+                }
+                var returns = moduleConf.exports ? "{" + moduleConf.exports.map(function(v) {
+                    return v.dest + ":(" + [ "window." + v.src, "this." + v.src, v.src ].join("||") + ")";
+                }).join(",") + "}" : "{}";
+                var moduleArgs = [];
+                var argsName = [];
+                for (var i in context) {
+                    if (context.hasOwnProperty(i)) {
+                        argsName.push(i);
+                        moduleArgs.push(context[i]);
+                    }
+                }
+                if (runInTag) {
+                    var script = document.createElement("script"), head = document.getElementsByTagName("head")[0], module;
+                    script.type = "text/javascript";
+                    var extDepIndex = _extDepsCount++;
+                    script.innerHTML = "(function runner (" + argsName.join(", ") + ") {\n" + contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
+                    moduleConf.src && script.setAttribute("data-src", moduleConf.src);
+                    moduleConf.name && script.setAttribute("name", moduleConf.name);
+                    var me = this;
+                    this.s6d[extDepIndex] = function(exports) {
+                        if (exports) {
+                            delete me.s6d[extDepIndex];
+                            module = exports;
+                        }
+                        return me.s6d[extDepIndex];
+                    };
+                    head.appendChild(script);
+                    return module;
+                } else {
+                    var fn;
+                    if (contents.apply && contents.call) {
+                        fn = contents;
+                    } else {
+                        fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
+                    }
+                    return fn.apply({}, moduleArgs);
+                }
+            };
+        }(),
+        loadModuleReferenceBySource: function(src) {
+            throw new Error("The required module %1 doesn't exist".replace("%1", src));
+        },
+        retrieveFileContents: function(uri, moduleConf, _moduleSrc, modulePromise) {
+            function xhr(url) {
+                var deferred = when.defer(), http = "XMLHttpRequest" in this ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP");
+                http.open("GET", url, true);
+                http.setRequestHeader("Accept", "application/javascript, text/javascript");
+                http.onreadystatechange = function onReadyStateChange() {
+                    if (this.readyState == 4) {
+                        if (/^20\d$/.test(this.status)) {
+                            deferred.resolve(http);
+                        } else {
+                            deferred.reject(this.status);
+                        }
+                    }
+                };
+                http.send();
+                return deferred.promise;
+            }
+            when(xhr(uri)).then(function xhrSuccess(res) {
+                var responseText = res.responseText;
+                moduleConf.contents = responseText;
+                when(_moduleSrc(moduleConf)).then(function(conf) {
+                    modulePromise.resolve(conf);
+                    return conf;
+                }, function(msg) {
+                    modulePromise.reject(msg);
+                });
+            }, function xhrError(code) {
+                var msg = 'Unable to fetch the module "' + _moduleSrc + '" (status code: ' + code + ")";
+                modulePromise.reject(msg);
+            });
+            return modulePromise;
+        },
+        onLoad: function(initConfig, initModules) {
+            function onReady() {
+                var confs = [];
+                var modules = [];
+                for (var i = 0; i < document.scripts.length; i++) {
+                    var script = document.scripts[i], srcAttr = script.getAttribute("type");
+                    if (srcAttr == "harmony") {
+                        modules.push(script);
+                    } else if (srcAttr == "text/shepherd-config") {
+                        confs.push(script.innerHTML.trim());
+                    }
+                }
+                initConfig(confs);
+                initModules(modules);
+            }
+            this.addEventListener && this.addEventListener("load", onReady);
+            !this.addEventListener && (this.onload = onReady);
+        }
+    };
+    (function(me, parser, when, flavour, undefined) {
         if (typeof parser.parse !== "function") {
             throw "No parser provided.";
         }
         function is(obj, type) {
             return Object.prototype.toString.call(obj).toLowerCase() == "[object " + type.toLowerCase() + "]";
         }
-        var modules = {}, _errModules = null, _isServer = typeof window == "undefined", _extDepsCount = 0, _debug;
+        function runInContext(name, args) {
+            if (name in flavour) {
+                return flavour[name].apply(me, args);
+            }
+            return null;
+        }
+        var modules = {}, _errModules = null, _isServer = typeof window == "undefined", _runInTag;
         var _plugins = {
             modularize: function modularizePlugin(vars) {
                 function fn(globalVar) {
@@ -1196,17 +1305,6 @@
                 }
             }
         };
-        function _loaderWrappers(conf) {
-            var name = conf.format;
-            if (name === "commonJS") {
-                return {
-                    fn: function commonJSWrapper(arg) {
-                        return conf.deps && conf.deps.hasOwnProperty(arg) ? conf.deps[arg] : require(arg);
-                    },
-                    name: "require"
-                };
-            }
-        }
         function parse(declaration, conf) {
             try {
                 var module = parser.parse(declaration);
@@ -1215,166 +1313,29 @@
                 return "Invalid declaration \n" + e.message + "\nDeclaration: " + declaration;
             }
         }
-        function xhr(url) {
-            var deferred = when.defer(), http = "XMLHttpRequest" in me ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP");
-            http.open("GET", url, true);
-            http.setRequestHeader("Accept", "application/javascript, text/javascript");
-            http.onreadystatechange = function onReadyStateChange() {
-                if (this.readyState == 4) {
-                    if (/^20\d$/.test(this.status)) {
-                        deferred.resolve(http);
-                    } else {
-                        deferred.reject(this.status);
-                    }
-                }
-            };
-            http.send();
-            return deferred.promise;
-        }
-        function serverModule(parsedURL) {
-            var defer = when.defer();
-            var get = require(parsedURL.protocol.indexOf("https") !== -1 ? "https" : "http").get;
-            var newURL = {
-                host: parsedURL.host,
-                path: parsedURL.pathname
-            };
-            var data = "";
-            parsedURL.port && (newURL.port = parsedURL.port);
-            get(newURL, function(res) {
-                res.on("data", function(chunk) {
-                    data += chunk;
-                });
-                res.on("end", function() {
-                    defer.resolve(data);
-                });
-                res.on("error", function(msg) {
-                    defer.reject(msg);
-                });
-            });
-            return defer;
-        }
         function _registerModule(module, src, name) {
+            var existingMod;
             if (src) {
-                var existingMod = modules[src];
+                existingMod = modules[src];
                 if (existingMod && !when.isPromise(existingMod)) {
                     return "Duplicating module " + src;
                 }
                 modules[src] = module;
             }
             if (name) {
-                var existingMod = modules[name];
+                existingMod = modules[name];
                 if (existingMod && !when.isPromise(existingMod)) {
                     return "Duplicating module " + name;
                 }
                 modules[name] = module;
             }
         }
-        function loadClientSideModule(moduleConf, contents) {
-            var conf = moduleConf.imports || {};
-            var module;
-            var wrapperConf;
-            conf.window = {};
-            for (var i in window) {
-                conf.window[i] = window[i];
-            }
-            var returns = moduleConf.exports ? "{" + moduleConf.exports.map(function(v) {
-                return v.dest + ":(" + [ "window." + v.src, "this." + v.src, v.src ].join("||") + ")";
-            }).join(",") + "}" : "{}";
-            var moduleArgs = [];
-            var argsName = [];
-            for (var i in conf) {
-                if (conf.hasOwnProperty(i)) {
-                    argsName.push(i);
-                    moduleArgs.push(conf[i]);
-                }
-            }
-            if (moduleConf.format && moduleConf.format.length) {
-                wrapperConf = _loaderWrappers(moduleConf);
-                argsName.push(wrapperConf.name);
-                moduleArgs.push(wrapperConf.fn);
-            }
-            if (_debug) {
-                var script = document.createElement("script"), head = document.getElementsByTagName("head")[0];
-                script.type = "text/javascript";
-                var extDepIndex = _extDepsCount++;
-                script.innerHTML = "(function runner (" + argsName.join(", ") + ") {\n" + contents + "\n;s6d[" + extDepIndex + "](" + returns + ");\n}).apply({}, s6d[" + extDepIndex + "]())";
-                moduleConf.src && script.setAttribute("data-src", moduleConf.src);
-                moduleConf.name && script.setAttribute("name", moduleConf.name);
-                me.s6d[extDepIndex] = function(exports) {
-                    if (exports) {
-                        delete me.s6d[extDepIndex];
-                        var _err = _registerModule(exports, moduleConf._internals.src, moduleConf.name);
-                        if (_err) {
-                            return _err;
-                        }
-                    }
-                    return me.s6d[extDepIndex];
-                };
-                head.appendChild(script);
-            } else {
-                var fn;
-                if (contents.apply && contents.call) {
-                    fn = contents;
-                } else {
-                    fn = Function.apply({}, argsName.concat([ contents + ";\nreturn " + returns ]));
-                }
-                module = fn.apply({}, moduleArgs);
-                var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
-                if (_err) {
-                    return _err;
-                }
-                return module;
-            }
-        }
-        function loadServerSideModule(moduleConf, contents) {
-            var module;
-            var wrapperConf;
-            var vm = require("vm");
-            var context = moduleConf.imports || {};
-            if (moduleConf.format && moduleConf.format.length) {
-                wrapperConf = _loaderWrappers(moduleConf);
-                context[wrapperConf.name] = wrapperConf.fn;
-            }
-            context.returns = {};
-            context.console = console;
-            context.exports = {};
-            context.module = {
-                exports: {}
-            };
-            context.require = function(arg) {
-                if (context[arg]) {
-                    return context[arg];
-                }
-                return require(arg);
-            };
-            var returnStatement = moduleConf.exports ? moduleConf.exports.map(function(v) {
-                return "returns." + v.dest + " = " + [ "exports." + v.src, "module.exports." + v.src, v.src ].join("||");
-            }).join(";\n") : "";
-            vm.runInNewContext(contents + ";\n" + returnStatement, context, moduleConf._internals.src + ".vm");
-            module = context.returns;
-            for (var i in context.exports) {
-                if (context.exports.hasOwnProperty(i)) {
-                    module[i] = context.exports[i];
-                }
-            }
-            for (var i in context.module.exports) {
-                if (context.module.exports.hasOwnProperty(i)) {
-                    module[i] = context.module.exports[i];
-                }
-            }
-            var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
-            if (_err) {
-                return _err;
-            }
-            return module;
-        }
         function loadModule(moduleConf, contents) {
             !moduleConf && (moduleConf = {});
-            if (!_isServer) {
-                return loadClientSideModule(moduleConf, contents);
-            } else {
-                return loadServerSideModule(moduleConf, contents);
-            }
+            moduleConf.imports = moduleConf.imports || {};
+            var module = runInContext("loadModule", [ moduleConf, contents, _runInTag ]);
+            var _err = _registerModule(module, moduleConf._internals.src, moduleConf.name);
+            return _err || module;
         }
         function applyConfiguration(conf) {
             var moduleConf = {};
@@ -1461,17 +1422,8 @@
                             confPromises.push(_p);
                         }
                     } else {
-                        if (_isServer) {
-                            var _dep;
-                            try {
-                                _dep = require(declaration.src);
-                            } catch (e) {
-                                throw new Error("The required module %1 doesn't exist".replace("%1", declaration.src));
-                            }
-                            moduleConf.imports[declaration.id] = _dep;
-                        } else {
-                            throw new Error("The required module %1 doesn't exist".replace("%1", declaration.src));
-                        }
+                        var _dep = runInContext("loadModuleReferenceBySource", [ declaration.src ]);
+                        moduleConf.imports[declaration.id] = _dep;
                     }
                 }
             }
@@ -1491,10 +1443,10 @@
             return defer;
         }
         function _moduleSrc(conf) {
-            var defer = when.defer(), moduleConf = conf || {}, rawText = conf.contents ? conf.contents : "", declaration = "";
+            var defer = when.defer(), moduleConf = conf || {}, rawText = conf.contents ? conf.contents : "", declaration = "", module;
             var comments = rawText.match(/\s*\/\/\s*s6d([\s\S]*?)\/\/\s*-s6d/m);
             if (!comments) {
-                var module = loadModule({
+                module = loadModule({
                     _internals: {
                         src: conf.src
                     }
@@ -1519,7 +1471,7 @@
                         contents: rawText
                     };
                     when(applyConfiguration(usedConf)).then(function(moduleConf) {
-                        var module = loadModule(moduleConf, moduleConf._internals.contents.replace(comments[0], ""));
+                        module = loadModule(moduleConf, moduleConf._internals.contents.replace(comments[0], ""));
                         defer.resolve(module);
                         return module;
                     }, function(e) {
@@ -1528,7 +1480,7 @@
                     });
                 }
             } else {
-                var module = loadModule({
+                module = loadModule({
                     _internals: {
                         src: conf.src
                     }
@@ -1537,19 +1489,6 @@
                 return module;
             }
             return defer.promise || defer;
-        }
-        function _serverPathDetection(uri) {
-            var path;
-            try {
-                path = require.resolve(uri);
-            } catch (e) {}
-            try {
-                path = !path ? require("fs").statSync(__dirname + "/" + uri).isFile() && __dirname + "/" + uri : path;
-            } catch (e) {}
-            try {
-                path = !path ? require("fs").statSync(process.cwd() + "/" + uri).isFile() && process.cwd() + "/" + uri : path;
-            } catch (e) {}
-            return path;
         }
         function _module(moduleSrc, callback, errorFn) {
             if (modules.hasOwnProperty(moduleSrc)) {
@@ -1574,63 +1513,10 @@
             var moduleConf = is(moduleSrc, "string") ? {
                 src: moduleSrc
             } : moduleSrc;
-            !moduleConf.format && _isServer && (moduleConf.format = "commonJS");
             var uri = is(moduleSrc, "string") ? moduleSrc : moduleSrc.name;
             if (uri) {
-                if (!_isServer) {
-                    when(xhr(uri)).then(function xhrSuccess(res) {
-                        var responseText = res.responseText;
-                        moduleConf.contents = responseText;
-                        when(_moduleSrc(moduleConf)).then(function(conf) {
-                            modulePromise.resolve(conf);
-                            return conf;
-                        }, function(msg) {
-                            modulePromise.reject(msg);
-                        });
-                    }, function xhrError(code) {
-                        _error('Unable to fetch the module "' + moduleSrc + '" (status code: ' + code + ")");
-                    });
-                    return modulePromise.promise;
-                } else {
-                    var modPath, url = require("url"), parsedURL = url.parse(uri);
-                    if (parsedURL.host) {
-                        when(serverModule(parsedURL)).then(function(moduleSrc) {
-                            moduleConf.contents = moduleSrc;
-                            when(_moduleSrc(moduleConf)).then(function(conf) {
-                                modulePromise.resolve(conf);
-                                return conf;
-                            }, function(msg) {
-                                modulePromise.reject(msg);
-                            });
-                        }, function xhrError(msg) {
-                            _error('Unable to fetch the module "' + uri + '" because: ' + msg);
-                        });
-                        return modulePromise.promise;
-                    } else {
-                        modPath = _serverPathDetection(uri);
-                        if (!modPath) {
-                            modulePromise.reject("Unable to locate file " + uri);
-                            return modulePromise;
-                        } else if (is(modPath, "object")) {
-                            moduleConf.deps = moduleConf.deps || {};
-                            moduleConf.deps[modPath.uri] = modPath.node_module;
-                        } else {
-                            try {
-                                moduleConf.contents = require("fs").readFileSync(modPath, "utf-8");
-                            } catch (e) {
-                                modulePromise.reject(e.message);
-                                return modulePromise;
-                            }
-                        }
-                        when(_moduleSrc(moduleConf)).then(function(conf) {
-                            modulePromise.resolve(conf);
-                            return conf;
-                        }, function(msg) {
-                            modulePromise.reject(msg);
-                        });
-                        return modulePromise.promise || modulePromise;
-                    }
-                }
+                var _contextReturn = runInContext("retrieveFileContents", [ uri, moduleConf, _moduleSrc, modulePromise ]);
+                return _contextReturn.promise || _contextReturn;
             } else {
                 if (is(moduleSrc, "object")) {
                     when(_moduleSrc(moduleSrc)).then(function(conf) {
@@ -1659,8 +1545,10 @@
                     }
                     if (prop in _plugins) {
                         _plugins[prop](conf[prop]);
-                    } else if (prop == "debug") {
-                        _debug = conf[prop];
+                    } else if (prop == "runInTag") {
+                        _runInTag = conf[prop];
+                    } else if (prop == "exposeAPI") {
+                        exposeAPI();
                     }
                 }
             }
@@ -1675,29 +1563,17 @@
                 });
             }
         }
-        !_isServer && me.addEventListener && me.addEventListener("load", function onReady() {
-            var confs = [];
-            var modules = [];
-            for (var i = 0; i < document.scripts.length; i++) {
-                var script = document.scripts[i], srcAttr = script.getAttribute("type");
-                if (srcAttr == "harmony") {
-                    modules.push(script);
-                } else if (srcAttr == "text/shepherd-config") {
-                    confs.push(script.innerHTML.trim());
-                }
+        runInContext("onLoad", [ initConfig, initModules, s6d ]);
+        var _errCb;
+        function s6d(modulePath, cb) {
+            if (is(modulePath, "object")) {
+                initConfig([ modulePath ]);
+            } else {
+                _module(modulePath, cb, _errCb);
             }
-            initConfig(confs);
-            initModules(modules);
-        });
-        if (typeof MINIFY == "undefined") {
-            var _errCb;
-            me.s6d = function(modulePath, cb) {
-                if (is(modulePath, "object")) {
-                    initConfig([ modulePath ]);
-                } else {
-                    _module(modulePath, cb, _errCb);
-                }
-            };
+        }
+        function exposeAPI() {
+            me.s6d = s6d;
             me.s6d.src = function(moduleSrc, cb) {
                 _moduleSrc({
                     contents: moduleSrc
@@ -1721,9 +1597,6 @@
                 modules = {};
                 _errModules = null;
             };
-            if (_isServer) {
-                exports = module.exports = me.s6d;
-            }
         }
-    })(this, harmonyParser, when);
+    })(this, harmonyParser, when, flavour);
 })();

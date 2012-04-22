@@ -1,5 +1,5 @@
 if (typeof window == 'undefined') {
-    var s6d = require('../../build/shepherd.dev.js');
+    var s6d = require('../../build/shepherd.server.js');
 }
 
 describe('Generic features of the Loader', function () {
