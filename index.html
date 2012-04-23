@@ -9,13 +9,13 @@
   <script type="text/javascript" src="vendor/less/dist/less-1.2.1.js"></script>
   <script type="text/javascript" src="vendor/shepherd/build/shepherd.dev.js"></script>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-  <script type="text/shepherd-js/config">
+  <script type="text/shepherd-config">
     {
       modularize: 'jQuery',
       noGlobal: ['jQuery', '$']
     }
   </script>
-  <script type="text/shepherd-js" data-src="lib/revealer.js"></script>
+  <script type="harmony" data-src="lib/revealer.js"></script>
   
   <style type="text/css">
     .container {
@@ -51,7 +51,7 @@
   </div>
   <div class="container">
     <div class="description">
-      <p><strong>Shepherd</strong> is a solution to manage Javascript modules and dependencies with an
+      <p><strong>Shepherd</strong> is a polyfill to manage Javascript modules and dependencies with an
         <a href="http://wiki.ecmascript.org/doku.php?id=harmony:modules">ECMAScript:Harmony</a>-compliant syntax.</p>
       <p>Stop wrapping your code with functions to build a module, your files <strong>are</strong> your modules. Period.
       </p>
@@ -65,6 +65,15 @@
     <div class="before">
       <h3>A <em>classical</em> JS file (yes, it's ugly code. Whatever.)</h3>
       <pre>
+
+
+
+
+
+
+
+
+
 var _min = 0;
 var _max = 1000;
 var _lte = function (a, b) { return a &lt;= b;};
@@ -81,13 +90,15 @@ var random = function () {
     </div>
     <div class="after">
       <h3>Add sugar, let <strong>Shepherd</strong> operate: it's now a module!</h3>
-      <pre>/**
+      <pre>//s6d
 module randomRange {
   export setMin;    
   export setMax;    
   export random;    
 }                   
-**/
+//-s6d
+
+
 var _min = 0;
 var _max = 1000;
 var _lte = function (a, b) { return a &lt;= b;};
@@ -115,58 +126,64 @@ var random = function () {
     <h3>Shepherd provides:</h3>
       <dl>
         <dt>a syntax compliant with ECMAScript:Harmony</dt>
-        <dd>which means that when Harmony is implemented in your favorite JS engine, just remove the quotes surrounding the module declarations and voila! <strong>Your code is ported to Harmony</strong>.</dd>
+        <dd>which means that when Harmony is implemented in modern JS engines, you will already use the new module syntax and features. And for older engines, there's Shepherd.</dd>
         <dt>a clutter-free module definition</dt>
-        <dd>Dont't bother wrapping your code with functions to create a module. <strong>Shepherd</strong> handles it for you out of the box by pre-processing your js files. <strong>Start writing at column 1!</strong></dd>
+        <dd>This is more about the decisions made at ECMA than it is about Shepherd, but this module syntax is really clean, flexible and readable. Stop using wrapper functions: <strong>Start writing at column 1!</strong></dd>
         <dt>a way to modularize external libraries as well</dt>
-        <dd>When you cannot integrate the <strong>Shepherd</strong> syntax within an external files, tell <strong>Shepherd</strong> to do some post-processing after the external file is loaded to depollute <i>global</i>.
-        <dt>backward-compatibility for your legacy-apps</dt>
-        <dd>The module declarations in <strong>Shepherd</strong> are stored in strings without operators nor left-operands (think of <code>"use strict";</code>), so your files remain 100% backward compatible. Migrate your apps with ease! </dd>
+        <dd>As you cannot force external dependencies to integrate the <strong>Harmony</strong> syntax, <strong>Shepherd</strong> provides facilities to depollute <i>global</i> and to modularize even the files you don't own.
       </dl>
   </div>
   <h2 id="usage">How to use</h2>
   <div class="container">
     <p>Just include the following line to your header:</p>
-    <pre>&lt;script type="text/javascript" src="lib/shepherd.js">&lt;/script></pre>
+    <pre>&lt;script type="text/javascript" src="lib/shepherd.dev.js">&lt;/script></pre>
     <p>Then include all the files you want Shepherd to handle like the following:</p>
-    <pre>&lt;script type="text/shepherd-js" data-src="path/to/my/file.js">&lt;/script></pre>
+    <pre>&lt;script type="harmony" data-src="path/to/my/file.js">&lt;/script></pre>
     <p>An in-depth documentation on the syntax will very soon (I promise) be made available.</p>
   </div>
   
+  <div class="container features">
+    <h3>Optimizer/Minifier</h3>
+    <p>Once you're ready for production, Shepherd comes with an optimizer that will concatenate all your Javascript
+files into a single file. Obviously, as bandwidth is precious, the generated file is minified with <a href="https://github.com/mishoo/UglifyJS">UglifyJS</a>.
+    </p>
+  </div>
+
+
   <h2 id="examples">Examples <small>Let's see how it works!</small></h2>
   <div class="container">
     <dl class="unstyled examples">
     <dt>Import a module from its URI</dt>
-    <dd>file.js:<pre>/**
+    <dd>file.js:<pre>//s6d
   module myModule at 'path/to/my/awesome/module.js'
-**/
+//-s6d
 
 console.log(myModule); // Displays myModule to the console</pre>
 <div class="alert-message"><code>myModule</code> is not available anywhere else in your application <small>(unless you repeat the declaration in another module)</small></div>
 </dd>
     <dt>Import a module by its name</dt>
     <dd>Declaring a named module (myNamedModule.js):
-<pre>/**
+<pre>//s6d
   module myNamedModule {
     export doSomething;
 }
-**/
+//-s6d
 
 var doSomething = function () {/* ... */};
 </pre>
 Using the named module (myApp.js):
-<pre>/**
+<pre>//s6d
   module myNamedModule;
-**/
+//-s6d
 // The above declaration specifies we want to use the module 'myNamedModule'
 
 myNamedModule.doSomething();
 </pre></dd>
     <dt>Export variables</dt>
-    <dd>File1.js : Defining a module <pre>/**
+    <dd>File1.js : Defining a module <pre>//s6d
   export myExportedVar;
   export myExportedFn;
-**/
+//-s6d
 
 var a = 'This variable is private';
 var b = function () {
@@ -177,17 +194,17 @@ var myExportedVar = 'This variable is publicly available';
 var myExportedFn = function () {
   return 'This function is publicly available';
 }</pre>
-File2.js : Importing a portion of the module <pre>/**
+File2.js : Importing a portion of the module <pre>//s6d
   import myExportedVar from 'File1.js';
-**/
+//-s6d
 
 console.log(a); //undefined
 console.log(b); //undefined
 console.log(myExportedFn); //undefined
 console.log(myExportedVar); //"This variable is publicly available"</pre>
-File2a.js : Importing the whole module<pre>/**
+File2a.js : Importing the whole module<pre>//s6d
   module 'File1.js';
-**/
+//-s6d
 
 console.log(a); //undefined
 console.log(b); //undefined
@@ -195,7 +212,7 @@ console.log(myExportedFn()); //"This function is publicly available"
 console.log(myExportedVar); //"This variable is publicly available"</pre>
 </dd>
     <dt>Turn your existing files into modules. </dt>
-    <dd><pre>/**
+    <dd><pre>//s6d
 module myModule {
   import imp1 from '/path/to/import.js';
   import imp2 from namedImportedModule; 
@@ -204,7 +221,7 @@ module myModule {
   export expA;                          
   export expB;                          
 }                                       
-**/
+//-s6d
 
 /** Here after goes the code of your module **/
 
@@ -222,9 +239,9 @@ var expB = ['This', 'is', 'an', 'exported', 'array'];</pre>
 &lt;/script&gt;
 </pre>
 Using jQuery in a module (myModule.js):
-<pre>/**
+<pre>//s6d
 module $ from jQuery;
-**/
+//-s6d
 
 $.ajax(/*...*/);
 </pre>
@@ -232,16 +249,14 @@ $.ajax(/*...*/);
     </dd>
     <dt>What about SSJS ?</dt>
     <dd>Bootstrap your app like the following:
-      <pre>require('../../build/shepherd.dev.js').call(this, 'app.js');</pre>
+      <pre>require('../../build/shepherd.server.js').call(this, 'app.js');</pre>
     (where app.js is the main entry point of your app)
     <br/>
     <div class="alert-message">
-      You can now Shepherd in your app.<br/>
+      You can now use Shepherd in your app.<br/>
       <b>Note</b>: You can keep using the commonJS syntax for your external modules.
     </div>
     </dd>
-    <dt>Already using RequireJS?</dt>
-    <dd><div class="alert-message">The AMD wrapper is a work in progress and will be made available as soon as possible.</div></dd>
     <dt style="color: red;">Live examples</dt>
     <dd>
       <ul>
@@ -274,7 +289,7 @@ $.ajax(/*...*/);
     I currently live in Paris, where I left all my previous develoment and management activities to focus on Javascript.<br />
     
     <p>Of course, you can leave me a message here at GitHub or on Twitter <a href="http://twitter.com/xcambar">@xcambar</a>.
-    <br /> And if you want to send me an E-mail, surely you will find it with ease.</p>
+    <br /> And if you want to send me an E-mail, surely you will find my address with ease.</p>
     
   </div>
   <h2 id="tldr">tl;dr</h2>
@@ -282,8 +297,8 @@ $.ajax(/*...*/);
     <p>
       Encapsulation through modules is a key factor to efficient/beautiful Javascript code.<br/>
       Both AMD and CommonJS have proven very efficient, but they are hardly compatible.<br />
-      ECMA made a proposal for an extension of Javascript using modules: ES:Harmony<br />
-      &rArr; Waiting for the day the proposal will be natively integrated to the runtimes, a library implements it for today's runtimes: <b>Shepherd</b>.
+      ECMA made a proposal for the future versions of Javascript for native modules.<br />
+      &rArr; Waiting for the day the proposal will be integrated into the runtimes, a library allows you to use them: <b>Shepherd</b>.
     </p>
   </div>
   <div class="footer">
