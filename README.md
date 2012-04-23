@@ -26,5 +26,17 @@ You can join me:
 * on Twitter: [@xcambar](http://twitter.com/xcambar)
 * on the [mailing list](https://groups.google.com/forum/?fromgroups#!forum/shepherd-js)
 
+## Credentials
+
+__Shepherd__ uses a number of excellent third-party software. Here's an exhaustive list:
+* [JISON](http://zaach.github.com/jison/), a port of Bison written in Javascript. Used to build the parser for the module syntax
+* [when.js](https://github.com/cujojs/when), a Promises/A compliant library. Used to handle dependencies and async operations
+* [UglifyJS](https://github.com/mishoo/UglifyJS) used in the build process for target generation and minification. Also used in the optimizer
+* [node-optimist](https://github.com/substack/node-optimist) for parsing command-line parameters in the optimizer
+
+Many thanks to the authors, your work is incredible, your contribution invaluable!!
+
+And last but not least:
+
 # Enjoy!
 
