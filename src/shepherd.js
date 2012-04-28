@@ -392,7 +392,7 @@
     function initModules (modules) {
         for (var i = 0; i < modules.length; i++) {
             var module = modules[i];
-            var moduleSrc = module.getAttribute('data-src');
+            var moduleSrc = module.getAttribute('src');
             moduleSrc && !modules.hasOwnProperty(moduleSrc) && _module(moduleSrc);
             !moduleSrc && module.innerHTML && _moduleSrc({contents: module.innerHTML});
         }
